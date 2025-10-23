@@ -36,30 +36,31 @@ const FAQ = () => {
   ];
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-background">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <p className="text-primary font-semibold mb-2">❓ FAQ</p>
+    <section id="faq" className="py-24 px-6 lg:px-8 bg-background">
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/50 mb-4">
+            <span className="text-xs font-medium text-foreground">FAQ</span>
+          </div>
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
-            Got Questions? <br />
-            We've Got Answers!
+            Frequently asked questions
           </h2>
           <p className="text-lg text-muted-foreground">
-            Find answers to common questions about Jaaxis and how it can help your business.
+            Everything you need to know about Jaaxis.
           </p>
         </div>
 
-        <Accordion type="single" collapsible className="space-y-4">
+        <Accordion type="single" collapsible className="space-y-3">
           {faqs.map((faq, index) => (
             <AccordionItem
               key={index}
               value={`item-${index}`}
-              className="border border-border rounded-lg px-6 bg-card"
+              className="border border-border rounded-lg px-6 bg-card hover:border-primary/20 transition-colors"
             >
-              <AccordionTrigger className="text-left text-lg font-semibold text-foreground hover:no-underline">
+              <AccordionTrigger className="text-left text-base font-medium text-foreground hover:no-underline py-5">
                 {faq.question}
               </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">
+              <AccordionContent className="text-sm text-muted-foreground pb-5">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>
@@ -67,7 +68,8 @@ const FAQ = () => {
         </Accordion>
 
         <div className="text-center mt-12">
-          <Button size="lg">Get Started</Button>
+          <p className="text-sm text-muted-foreground mb-4">Still have questions?</p>
+          <Button size="lg">Contact Support</Button>
         </div>
       </div>
     </section>

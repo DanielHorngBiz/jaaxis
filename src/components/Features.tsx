@@ -1,4 +1,3 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { Bot, Zap, MessageSquare, Shield, TrendingUp, Users } from "lucide-react";
 
 const Features = () => {
@@ -6,63 +5,68 @@ const Features = () => {
     {
       icon: Bot,
       title: "AI-Powered Conversations",
-      description: "Leverage advanced AI to provide intelligent, context-aware responses that feel natural and human-like.",
+      description: "Advanced AI that understands context and delivers natural, human-like responses to customer queries.",
     },
     {
       icon: Zap,
       title: "Instant Response",
-      description: "Deliver lightning-fast replies to customer queries, reducing wait times and improving satisfaction.",
+      description: "Lightning-fast replies that reduce wait times and significantly improve customer satisfaction.",
     },
     {
       icon: MessageSquare,
       title: "Multi-Channel Support",
-      description: "Engage customers across web, mobile, social media, and messaging platforms from a single dashboard.",
+      description: "Engage customers across web, mobile, social media, and messaging platforms seamlessly.",
     },
     {
       icon: Shield,
       title: "Enterprise Security",
-      description: "Bank-grade encryption and compliance with industry standards to keep your data secure and protected.",
+      description: "Bank-grade encryption and compliance with industry standards to protect your data.",
     },
     {
       icon: TrendingUp,
       title: "Analytics & Insights",
-      description: "Track performance metrics, understand customer behavior, and optimize your support strategy with real-time analytics.",
+      description: "Real-time performance metrics and customer behavior insights to optimize your strategy.",
     },
     {
       icon: Users,
       title: "Seamless Handoff",
-      description: "Smoothly transfer complex queries to human agents with full conversation context and history.",
+      description: "Smooth transfer to human agents with complete conversation context when needed.",
     },
   ];
 
   return (
-    <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-background">
+    <section id="features" className="py-24 px-6 lg:px-8 bg-background">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <p className="text-primary font-semibold mb-2">🚀 Our Features</p>
+        <div className="max-w-3xl mx-auto text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/50 mb-4">
+            <span className="text-xs font-medium text-foreground">Features</span>
+          </div>
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
-            Advanced Features to Supercharge <br />
-            Your AI Chatbot
+            Everything you need to deliver
+            <br />
+            exceptional support
           </h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Discover powerful capabilities designed to enhance your customer support experience and drive business growth.
+          <p className="text-lg text-muted-foreground">
+            Powerful capabilities designed to enhance your customer experience.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
-            <Card
+            <div
               key={index}
-              className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border"
+              className="group relative p-6 rounded-xl border border-border bg-card hover:shadow-lg hover:border-primary/20 transition-all duration-300"
             >
-              <CardContent className="pt-6">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                  <feature.icon className="h-6 w-6 text-primary" />
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                  <feature.icon className="h-5 w-5 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-2">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
-              </CardContent>
-            </Card>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>
