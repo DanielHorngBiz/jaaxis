@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
+import heroDemo from "@/assets/hero-demo.webm";
 
 const Hero = () => {
   return (
@@ -67,37 +68,16 @@ const Hero = () => {
               </div>
             </div>
 
-            {/* Chat interface */}
-            <div className="p-8 space-y-6">
-              <div className="flex items-start gap-3 animate-fade-in">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
-                </div>
-                <div className="flex-1 max-w-md">
-                  <div className="bg-secondary/80 rounded-2xl rounded-tl-sm px-4 py-3">
-                    <p className="text-sm text-foreground">Hi! I'm your AI assistant. How can I help you today?</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 justify-end animate-fade-in" style={{ animationDelay: "0.2s" }}>
-                <div className="flex-1 max-w-md">
-                  <div className="bg-primary rounded-2xl rounded-tr-sm px-4 py-3 ml-auto">
-                    <p className="text-sm text-primary-foreground">I need help with my recent order</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 animate-fade-in" style={{ animationDelay: "0.4s" }}>
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
-                </div>
-                <div className="flex-1 max-w-md">
-                  <div className="bg-secondary/80 rounded-2xl rounded-tl-sm px-4 py-3">
-                    <p className="text-sm text-foreground">I'd be happy to help! Let me pull up your order details...</p>
-                  </div>
-                </div>
-              </div>
+            {/* Demo Video */}
+            <div className="relative">
+              <video
+                src={heroDemo}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-auto"
+              />
             </div>
           </div>
         </div>
