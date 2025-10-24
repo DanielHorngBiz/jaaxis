@@ -10,7 +10,7 @@ const TrustBadges = () => {
 
   return (
     <section className="py-16 px-6 lg:px-8 border-y border-border bg-secondary/30">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <p className="text-center text-sm text-muted-foreground mb-10 font-medium">
           Trusted by innovative companies worldwide
         </p>

@@ -72,7 +72,7 @@ const Features = () => {
 
   return (
     <section id="features" className="py-24 px-6 lg:px-8 bg-background">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/50 mb-4">
