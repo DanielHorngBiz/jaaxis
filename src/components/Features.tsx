@@ -1,4 +1,4 @@
-import { Bot, Zap, MessageSquare, Shield, TrendingUp, Users, ArrowRight } from "lucide-react";
+import { Bot, Zap, MessageSquare, Users, ArrowRight, CheckCircle2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 
@@ -8,39 +8,47 @@ const Features = () => {
 
   const features = [
     {
-      icon: Bot,
-      title: "AI-Powered Conversations",
-      description: "Advanced AI that understands context and delivers natural, human-like responses to customer queries.",
+      icon: Zap,
+      title: "Build in Minutes Deploy Everywhere",
+      description: "Turn your website, FAQs, or help docs into a powerful AI agent, then launch it on Messenger, Instagram, and your storefront, no code required.",
+      bullets: [
+        "Train with text, files, or URLs",
+        "Deploy to Messenger, IG, and web",
+        "Multilingual support out of the box"
+      ],
       visual: "gradient-from-primary/20 to-primary/5",
     },
     {
-      icon: Zap,
-      title: "Instant Response",
-      description: "Lightning-fast replies that reduce wait times and significantly improve customer satisfaction.",
+      icon: MessageSquare,
+      title: "Connect Your Store Solve Every Question",
+      description: "Seamlessly integrate with Shopify, WooCommerce, and more so your AI agent can track orders, process refunds, and answer real customer questions.",
+      bullets: [
+        "Deep store integration",
+        "Understands customer intent",
+        "Resolves support from end to end"
+      ],
       visual: "gradient-from-accent/20 to-accent/5",
     },
     {
-      icon: MessageSquare,
-      title: "Multi-Channel Support",
-      description: "Engage customers across web, mobile, social media, and messaging platforms seamlessly.",
+      icon: Bot,
+      title: "Improve Your AI by Editing Chats",
+      description: "Fine-tune your chatbot by simply editing past conversations, no retraining, no tech skills required.",
+      bullets: [
+        "Fine-tune with real conversations",
+        "Instantly improve responses",
+        "No retraining needed"
+      ],
       visual: "gradient-from-primary/15 to-secondary",
     },
     {
-      icon: Shield,
-      title: "Enterprise Security",
-      description: "Bank-grade encryption and compliance with industry standards to protect your data.",
-      visual: "gradient-from-muted to-card",
-    },
-    {
-      icon: TrendingUp,
-      title: "Analytics & Insights",
-      description: "Real-time performance metrics and customer behavior insights to optimize your strategy.",
-      visual: "gradient-from-primary/10 to-background",
-    },
-    {
       icon: Users,
-      title: "Seamless Handoff",
-      description: "Smooth transfer to human agents with complete conversation context when needed.",
+      title: "Forward to Humans When It Matters",
+      description: "Automatically route chats to a human when AI can't help, based on custom rules, and collect contact info for seamless follow-up.",
+      bullets: [
+        "Route when AI gets stuck",
+        "Trigger handoff with custom rules",
+        "Collect contact info for follow-up"
+      ],
       visual: "gradient-from-secondary to-primary/5",
     },
   ];
@@ -84,12 +92,12 @@ const Features = () => {
             <span className="text-xs font-medium text-foreground">Features</span>
           </div>
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
-            Everything you need to deliver
+            Advanced Features to Supercharge
             <br />
-            exceptional support
+            Your AI Agent
           </h2>
           <p className="text-lg text-muted-foreground">
-            Powerful capabilities designed to enhance your customer experience.
+            Equip your AI agent with powerful tools to resolve customer issues faster, deliver instant answers in any language, and create a seamless support experience across platforms.
           </p>
         </div>
 
@@ -129,12 +137,25 @@ const Features = () => {
                         {feature.title}
                       </h3>
                       <p
-                        className={`text-sm leading-relaxed transition-all duration-300 ${
+                        className={`text-sm leading-relaxed mb-3 transition-all duration-300 ${
                           isActive ? "text-muted-foreground opacity-100" : "text-muted-foreground/60 opacity-60"
                         }`}
                       >
                         {feature.description}
                       </p>
+                      <ul className="space-y-2">
+                        {feature.bullets.map((bullet, bulletIndex) => (
+                          <li
+                            key={bulletIndex}
+                            className={`flex items-start gap-2 text-xs transition-all duration-300 ${
+                              isActive ? "text-muted-foreground opacity-100" : "text-muted-foreground/60 opacity-60"
+                            }`}
+                          >
+                            <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                            <span>{bullet}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
                 </button>
@@ -188,7 +209,7 @@ const Features = () => {
               <div
                 key={index}
                 ref={(el) => (triggerRefs.current[index] = el)}
-                className="h-[85vh] lg:h-[95vh]"
+                className="h-[100vh]"
               />
             ))}
           </div>
