@@ -1,6 +1,10 @@
 import { Bot, Zap, MessageSquare, Users, ArrowRight } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "./ui/button";
+import feature1Video from "@/assets/feature-1.webm";
+import feature2Video from "@/assets/feature-2.webm";
+import feature3Video from "@/assets/feature-3.webm";
+import feature4Video from "@/assets/feature-4.webm";
 
 const Features = () => {
   const [activeFeature, setActiveFeature] = useState(0);
@@ -11,30 +15,33 @@ const Features = () => {
       icon: Zap,
       title: "Launch in Minutes",
       description: "Turn your docs into an AI agent and deploy across web, Messenger, and Instagram instantly.",
+      video: feature1Video,
       visual: "gradient-from-primary/20 to-primary/5",
     },
     {
       icon: MessageSquare,
       title: "Smart Store Integration",
       description: "Connect with Shopify and WooCommerce so your AI handles orders, refunds, and support automatically.",
+      video: feature2Video,
       visual: "gradient-from-accent/20 to-accent/5",
     },
     {
       icon: Bot,
       title: "Learn From Every Chat",
       description: "Edit past conversations to improve responses. No training required, changes apply instantly.",
+      video: feature3Video,
       visual: "gradient-from-primary/15 to-secondary",
     },
     {
       icon: Users,
       title: "Seamless Human Handoff",
       description: "Set custom rules to route complex cases to your team while capturing customer details automatically.",
+      video: feature4Video,
       visual: "gradient-from-secondary to-primary/5",
     },
   ];
 
   const activeFeatureData = features[activeFeature];
-  const ActiveIcon = activeFeatureData.icon;
 
   useEffect(() => {
     const observers = triggerRefs.current.map((trigger, index) => {
@@ -135,27 +142,16 @@ const Features = () => {
             <div className="min-h-[60vh] lg:min-h-[70vh] flex items-center">
               <div
                 key={activeFeature}
-                className={`w-full rounded-2xl border border-border p-8 lg:p-12 shadow-xl bg-${activeFeatureData.visual} animate-fade-in`}
+                className="w-full rounded-2xl border border-border overflow-hidden shadow-xl animate-fade-in"
               >
-                <div className="flex flex-col items-center justify-center h-full text-center space-y-8">
-                  <div className="w-20 h-20 rounded-2xl bg-primary/20 backdrop-blur-sm flex items-center justify-center animate-scale-in">
-                    <ActiveIcon className="h-10 w-10 text-primary" />
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="text-3xl lg:text-4xl font-bold text-foreground">
-                      {activeFeatureData.title}
-                    </h3>
-                    <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-md mx-auto">
-                      {activeFeatureData.description}
-                    </p>
-                  </div>
-                  <div className="pt-4">
-                    <div className="inline-flex items-center gap-2 text-sm text-primary font-medium cursor-pointer hover:gap-3 transition-all">
-                      Learn more
-                      <ArrowRight className="h-4 w-4" />
-                    </div>
-                  </div>
-                </div>
+                <video
+                  src={activeFeatureData.video}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-auto"
+                />
               </div>
             </div>
           </div>
