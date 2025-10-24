@@ -1,4 +1,4 @@
-import { Bot, Zap, MessageSquare, Users, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Bot, Zap, MessageSquare, Users, ArrowRight } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 
@@ -9,46 +9,26 @@ const Features = () => {
   const features = [
     {
       icon: Zap,
-      title: "Launch Your AI Agent in Minutes",
-      description: "Transform your content into an intelligent AI assistant and deploy it across every channel your customers use—no coding required.",
-      bullets: [
-        "Train instantly with docs, URLs, or files",
-        "Go live on web, Messenger, and Instagram",
-        "Built-in multilingual support for global reach"
-      ],
+      title: "Launch in Minutes",
+      description: "Turn your docs into an AI agent and deploy across web, Messenger, and Instagram instantly.",
       visual: "gradient-from-primary/20 to-primary/5",
     },
     {
       icon: MessageSquare,
-      title: "Smart E-Commerce Integration",
-      description: "Connect seamlessly with Shopify, WooCommerce, and major platforms so your AI can handle orders, process refunds, and resolve customer issues autonomously.",
-      bullets: [
-        "Native integration with leading platforms",
-        "Understands complex customer inquiries",
-        "End-to-end resolution without escalation"
-      ],
+      title: "Smart Store Integration",
+      description: "Connect with Shopify and WooCommerce so your AI handles orders, refunds, and support automatically.",
       visual: "gradient-from-accent/20 to-accent/5",
     },
     {
       icon: Bot,
-      title: "Refine AI Through Conversations",
-      description: "Make your AI smarter by editing past interactions. No complex training, no technical expertise—just click, edit, and improve.",
-      bullets: [
-        "Learn from real customer conversations",
-        "Instant improvements without retraining",
-        "Simple interface anyone can use"
-      ],
+      title: "Learn From Every Chat",
+      description: "Edit past conversations to improve responses. No training required, changes apply instantly.",
       visual: "gradient-from-primary/15 to-secondary",
     },
     {
       icon: Users,
       title: "Seamless Human Handoff",
-      description: "Intelligently escalate to your team when needed. Set custom triggers, capture customer details, and ensure smooth transitions that maintain context.",
-      bullets: [
-        "Smart routing based on conversation signals",
-        "Customizable escalation rules",
-        "Automatic contact capture for follow-up"
-      ],
+      description: "Set custom rules to route complex cases to your team while capturing customer details automatically.",
       visual: "gradient-from-secondary to-primary/5",
     },
   ];
@@ -92,12 +72,12 @@ const Features = () => {
             <span className="text-xs font-medium text-foreground">Features</span>
           </div>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
-            Advanced Features to Supercharge
+            Powerful Features for
             <br />
-            Your AI Agent
+            Modern Customer Support
           </h2>
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Equip your AI agent with powerful tools to resolve customer issues faster, deliver instant answers in any language, and create a seamless support experience across platforms.
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
+            Everything you need to deliver exceptional customer experiences with AI.
           </p>
         </div>
 
@@ -137,25 +117,12 @@ const Features = () => {
                         {feature.title}
                       </h3>
                       <p
-                        className={`text-sm leading-relaxed mb-4 transition-all duration-300 ${
+                        className={`text-base leading-relaxed transition-all duration-300 ${
                           isActive ? "text-muted-foreground opacity-100" : "text-muted-foreground/60 opacity-60"
                         }`}
                       >
                         {feature.description}
                       </p>
-                      <ul className="space-y-2.5">
-                        {feature.bullets.map((bullet, bulletIndex) => (
-                          <li
-                            key={bulletIndex}
-                            className={`flex items-start gap-3 text-sm transition-all duration-300 ${
-                              isActive ? "text-foreground opacity-100" : "text-foreground/60 opacity-60"
-                            }`}
-                          >
-                            <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                            <span className="leading-relaxed">{bullet}</span>
-                          </li>
-                        ))}
-                      </ul>
                     </div>
                   </div>
                 </button>
@@ -184,11 +151,11 @@ const Features = () => {
                   <div className="w-20 h-20 rounded-2xl bg-primary/20 backdrop-blur-sm flex items-center justify-center animate-scale-in">
                     <ActiveIcon className="h-10 w-10 text-primary" />
                   </div>
-                  <div className="space-y-4 max-w-lg">
-                    <h3 className="text-3xl lg:text-4xl font-bold text-foreground leading-tight">
+                  <div className="space-y-4">
+                    <h3 className="text-3xl lg:text-4xl font-bold text-foreground">
                       {activeFeatureData.title}
                     </h3>
-                    <p className="text-base lg:text-lg text-muted-foreground leading-relaxed">
+                    <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-md mx-auto">
                       {activeFeatureData.description}
                     </p>
                   </div>
