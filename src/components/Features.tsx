@@ -95,16 +95,6 @@ const Features = () => {
 
         {/* Features Grid - Desktop: Side by side with sticky, Mobile: Stacked */}
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 relative">
-          {/* Invisible Scroll Triggers */}
-          <div className="absolute left-0 w-1 pointer-events-none">
-            {features.map((_, index) => (
-              <div
-                key={index}
-                ref={(el) => (triggerRefs.current[index] = el)}
-                className="h-[80vh]"
-              />
-            ))}
-          </div>
 
           {/* Left Column - Sticky Feature List */}
           <div className="lg:sticky lg:top-24 lg:self-start space-y-6 h-fit z-10">
@@ -191,10 +181,18 @@ const Features = () => {
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Spacer to allow scrolling through all features */}
-        <div className="h-[400vh] lg:h-[480vh]" />
+          {/* Scroll Triggers to drive pinned section */}
+          <div className="hidden lg:block col-span-2" aria-hidden="true">
+            {features.map((_, index) => (
+              <div
+                key={index}
+                ref={(el) => (triggerRefs.current[index] = el)}
+                className="h-[85vh] lg:h-[95vh]"
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
