@@ -29,13 +29,10 @@ const Hero = () => {
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+          <div className="flex justify-center pt-4">
             <Button size="lg" className="group h-11 px-6">
               Get Started Free
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-            </Button>
-            <Button size="lg" variant="outline" className="h-11 px-6">
-              View Demo
             </Button>
           </div>
 
