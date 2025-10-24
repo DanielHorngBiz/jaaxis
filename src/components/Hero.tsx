@@ -58,15 +58,6 @@ const Hero = () => {
         <div className="max-w-5xl mx-auto mt-20">
           <div className="relative rounded-xl border border-border bg-card shadow-2xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
-            
-            {/* Browser chrome */}
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-secondary/30">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-400" />
-                <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                <div className="w-3 h-3 rounded-full bg-green-400" />
-              </div>
-            </div>
 
             {/* Demo Video */}
             <div className="relative">
