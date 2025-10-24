@@ -9,45 +9,45 @@ const Features = () => {
   const features = [
     {
       icon: Zap,
-      title: "Build in Minutes Deploy Everywhere",
-      description: "Turn your website, FAQs, or help docs into a powerful AI agent, then launch it on Messenger, Instagram, and your storefront, no code required.",
+      title: "Launch Your AI Agent in Minutes",
+      description: "Transform your content into an intelligent AI assistant and deploy it across every channel your customers use—no coding required.",
       bullets: [
-        "Train with text, files, or URLs",
-        "Deploy to Messenger, IG, and web",
-        "Multilingual support out of the box"
+        "Train instantly with docs, URLs, or files",
+        "Go live on web, Messenger, and Instagram",
+        "Built-in multilingual support for global reach"
       ],
       visual: "gradient-from-primary/20 to-primary/5",
     },
     {
       icon: MessageSquare,
-      title: "Connect Your Store Solve Every Question",
-      description: "Seamlessly integrate with Shopify, WooCommerce, and more so your AI agent can track orders, process refunds, and answer real customer questions.",
+      title: "Smart E-Commerce Integration",
+      description: "Connect seamlessly with Shopify, WooCommerce, and major platforms so your AI can handle orders, process refunds, and resolve customer issues autonomously.",
       bullets: [
-        "Deep store integration",
-        "Understands customer intent",
-        "Resolves support from end to end"
+        "Native integration with leading platforms",
+        "Understands complex customer inquiries",
+        "End-to-end resolution without escalation"
       ],
       visual: "gradient-from-accent/20 to-accent/5",
     },
     {
       icon: Bot,
-      title: "Improve Your AI by Editing Chats",
-      description: "Fine-tune your chatbot by simply editing past conversations, no retraining, no tech skills required.",
+      title: "Refine AI Through Conversations",
+      description: "Make your AI smarter by editing past interactions. No complex training, no technical expertise—just click, edit, and improve.",
       bullets: [
-        "Fine-tune with real conversations",
-        "Instantly improve responses",
-        "No retraining needed"
+        "Learn from real customer conversations",
+        "Instant improvements without retraining",
+        "Simple interface anyone can use"
       ],
       visual: "gradient-from-primary/15 to-secondary",
     },
     {
       icon: Users,
-      title: "Forward to Humans When It Matters",
-      description: "Automatically route chats to a human when AI can't help, based on custom rules, and collect contact info for seamless follow-up.",
+      title: "Seamless Human Handoff",
+      description: "Intelligently escalate to your team when needed. Set custom triggers, capture customer details, and ensure smooth transitions that maintain context.",
       bullets: [
-        "Route when AI gets stuck",
-        "Trigger handoff with custom rules",
-        "Collect contact info for follow-up"
+        "Smart routing based on conversation signals",
+        "Customizable escalation rules",
+        "Automatic contact capture for follow-up"
       ],
       visual: "gradient-from-secondary to-primary/5",
     },
@@ -91,12 +91,12 @@ const Features = () => {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/50 mb-4">
             <span className="text-xs font-medium text-foreground">Features</span>
           </div>
-          <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
             Advanced Features to Supercharge
             <br />
             Your AI Agent
           </h2>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Equip your AI agent with powerful tools to resolve customer issues faster, deliver instant answers in any language, and create a seamless support experience across platforms.
           </p>
         </div>
@@ -114,9 +114,9 @@ const Features = () => {
                 <button
                   key={index}
                   onClick={() => setActiveFeature(index)}
-                  className={`w-full text-left p-6 rounded-xl border transition-all duration-300 ${
+                  className={`w-full text-left p-8 rounded-xl border transition-all duration-300 ${
                     isActive
-                      ? "border-primary bg-primary/5 shadow-md"
+                      ? "border-primary bg-primary/5 shadow-lg"
                       : "border-border bg-card hover:border-primary/30 hover:bg-secondary/50"
                   }`}
                 >
@@ -130,29 +130,29 @@ const Features = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3
-                        className={`text-lg font-semibold mb-2 transition-colors ${
+                        className={`text-xl font-bold mb-3 transition-colors ${
                           isActive ? "text-foreground" : "text-foreground/70"
                         }`}
                       >
                         {feature.title}
                       </h3>
                       <p
-                        className={`text-sm leading-relaxed mb-3 transition-all duration-300 ${
+                        className={`text-sm leading-relaxed mb-4 transition-all duration-300 ${
                           isActive ? "text-muted-foreground opacity-100" : "text-muted-foreground/60 opacity-60"
                         }`}
                       >
                         {feature.description}
                       </p>
-                      <ul className="space-y-2">
+                      <ul className="space-y-2.5">
                         {feature.bullets.map((bullet, bulletIndex) => (
                           <li
                             key={bulletIndex}
-                            className={`flex items-start gap-2 text-xs transition-all duration-300 ${
-                              isActive ? "text-muted-foreground opacity-100" : "text-muted-foreground/60 opacity-60"
+                            className={`flex items-start gap-3 text-sm transition-all duration-300 ${
+                              isActive ? "text-foreground opacity-100" : "text-foreground/60 opacity-60"
                             }`}
                           >
-                            <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                            <span>{bullet}</span>
+                            <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                            <span className="leading-relaxed">{bullet}</span>
                           </li>
                         ))}
                       </ul>
@@ -162,13 +162,13 @@ const Features = () => {
               );
             })}
             
-            <div className="pt-4">
-              <Button className="w-full gap-2" size="lg">
-                Explore All Features
+            <div className="pt-6">
+              <Button className="w-full gap-2" size="lg" variant="gradient">
+                Start Building Your AI Agent
                 <ArrowRight className="h-4 w-4" />
               </Button>
-              <p className="text-xs text-muted-foreground mt-4 text-center">
-                Trusted by 10,000+ businesses worldwide
+              <p className="text-xs text-muted-foreground mt-5 text-center font-medium">
+                Join 10,000+ businesses delivering exceptional support
               </p>
             </div>
           </div>
@@ -184,11 +184,11 @@ const Features = () => {
                   <div className="w-20 h-20 rounded-2xl bg-primary/20 backdrop-blur-sm flex items-center justify-center animate-scale-in">
                     <ActiveIcon className="h-10 w-10 text-primary" />
                   </div>
-                  <div className="space-y-4 max-w-md">
-                    <h3 className="text-2xl lg:text-3xl font-bold text-foreground">
+                  <div className="space-y-4 max-w-lg">
+                    <h3 className="text-3xl lg:text-4xl font-bold text-foreground leading-tight">
                       {activeFeatureData.title}
                     </h3>
-                    <p className="text-base lg:text-lg text-muted-foreground">
+                    <p className="text-base lg:text-lg text-muted-foreground leading-relaxed">
                       {activeFeatureData.description}
                     </p>
                   </div>
