@@ -1,10 +1,9 @@
 import { Bot, Zap, MessageSquare, Shield, TrendingUp, Users, ArrowRight } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 
 const Features = () => {
   const [activeFeature, setActiveFeature] = useState(0);
-  const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const features = [
     {
@@ -45,36 +44,8 @@ const Features = () => {
     },
   ];
 
-  useEffect(() => {
-    const observers = sectionRefs.current.map((section, index) => {
-      if (!section) return null;
-      
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              setActiveFeature(index);
-            }
-          });
-        },
-        {
-          threshold: 0.6,
-          rootMargin: "-20% 0px -20% 0px",
-        }
-      );
-
-      observer.observe(section);
-      return observer;
-    });
-
-    return () => {
-      observers.forEach((observer) => observer?.disconnect());
-    };
-  }, []);
-
-  const scrollToFeature = (index: number) => {
-    sectionRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "center" });
-  };
+  const activeFeatureData = features[activeFeature];
+  const ActiveIcon = activeFeatureData.icon;
 
   return (
     <section id="features" className="py-24 px-6 lg:px-8 bg-background">
@@ -105,7 +76,7 @@ const Features = () => {
               return (
                 <button
                   key={index}
-                  onClick={() => scrollToFeature(index)}
+                  onClick={() => setActiveFeature(index)}
                   className={`w-full text-left p-6 rounded-xl border transition-all duration-300 ${
                     isActive
                       ? "border-primary bg-primary/5 shadow-md"
@@ -152,47 +123,34 @@ const Features = () => {
             </div>
           </div>
 
-          {/* Right Column - Scrolling Feature Visuals */}
-          <div className="space-y-12 lg:space-y-24">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-              
-              return (
-                <div
-                  key={index}
-                  ref={(el) => (sectionRefs.current[index] = el)}
-                  className="min-h-[60vh] lg:min-h-[80vh] flex items-center"
-                >
-                  <div
-                    className={`w-full rounded-2xl border border-border p-8 lg:p-12 transition-all duration-700 bg-${feature.visual} ${
-                      activeFeature === index
-                        ? "opacity-100 scale-100 shadow-xl"
-                        : "opacity-40 scale-95"
-                    }`}
-                  >
-                    <div className="flex flex-col items-center justify-center h-full text-center space-y-8">
-                      <div className="w-20 h-20 rounded-2xl bg-primary/20 backdrop-blur-sm flex items-center justify-center">
-                        <Icon className="h-10 w-10 text-primary" />
-                      </div>
-                      <div className="space-y-4 max-w-md">
-                        <h3 className="text-2xl lg:text-3xl font-bold text-foreground">
-                          {feature.title}
-                        </h3>
-                        <p className="text-base lg:text-lg text-muted-foreground">
-                          {feature.description}
-                        </p>
-                      </div>
-                      <div className="pt-4">
-                        <div className="inline-flex items-center gap-2 text-sm text-primary font-medium">
-                          Learn more
-                          <ArrowRight className="h-4 w-4" />
-                        </div>
-                      </div>
+          {/* Right Column - Fixed Visual with Fade Transitions */}
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <div className="min-h-[60vh] lg:min-h-[80vh] flex items-center">
+              <div
+                key={activeFeature}
+                className={`w-full rounded-2xl border border-border p-8 lg:p-12 shadow-xl bg-${activeFeatureData.visual} animate-fade-in`}
+              >
+                <div className="flex flex-col items-center justify-center h-full text-center space-y-8">
+                  <div className="w-20 h-20 rounded-2xl bg-primary/20 backdrop-blur-sm flex items-center justify-center animate-scale-in">
+                    <ActiveIcon className="h-10 w-10 text-primary" />
+                  </div>
+                  <div className="space-y-4 max-w-md">
+                    <h3 className="text-2xl lg:text-3xl font-bold text-foreground">
+                      {activeFeatureData.title}
+                    </h3>
+                    <p className="text-base lg:text-lg text-muted-foreground">
+                      {activeFeatureData.description}
+                    </p>
+                  </div>
+                  <div className="pt-4">
+                    <div className="inline-flex items-center gap-2 text-sm text-primary font-medium cursor-pointer hover:gap-3 transition-all">
+                      Learn more
+                      <ArrowRight className="h-4 w-4" />
                     </div>
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            </div>
           </div>
         </div>
       </div>
