@@ -1,9 +1,10 @@
 import { Bot, Zap, MessageSquare, Shield, TrendingUp, Users, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 
 const Features = () => {
   const [activeFeature, setActiveFeature] = useState(0);
+  const triggerRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const features = [
     {
@@ -47,6 +48,33 @@ const Features = () => {
   const activeFeatureData = features[activeFeature];
   const ActiveIcon = activeFeatureData.icon;
 
+  useEffect(() => {
+    const observers = triggerRefs.current.map((trigger, index) => {
+      if (!trigger) return null;
+      
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActiveFeature(index);
+            }
+          });
+        },
+        {
+          threshold: 0.5,
+          rootMargin: "-40% 0px -40% 0px",
+        }
+      );
+
+      observer.observe(trigger);
+      return observer;
+    });
+
+    return () => {
+      observers.forEach((observer) => observer?.disconnect());
+    };
+  }, []);
+
   return (
     <section id="features" className="py-24 px-6 lg:px-8 bg-background">
       <div className="max-w-6xl mx-auto">
@@ -66,9 +94,20 @@ const Features = () => {
         </div>
 
         {/* Features Grid - Desktop: Side by side with sticky, Mobile: Stacked */}
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 relative">
+          {/* Invisible Scroll Triggers */}
+          <div className="absolute left-0 w-1 pointer-events-none">
+            {features.map((_, index) => (
+              <div
+                key={index}
+                ref={(el) => (triggerRefs.current[index] = el)}
+                className="h-[80vh]"
+              />
+            ))}
+          </div>
+
           {/* Left Column - Sticky Feature List */}
-          <div className="lg:sticky lg:top-24 lg:self-start space-y-6 h-fit">
+          <div className="lg:sticky lg:top-24 lg:self-start space-y-6 h-fit z-10">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               const isActive = activeFeature === index;
@@ -124,8 +163,8 @@ const Features = () => {
           </div>
 
           {/* Right Column - Fixed Visual with Fade Transitions */}
-          <div className="lg:sticky lg:top-24 lg:self-start">
-            <div className="min-h-[60vh] lg:min-h-[80vh] flex items-center">
+          <div className="lg:sticky lg:top-24 lg:self-start z-10">
+            <div className="min-h-[60vh] lg:min-h-[70vh] flex items-center">
               <div
                 key={activeFeature}
                 className={`w-full rounded-2xl border border-border p-8 lg:p-12 shadow-xl bg-${activeFeatureData.visual} animate-fade-in`}
@@ -153,6 +192,9 @@ const Features = () => {
             </div>
           </div>
         </div>
+
+        {/* Spacer to allow scrolling through all features */}
+        <div className="h-[400vh] lg:h-[480vh]" />
       </div>
     </section>
   );
