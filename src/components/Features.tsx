@@ -128,16 +128,6 @@ const Features = () => {
                 </button>
               );
             })}
-            
-            <div className="pt-6">
-              <Button className="w-full gap-2" size="lg" variant="gradient">
-                Start Building Your AI Agent
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-              <p className="text-xs text-muted-foreground mt-5 text-center font-medium">
-                Join 10,000+ businesses delivering exceptional support
-              </p>
-            </div>
           </div>
 
           {/* Right Column - Fixed Visual with Fade Transitions */}
