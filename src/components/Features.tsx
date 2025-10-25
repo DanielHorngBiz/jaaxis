@@ -84,10 +84,11 @@ const Features = () => {
       ScrollTrigger.create({
         trigger: sectionRef.current,
         pin: true,
-        start: "center center",
+        start: "top top",
         end: () => `+=${totalScrollDistance}`,
         pinSpacing: true,
-        scrub: 0.5,
+        pinReparent: true,
+        scrub: 0.6,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
@@ -143,8 +144,8 @@ const Features = () => {
 
 
   return (
-    <section ref={sectionRef} id="features" className="min-h-screen py-24 px-6 lg:px-8 bg-background flex items-center">
-      <div ref={contentRef} className="max-w-5xl mx-auto w-full">
+    <section ref={sectionRef} id="features" className="min-h-screen py-24 px-6 lg:px-8 bg-background flex items-center lg:h-[100svh] lg:py-0">
+      <div ref={contentRef} className="max-w-5xl mx-auto w-full h-full flex flex-col justify-center">
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center mb-16">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/50 mb-4">
@@ -213,12 +214,20 @@ const Features = () => {
                           >
                             {feature.title}
                           </h3>
-                          {/* Description only shown when active */}
+                          {/* Mobile: Show description only when active */}
                           {isActive && (
-                            <p className="text-base leading-relaxed text-muted-foreground animate-fade-in">
+                            <p className="text-base leading-relaxed text-muted-foreground lg:hidden">
                               {feature.description}
                             </p>
                           )}
+                          {/* Desktop: Reserve space to prevent layout shift */}
+                          <div className="mt-3 hidden lg:block">
+                            <div className="transition-all duration-300 overflow-hidden lg:h-[64px]">
+                              <p className={`text-base leading-relaxed text-muted-foreground ${isActive ? 'opacity-100' : 'opacity-0'}`}>
+                                {feature.description}
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
