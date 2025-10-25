@@ -56,8 +56,8 @@ const Features = () => {
           });
         },
         {
-          threshold: [0, 0.5, 1],
-          rootMargin: "-20% 0px -20% 0px",
+          threshold: [0, 0.25, 0.5, 0.75, 1],
+          rootMargin: "-30% 0px -30% 0px",
         }
       );
 
@@ -72,8 +72,7 @@ const Features = () => {
 
   return (
     <section id="features" className="py-24 px-6 lg:px-8 bg-background">
-      <div className="sticky top-0 min-h-screen flex items-center">
-        <div className="max-w-5xl mx-auto w-full">
+      <div className="max-w-5xl mx-auto w-full">
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center mb-16">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/50 mb-4">
@@ -92,45 +91,51 @@ const Features = () => {
           {/* Features Grid - Desktop: Side by side with sticky, Mobile: Stacked */}
           <div className="grid lg:grid-cols-[1fr_2fr] gap-12 lg:gap-16 relative">
 
-          {/* Left Column - Sticky Feature List */}
-          <div className="lg:sticky lg:top-24 lg:self-start space-y-6 h-fit z-10">
+          {/* Left Column - Scrolling Feature List */}
+          <div className="space-y-6 z-10">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               const isActive = activeFeature === index;
               
               return (
-                <div
-                  ref={(el) => (triggerRefs.current[index] = el)}
-                  key={index}
-                  className={`w-full p-8 rounded-xl border transition-all duration-300 ${
-                    isActive
-                      ? "border-primary bg-primary/5 shadow-lg"
-                      : "border-border bg-card"
-                  }`}
-                >
-                  <div className="flex items-start gap-4">
-                    <div
-                      className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
-                        isActive ? "bg-primary text-primary-foreground scale-110" : "bg-primary/10 text-primary"
-                      }`}
-                    >
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3
-                        className={`text-xl font-bold mb-3 transition-colors ${
-                          isActive ? "text-foreground" : "text-foreground/70"
+                <div key={index}>
+                  <div
+                    ref={(el) => (triggerRefs.current[index] = el)}
+                    className={`w-full p-8 rounded-xl border transition-all duration-300 ${
+                      isActive
+                        ? "border-primary bg-primary/5 shadow-lg"
+                        : "border-border bg-card"
+                    }`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div
+                        className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
+                          isActive ? "bg-primary text-primary-foreground scale-110" : "bg-primary/10 text-primary"
                         }`}
                       >
-                        {feature.title}
-                      </h3>
-                      {isActive && (
-                        <p className="text-base leading-relaxed text-muted-foreground animate-fade-in">
-                          {feature.description}
-                        </p>
-                      )}
+                        <Icon className="h-6 w-6" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3
+                          className={`text-xl font-bold mb-3 transition-colors ${
+                            isActive ? "text-foreground" : "text-foreground/70"
+                          }`}
+                        >
+                          {feature.title}
+                        </h3>
+                        {isActive && (
+                          <p className="text-base leading-relaxed text-muted-foreground animate-fade-in">
+                            {feature.description}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
+                  
+                  {/* Scroll spacer between features */}
+                  {index < features.length - 1 && (
+                    <div className="h-[100vh]" aria-hidden="true" />
+                  )}
                 </div>
               );
             })}
@@ -157,7 +162,6 @@ const Features = () => {
 
           </div>
         </div>
-      </div>
     </section>
   );
 };
