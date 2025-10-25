@@ -50,14 +50,14 @@ const Features = () => {
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
               setActiveFeature(index);
             }
           });
         },
         {
-          threshold: 0.5,
-          rootMargin: "-40% 0px -40% 0px",
+          threshold: [0, 0.5, 1],
+          rootMargin: "-20% 0px -20% 0px",
         }
       );
 
