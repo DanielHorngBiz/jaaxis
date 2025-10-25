@@ -45,27 +45,26 @@ const Features = () => {
   const activeFeatureData = features[activeFeature];
 
   useEffect(() => {
-    const section = document.querySelector("#features");
-    if (!section) return;
-
     const handleScroll = () => {
-      const rect = section.getBoundingClientRect();
-      const sectionHeight = rect.height;
-      const scrolled = -rect.top;
-      const totalScrollDistance = sectionHeight - window.innerHeight;
+      const activeTrigger = triggerRefs.current[activeFeature];
+      if (!activeTrigger) return;
+
+      const rect = activeTrigger.getBoundingClientRect();
+      const triggerHeight = rect.height;
+      const viewportCenter = window.innerHeight / 2;
+      const triggerCenter = rect.top + triggerHeight / 2;
+      const distanceFromCenter = viewportCenter - triggerCenter;
       
-      // Calculate overall progress (0-100)
-      const overallProgress = Math.min(Math.max((scrolled / totalScrollDistance) * 100, 0), 100);
+      // Calculate progress based on how far through the trigger we've scrolled
+      const progress = Math.min(Math.max(((distanceFromCenter + triggerHeight / 2) / triggerHeight) * 100, 0), 100);
       
-      // Calculate per-feature progress (0-100 for current feature)
-      const featureProgress = (overallProgress % 25) * 4; // 4 features = 25% each
-      
-      setScrollProgress(featureProgress);
+      setScrollProgress(progress);
     };
 
     window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Initial calculation
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [activeFeature]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
