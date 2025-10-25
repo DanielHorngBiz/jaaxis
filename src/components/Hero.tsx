@@ -22,7 +22,7 @@ const Hero = () => {
           }
         });
       },
-      { threshold: 0.5 } // Play when 50% of video is visible
+      { threshold: 0.1 } // Play when 10% of video is visible
     );
 
     observer.observe(video);
@@ -92,6 +92,9 @@ const Hero = () => {
                 loop
                 muted
                 playsInline
+                autoPlay
+                preload="auto"
+                poster="/placeholder.svg"
                 className="w-full h-auto"
               />
             </div>
