@@ -2,10 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "./ui/button";
-import feature1Video from "@/assets/feature-1.webm";
-import feature2Video from "@/assets/feature-2.webm";
-import feature3Video from "@/assets/feature-3.webm";
-import feature4Video from "@/assets/feature-4.webm";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -24,25 +20,25 @@ const Features = () => {
     {
       title: "Launch in Minutes",
       description: "Turn your docs into an AI agent and deploy across web, Messenger, and Instagram instantly.",
-      video: feature1Video,
+      video: "https://jaaxis.com/wp-content/uploads/2025/06/GIF-1.webm",
       visual: "gradient-from-primary/20 to-primary/5",
     },
     {
       title: "Smart Store Integration",
       description: "Connect with Shopify and WooCommerce so your AI handles orders, refunds, and support automatically.",
-      video: feature2Video,
+      video: "https://jaaxis.com/wp-content/uploads/2025/06/GIF-2.webm",
       visual: "gradient-from-accent/20 to-accent/5",
     },
     {
       title: "Learn From Every Chat",
       description: "Edit past conversations to improve responses. No training required, changes apply instantly.",
-      video: feature3Video,
+      video: "https://jaaxis.com/wp-content/uploads/2025/06/GIF-3.webm",
       visual: "gradient-from-primary/15 to-secondary",
     },
     {
       title: "Seamless Human Handoff",
       description: "Set custom rules to route complex cases to your team while capturing customer details automatically.",
-      video: feature4Video,
+      video: "https://jaaxis.com/wp-content/uploads/2025/06/GIF-04-V2.webm",
       visual: "gradient-from-secondary to-primary/5",
     },
   ];
