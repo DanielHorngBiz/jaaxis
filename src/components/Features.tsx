@@ -78,7 +78,7 @@ const Features = () => {
       const step = window.innerHeight * 2;
       const totalScrollDistance = features.length * step;
 
-      // Pin the entire section at center
+      // Single ScrollTrigger that pins section and handles all feature switching
       ScrollTrigger.create({
         trigger: sectionRef.current,
         pin: true,
@@ -87,21 +87,15 @@ const Features = () => {
         pinSpacing: true,
         scrub: true,
         anticipatePin: 1,
-      });
-
-      // Create progress animations for each feature
-      features.forEach((_, index) => {
-        ScrollTrigger.create({
-          trigger: sectionRef.current,
-          start: () => `top+=${index * step} top`,
-          end: () => `top+=${(index + 1) * step} top`,
-          scrub: true,
-          onUpdate: (self) => {
-            const progress = self.progress * 400;
-            setScrollProgress(progress);
-            setActiveFeature(index);
-          },
-        });
+        onUpdate: (self) => {
+          // Calculate which feature based on overall progress
+          const totalProgress = self.progress;
+          const featureIndex = Math.min(Math.floor(totalProgress * features.length), features.length - 1);
+          const progressWithinFeature = (totalProgress * features.length) % 1;
+          
+          setActiveFeature(featureIndex);
+          setScrollProgress(progressWithinFeature * 400);
+        },
       });
     }, sectionRef);
 
