@@ -59,6 +59,10 @@ const Features = () => {
       const progress = ratio * 400;
       
       setScrollProgress(progress);
+      
+      // Update active feature based on progress (0-100, 100-200, 200-300, 300-400)
+      const newActiveFeature = Math.min(Math.floor(progress / 100), 3);
+      setActiveFeature(newActiveFeature);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -66,25 +70,6 @@ const Features = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.3) {
-            const index = Number((entry.target as HTMLElement).dataset.index);
-            setActiveFeature(index);
-          }
-        });
-      },
-      {
-        threshold: [0, 0.3, 0.5, 0.7, 1],
-        rootMargin: "-40% 0px -40% 0px",
-      }
-    );
-
-    triggerRefs.current.forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <section id="features" className="py-24 px-6 lg:px-8 bg-background">
