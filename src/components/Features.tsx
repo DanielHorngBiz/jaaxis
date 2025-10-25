@@ -187,18 +187,26 @@ const Features = () => {
                 })}
               </div>
 
-              {/* RIGHT: Video display */}
+              {/* RIGHT: Video display - All videos preloaded */}
               <div className="relative">
-                <div className="w-full rounded-2xl border border-border overflow-hidden shadow-xl">
-                  <video
-                    key={activeFeature}
-                    src={activeFeatureData.video}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-auto animate-fade-in"
-                  />
+                <div className="w-full rounded-2xl border border-border overflow-hidden shadow-xl relative">
+                  {features.map((feature, index) => (
+                    <video
+                      key={index}
+                      src={feature.video}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      preload="auto"
+                      className={`w-full h-auto transition-opacity duration-500 ${
+                        index === activeFeature 
+                          ? "opacity-100 relative" 
+                          : "opacity-0 absolute inset-0 pointer-events-none"
+                      }`}
+                      style={{ willChange: 'opacity' }}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
