@@ -75,7 +75,7 @@ const Features = () => {
 
     // Desktop: GSAP ScrollTrigger
     const ctx = gsap.context(() => {
-      const totalScrollDistance = features.length * window.innerHeight * 3.5;
+      const totalScrollDistance = features.length * window.innerHeight * 3;
 
       // Pin the entire content (header + grid) at center
       ScrollTrigger.create({
@@ -92,8 +92,8 @@ const Features = () => {
       features.forEach((_, index) => {
         ScrollTrigger.create({
           trigger: sectionRef.current,
-          start: () => `top+=${index * window.innerHeight * 3.5} top`,
-          end: () => `top+=${(index + 1) * window.innerHeight * 3.5} top`,
+          start: () => `top+=${index * window.innerHeight * 3} top`,
+          end: () => `top+=${(index + 1) * window.innerHeight * 3} top`,
           scrub: true,
           onUpdate: (self) => {
             const progress = self.progress * 400;
