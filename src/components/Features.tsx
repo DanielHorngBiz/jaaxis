@@ -72,24 +72,25 @@ const Features = () => {
 
   return (
     <section id="features" className="py-24 px-6 lg:px-8 bg-background">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="max-w-3xl mx-auto text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/50 mb-4">
-            <span className="text-xs font-medium text-foreground">Features</span>
+      <div className="sticky top-0 min-h-screen flex items-center">
+        <div className="max-w-5xl mx-auto w-full">
+          {/* Header */}
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/50 mb-4">
+              <span className="text-xs font-medium text-foreground">Features</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
+              Powerful Features for
+              <br />
+              Modern Customer Support
+            </h2>
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
+              Everything you need to deliver exceptional customer experiences with AI.
+            </p>
           </div>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
-            Powerful Features for
-            <br />
-            Modern Customer Support
-          </h2>
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to deliver exceptional customer experiences with AI.
-          </p>
-        </div>
 
-        {/* Features Grid - Desktop: Side by side with sticky, Mobile: Stacked */}
-        <div className="grid lg:grid-cols-[1fr_2fr] gap-12 lg:gap-16 relative">
+          {/* Features Grid - Desktop: Side by side with sticky, Mobile: Stacked */}
+          <div className="grid lg:grid-cols-[1fr_2fr] gap-12 lg:gap-16 relative">
 
           {/* Left Column - Sticky Feature List */}
           <div className="lg:sticky lg:top-24 lg:self-start space-y-6 h-fit z-10">
@@ -154,6 +155,7 @@ const Features = () => {
             </div>
           </div>
 
+          </div>
         </div>
       </div>
     </section>
