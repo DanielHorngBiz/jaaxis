@@ -12,6 +12,7 @@ gsap.registerPlugin(ScrollTrigger);
 const Features = () => {
   const [activeFeature, setActiveFeature] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isInViewport, setIsInViewport] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -103,11 +104,31 @@ const Features = () => {
     return () => ctx.revert();
   }, [features.length]);
 
-  // Control video playback based on active feature
+  // Viewport detection for videos
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsInViewport(entry.isIntersecting);
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(sectionRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  // Control video playback based on active feature AND viewport visibility
   useEffect(() => {
     videoRefs.current.forEach((video, index) => {
       if (video) {
-        if (index === activeFeature) {
+        if (index === activeFeature && isInViewport) {
           video.play().catch(() => {
             // Ignore autoplay errors
           });
@@ -116,7 +137,7 @@ const Features = () => {
         }
       }
     });
-  }, [activeFeature]);
+  }, [activeFeature, isInViewport]);
 
 
   return (
