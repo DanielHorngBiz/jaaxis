@@ -106,11 +106,12 @@ const Features = () => {
           </div>
 
           {/* Features Grid - Desktop: Side by side with sticky, Mobile: Stacked */}
-          <div className="relative min-h-[500vh]">
+          <div className="relative">
+            {/* TWO STICKY COLUMNS */}
             <div className="grid lg:grid-cols-[1fr_2fr] gap-12 lg:gap-16">
               
               {/* LEFT: Single sticky card that changes content */}
-              <div className="lg:sticky lg:top-24 lg:h-screen flex items-center">
+              <div className="lg:sticky lg:top-24 lg:self-start h-fit">
                 <div className="relative w-full">
                   {/* SVG Progress Ring */}
                   <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ overflow: 'visible' }}>
@@ -148,33 +149,35 @@ const Features = () => {
                 </div>
               </div>
 
-              {/* RIGHT: Sticky video */}
-              <div className="lg:sticky lg:top-24 lg:h-screen flex items-center">
-                <div className="w-full rounded-2xl border border-border overflow-hidden shadow-xl">
-                  <video
-                    key={activeFeature}
-                    src={activeFeatureData.video}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-auto"
-                  />
+              {/* RIGHT: Sticky video with scroll triggers */}
+              <div className="relative">
+                <div className="lg:sticky lg:top-24 lg:self-start">
+                  <div className="w-full rounded-2xl border border-border overflow-hidden shadow-xl">
+                    <video
+                      key={activeFeature}
+                      src={activeFeatureData.video}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-full h-auto"
+                    />
+                  </div>
+                </div>
+
+                {/* SCROLL TRIGGERS (in the right column to create scroll height) */}
+                <div className="space-y-[100vh] mt-[50vh]">
+                  {features.map((_, index) => (
+                    <div
+                      key={index}
+                      ref={(el) => (triggerRefs.current[index] = el)}
+                      data-index={index}
+                      className="h-[100vh]"
+                      aria-hidden="true"
+                    />
+                  ))}
                 </div>
               </div>
-            </div>
-
-            {/* INVISIBLE SCROLL TRIGGERS (positioned absolutely below) */}
-            <div className="absolute top-[100vh] left-0 w-full space-y-[100vh]">
-              {features.map((_, index) => (
-                <div
-                  key={index}
-                  ref={(el) => (triggerRefs.current[index] = el)}
-                  data-index={index}
-                  className="h-[100vh]"
-                  aria-hidden="true"
-                />
-              ))}
             </div>
           </div>
         </div>
