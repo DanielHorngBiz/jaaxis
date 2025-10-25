@@ -78,8 +78,8 @@ const Features = () => {
 
     // Desktop: GSAP ScrollTrigger
     const ctx = gsap.context(() => {
-      const step = window.innerHeight * 1.5;
-      const totalScrollDistance = features.length * step;
+      const step = window.innerHeight * 1.2;
+      const totalScrollDistance = (features.length - 1) * step;
 
       // Single ScrollTrigger that pins section and handles all feature switching
       ScrollTrigger.create({
@@ -88,6 +88,7 @@ const Features = () => {
         start: "top top",
         end: () => `+=${totalScrollDistance}`,
         pinSpacing: true,
+        markers: false,
         scrub: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
@@ -150,7 +151,7 @@ const Features = () => {
 
 
   return (
-    <section ref={sectionRef} id="features" className="relative bg-background">
+    <section ref={sectionRef} id="features" className="relative bg-background pb-24 lg:pb-0">
       <div className="min-h-screen py-24 px-6 lg:px-8 flex items-center">
       <div ref={contentRef} className="max-w-5xl mx-auto w-full">
           {/* Header */}
