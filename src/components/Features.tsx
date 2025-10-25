@@ -13,6 +13,7 @@ const Features = () => {
   const [activeFeature, setActiveFeature] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
   const features = [
@@ -45,7 +46,7 @@ const Features = () => {
   const activeFeatureData = features[activeFeature];
 
   useEffect(() => {
-    if (!sectionRef.current || !gridRef.current) return;
+    if (!sectionRef.current || !contentRef.current) return;
 
     // Only apply ScrollTrigger on desktop
     const mediaQuery = window.matchMedia("(min-width: 1024px)");
@@ -76,10 +77,10 @@ const Features = () => {
     const ctx = gsap.context(() => {
       const totalScrollDistance = features.length * window.innerHeight * 3.5;
 
-      // Pin the entire grid container at center
+      // Pin the entire content (header + grid) at center
       ScrollTrigger.create({
         trigger: sectionRef.current,
-        pin: gridRef.current,
+        pin: contentRef.current,
         start: "center center",
         end: () => `+=${totalScrollDistance}`,
         pinSpacing: true,
@@ -109,7 +110,7 @@ const Features = () => {
 
   return (
     <section ref={sectionRef} id="features" className="py-24 px-6 lg:px-8 bg-background mb-24">
-      <div className="max-w-5xl mx-auto w-full">
+      <div ref={contentRef} className="max-w-5xl mx-auto w-full">
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center mb-16">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/50 mb-4">
