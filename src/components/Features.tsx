@@ -6,10 +6,6 @@ import feature1Video from "@/assets/feature-1.webm";
 import feature2Video from "@/assets/feature-2.webm";
 import feature3Video from "@/assets/feature-3.webm";
 import feature4Video from "@/assets/feature-4.webm";
-import feature1Poster from "@/assets/feature-1-poster.webp";
-import feature2Poster from "@/assets/feature-2-poster.webp";
-import feature3Poster from "@/assets/feature-3-poster.webp";
-import feature4Poster from "@/assets/feature-4-poster.webp";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -27,28 +23,24 @@ const Features = () => {
       title: "Launch in Minutes",
       description: "Turn your docs into an AI agent and deploy across web, Messenger, and Instagram instantly.",
       video: feature1Video,
-      poster: feature1Poster,
       visual: "gradient-from-primary/20 to-primary/5",
     },
     {
       title: "Smart Store Integration",
       description: "Connect with Shopify and WooCommerce so your AI handles orders, refunds, and support automatically.",
       video: feature2Video,
-      poster: feature2Poster,
       visual: "gradient-from-accent/20 to-accent/5",
     },
     {
       title: "Learn From Every Chat",
       description: "Edit past conversations to improve responses. No training required, changes apply instantly.",
       video: feature3Video,
-      poster: feature3Poster,
       visual: "gradient-from-primary/15 to-secondary",
     },
     {
       title: "Seamless Human Handoff",
       description: "Set custom rules to route complex cases to your team while capturing customer details automatically.",
       video: feature4Video,
-      poster: feature4Poster,
       visual: "gradient-from-secondary to-primary/5",
     },
   ];
@@ -95,7 +87,7 @@ const Features = () => {
         start: "top top",
         end: () => `+=${totalScrollDistance}`,
         pinSpacing: true,
-        scrub: true,
+        scrub: 1,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
@@ -185,10 +177,6 @@ const Features = () => {
                         <svg 
                           className="absolute inset-0 w-full h-full pointer-events-none"
                           preserveAspectRatio="none"
-                          style={{ 
-                            transform: 'translateZ(0)',
-                            willChange: 'transform'
-                          }}
                         >
                           {/* Animated progress - travels around all 4 sides */}
                           <rect
@@ -204,10 +192,7 @@ const Features = () => {
                             strokeDasharray="400"
                             strokeDashoffset={400 - scrollProgress}
                             strokeLinecap="round"
-                            style={{ 
-                              opacity: 0.8,
-                              transform: 'translateZ(0)'
-                            }}
+                            style={{ opacity: 0.8 }}
                           />
                         </svg>
                       )}
@@ -247,44 +232,26 @@ const Features = () => {
                 })}
               </div>
 
-              {/* RIGHT: Video display - Smart loading (active + buffer) */}
+              {/* RIGHT: Video display - All videos preloaded */}
               <div className="relative">
-                <div 
-                  className="w-full rounded-2xl border border-border overflow-hidden shadow-xl relative"
-                  style={{ 
-                    transform: 'translateZ(0)',
-                    willChange: 'transform, opacity'
-                  }}
-                >
-                  {features.map((feature, index) => {
-                    const isActive = index === activeFeature;
-                    const isBuffer = index === activeFeature + 1;
-                    const shouldRender = isActive || isBuffer;
-                    
-                    if (!shouldRender) return null;
-                    
-                    return (
-                      <video
-                        key={index}
-                        ref={(el) => (videoRefs.current[index] = el)}
-                        src={feature.video}
-                        poster={feature.poster}
-                        loop
-                        muted
-                        playsInline
-                        preload="auto"
-                        className={`w-full h-auto transition-opacity duration-500 ${
-                          isActive 
-                            ? "opacity-100 relative" 
-                            : "opacity-0 absolute inset-0 pointer-events-none"
-                        }`}
-                        style={{ 
-                          transform: 'translateZ(0)',
-                          willChange: 'transform, opacity'
-                        }}
-                      />
-                    );
-                  })}
+                <div className="w-full rounded-2xl border border-border overflow-hidden shadow-xl relative">
+                  {features.map((feature, index) => (
+                    <video
+                      key={index}
+                      ref={(el) => (videoRefs.current[index] = el)}
+                      src={feature.video}
+                      loop
+                      muted
+                      playsInline
+                      preload="auto"
+                      className={`w-full h-auto transition-opacity duration-500 ${
+                        index === activeFeature 
+                          ? "opacity-100 relative" 
+                          : "opacity-0 absolute inset-0 pointer-events-none"
+                      }`}
+                      style={{ willChange: 'opacity' }}
+                    />
+                  ))}
                 </div>
               </div>
             </div>

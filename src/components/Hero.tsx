@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import heroDemo from "@/assets/hero-demo.webm";
-import heroDemoPoster from "@/assets/hero-demo-poster.webp";
 import { useEffect, useRef } from "react";
 
 const Hero = () => {
@@ -87,20 +86,14 @@ const Hero = () => {
 
             {/* Demo Video */}
             <div className="relative">
-            <video
-              ref={videoRef}
-              src={heroDemo}
-              poster={heroDemoPoster}
-              loop
-              muted
-              playsInline
-              preload="auto"
-              className="w-full h-auto"
-              style={{ 
-                transform: 'translateZ(0)',
-                willChange: 'transform, opacity'
-              }}
-            />
+              <video
+                ref={videoRef}
+                src={heroDemo}
+                loop
+                muted
+                playsInline
+                className="w-full h-auto"
+              />
             </div>
           </div>
         </div>
