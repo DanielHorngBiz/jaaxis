@@ -55,14 +55,16 @@ const Features = () => {
       // Convert to 0-1 ratio
       const ratio = totalScrollable > 0 ? scrolledIntoSection / totalScrollable : 0;
       
-      // Map to 0-400 (full perimeter)
-      const progress = ratio * 400;
+      // Map to 0-1600 (400 per feature × 4 features)
+      const totalProgress = ratio * 1600;
       
-      setScrollProgress(progress);
-      
-      // Update active feature based on progress (0-100, 100-200, 200-300, 300-400)
-      const newActiveFeature = Math.min(Math.floor(progress / 100), 3);
+      // Update active feature based on total progress
+      const newActiveFeature = Math.min(Math.floor(totalProgress / 400), 3);
       setActiveFeature(newActiveFeature);
+      
+      // Progress within current feature (0-400 for all 4 sides)
+      const progressWithinFeature = totalProgress % 400;
+      setScrollProgress(progressWithinFeature);
     };
 
     window.addEventListener("scroll", handleScroll);
