@@ -85,7 +85,7 @@ const Hero = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
 
             {/* Demo Video */}
-            <div className="relative aspect-[4/3]">
+            <div className="relative w-full" style={{ paddingBottom: '75%' }}>
               <video
                 ref={videoRef}
                 src={heroDemo}
