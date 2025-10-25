@@ -94,7 +94,6 @@ const Hero = () => {
                 playsInline
                 autoPlay
                 preload="auto"
-                poster="/placeholder.svg"
                 className="w-full h-auto"
               />
             </div>
