@@ -6,34 +6,35 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 
+const FAQ_DATA = [
+  {
+    question: "What is Jaaxis?",
+    answer:
+      "Jaaxis is an advanced AI-powered customer support chatbot platform that helps businesses automate customer interactions, provide instant responses, and scale their support operations efficiently.",
+  },
+  {
+    question: "Is Jaaxis free to use?",
+    answer:
+      "We offer a free trial to get you started. After that, we have flexible pricing plans starting from $10/month for small businesses to enterprise solutions for larger organizations.",
+  },
+  {
+    question: "Do I need to install software to use Jaaxis?",
+    answer:
+      "No installation required! Jaaxis is a cloud-based solution that works directly in your web browser. Simply embed our chatbot widget on your website or integrate with your preferred platforms.",
+  },
+  {
+    question: "How secure is my data in Jaaxis?",
+    answer:
+      "Security is our top priority. We use bank-grade encryption, comply with industry standards like GDPR and SOC 2, and ensure your data is protected with advanced security measures.",
+  },
+  {
+    question: "Will I own questions?",
+    answer:
+      "Yes, absolutely! You retain full ownership of all your data, conversations, and content. We never use your data to train models for other customers.",
+  },
+];
+
 const FAQ = () => {
-  const faqs = [
-    {
-      question: "What is Jaaxis?",
-      answer:
-        "Jaaxis is an advanced AI-powered customer support chatbot platform that helps businesses automate customer interactions, provide instant responses, and scale their support operations efficiently.",
-    },
-    {
-      question: "Is Jaaxis free to use?",
-      answer:
-        "We offer a free trial to get you started. After that, we have flexible pricing plans starting from $10/month for small businesses to enterprise solutions for larger organizations.",
-    },
-    {
-      question: "Do I need to install software to use Jaaxis?",
-      answer:
-        "No installation required! Jaaxis is a cloud-based solution that works directly in your web browser. Simply embed our chatbot widget on your website or integrate with your preferred platforms.",
-    },
-    {
-      question: "How secure is my data in Jaaxis?",
-      answer:
-        "Security is our top priority. We use bank-grade encryption, comply with industry standards like GDPR and SOC 2, and ensure your data is protected with advanced security measures.",
-    },
-    {
-      question: "Will I own questions?",
-      answer:
-        "Yes, absolutely! You retain full ownership of all your data, conversations, and content. We never use your data to train models for other customers.",
-    },
-  ];
 
   return (
     <section id="faq" className="py-24 px-6 lg:px-8 bg-background">
@@ -51,7 +52,7 @@ const FAQ = () => {
         </div>
 
         <Accordion type="single" collapsible className="space-y-3">
-          {faqs.map((faq, index) => (
+          {FAQ_DATA.map((faq, index) => (
             <AccordionItem
               key={index}
               value={`item-${index}`}

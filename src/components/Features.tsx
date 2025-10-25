@@ -10,9 +10,11 @@ import feature4Video from "@/assets/feature-4.webm";
 gsap.registerPlugin(ScrollTrigger);
 
 const Features = () => {
-  const [activeFeature, setActiveFeature] = useState(0);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [isInViewport, setIsInViewport] = useState(false);
+  const [featureState, setFeatureState] = useState({
+    activeFeature: 0,
+    scrollProgress: 0,
+    isInViewport: false
+  });
   const sectionRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -45,7 +47,7 @@ const Features = () => {
     },
   ];
 
-  const activeFeatureData = features[activeFeature];
+  const activeFeatureData = features[featureState.activeFeature];
 
   useEffect(() => {
     if (!sectionRef.current || !contentRef.current) return;
@@ -66,9 +68,12 @@ const Features = () => {
         const ratio = totalScrollable > 0 ? scrolledIntoSection / totalScrollable : 0;
         const totalProgress = ratio * 1600;
         const newActiveFeature = Math.min(Math.floor(totalProgress / 400), 3);
-        setActiveFeature(newActiveFeature);
         const progressWithinFeature = totalProgress % 400;
-        setScrollProgress(progressWithinFeature);
+        setFeatureState({
+          activeFeature: newActiveFeature,
+          scrollProgress: progressWithinFeature,
+          isInViewport: featureState.isInViewport
+        });
       };
       window.addEventListener("scroll", handleScroll);
       handleScroll();
@@ -97,14 +102,17 @@ const Features = () => {
           const featureIndex = Math.min(Math.floor(exactFeaturePosition), features.length - 1);
           const progressWithinFeature = exactFeaturePosition - featureIndex;
           
-          setActiveFeature(featureIndex);
-          setScrollProgress(progressWithinFeature * 400);
+          setFeatureState(prev => ({
+            ...prev,
+            activeFeature: featureIndex,
+            scrollProgress: progressWithinFeature * 400
+          }));
         },
       });
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [features.length]);
+  }, []);
 
   // Viewport detection for videos
   useEffect(() => {
@@ -113,7 +121,10 @@ const Features = () => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          setIsInViewport(entry.isIntersecting);
+          setFeatureState(prev => ({
+            ...prev,
+            isInViewport: entry.isIntersecting
+          }));
         });
       },
       { threshold: 0.9 }
@@ -130,7 +141,7 @@ const Features = () => {
   useEffect(() => {
     videoRefs.current.forEach((video, index) => {
       if (video) {
-        if (index === activeFeature && isInViewport) {
+        if (index === featureState.activeFeature && featureState.isInViewport) {
           video.play().catch(() => {
             // Ignore autoplay errors
           });
@@ -139,7 +150,7 @@ const Features = () => {
         }
       }
     });
-  }, [activeFeature, isInViewport]);
+  }, [featureState.activeFeature, featureState.isInViewport]);
 
 
   return (
@@ -168,7 +179,7 @@ const Features = () => {
               {/* LEFT: All feature cards */}
               <div className="h-fit space-y-4">
                 {features.map((feature, index) => {
-                  const isActive = activeFeature === index;
+                  const isActive = featureState.activeFeature === index;
                   
                   return (
                     <div key={index} className="relative">
@@ -190,7 +201,7 @@ const Features = () => {
                             strokeWidth="3"
                             pathLength="400"
                             strokeDasharray="400"
-                            strokeDashoffset={400 - scrollProgress}
+                            strokeDashoffset={400 - featureState.scrollProgress}
                             strokeLinecap="round"
                             style={{ opacity: 0.8 }}
                           />
@@ -245,7 +256,7 @@ const Features = () => {
                       playsInline
                       preload="auto"
                       className={`w-full h-auto transition-opacity duration-500 ${
-                        index === activeFeature 
+                        index === featureState.activeFeature
                           ? "opacity-100 relative" 
                           : "opacity-0 absolute inset-0 pointer-events-none"
                       }`}

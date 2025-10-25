@@ -1,51 +1,52 @@
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 
+const PRICING_PLANS = [
+  {
+    name: "Basic",
+    price: "$19",
+    period: "month",
+    description: "7-Day Free Trial",
+    features: [
+      "300 replies per month",
+      "1 AI bot",
+      "Unlimited knowledge",
+      "Access to all integrations",
+      "$10 per 100 additional replies",
+    ],
+    highlighted: false,
+  },
+  {
+    name: "Pro",
+    price: "$49",
+    period: "month",
+    description: "Get Started",
+    features: [
+      "3000 replies per month",
+      "3 AI bots",
+      "Unlimited knowledge",
+      "Access to all integrations",
+      "$10 per 100 additional replies",
+    ],
+    highlighted: true,
+  },
+  {
+    name: "Enterprise",
+    price: "$149",
+    period: "month",
+    description: "Get Started",
+    features: [
+      "15,000 replies per month",
+      "5 AI bots",
+      "Unlimited knowledge",
+      "Access to all integrations",
+      "$10 per 100 additional replies",
+    ],
+    highlighted: false,
+  },
+];
+
 const Pricing = () => {
-  const plans = [
-    {
-      name: "Basic",
-      price: "$19",
-      period: "month",
-      description: "7-Day Free Trial",
-      features: [
-        "300 replies per month",
-        "1 AI bot",
-        "Unlimited knowledge",
-        "Access to all integrations",
-        "$10 per 100 additional replies",
-      ],
-      highlighted: false,
-    },
-    {
-      name: "Pro",
-      price: "$49",
-      period: "month",
-      description: "Get Started",
-      features: [
-        "3000 replies per month",
-        "3 AI bots",
-        "Unlimited knowledge",
-        "Access to all integrations",
-        "$10 per 100 additional replies",
-      ],
-      highlighted: true,
-    },
-    {
-      name: "Enterprise",
-      price: "$149",
-      period: "month",
-      description: "Get Started",
-      features: [
-        "15,000 replies per month",
-        "5 AI bots",
-        "Unlimited knowledge",
-        "Access to all integrations",
-        "$10 per 100 additional replies",
-      ],
-      highlighted: false,
-    },
-  ];
 
   return (
     <section id="pricing" className="py-24 px-6 lg:px-8 bg-secondary/30">
@@ -63,7 +64,7 @@ const Pricing = () => {
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {plans.map((plan, index) => (
+          {PRICING_PLANS.map((plan, index) => (
             <div
               key={index}
               className={`relative p-8 rounded-xl border transition-all duration-300 ${
