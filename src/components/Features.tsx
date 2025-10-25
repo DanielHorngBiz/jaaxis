@@ -121,21 +121,15 @@ const Features = () => {
                       {isActive && (
                         <svg 
                           className="absolute inset-0 w-full h-full pointer-events-none" 
-                          viewBox="0 0 100 100"
-                          preserveAspectRatio="none"
+                          style={{ overflow: 'visible' }}
                         >
-                          {/* Background track */}
-                          <rect
-                            x="2" y="2" width="96" height="96" rx="12"
-                            fill="none"
-                            stroke="hsl(var(--border))"
-                            strokeWidth="2"
-                            opacity="0.2"
-                            pathLength="400"
-                          />
                           {/* Animated progress - travels around all 4 sides */}
                           <rect
-                            x="2" y="2" width="96" height="96" rx="12"
+                            x="2"
+                            y="2"
+                            width="calc(100% - 4px)"
+                            height="calc(100% - 4px)"
+                            rx="12"
                             fill="none"
                             stroke="hsl(var(--primary))"
                             strokeWidth="3"
@@ -143,7 +137,7 @@ const Features = () => {
                             strokeDasharray="400"
                             strokeDashoffset={400 - (activeFeature * 100 + scrollProgress)}
                             strokeLinecap="round"
-                            className="transition-[stroke-dashoffset] duration-100 ease-linear"
+                            className="transition-[stroke-dashoffset] duration-150 ease-out"
                             style={{ opacity: 0.8 }}
                           />
                         </svg>
