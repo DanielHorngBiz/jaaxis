@@ -180,8 +180,8 @@ const Features = () => {
 
 
   return (
-    <section ref={sectionRef} id="features" className="relative bg-background pb-24 lg:pb-0">
-      <div className="min-h-screen py-24 px-6 lg:px-8 flex items-center">
+    <section ref={sectionRef} id="features" className="relative bg-background pb-32 md:pb-48 lg:pb-0">
+      <div className="min-h-screen py-24 px-6 lg:px-8 flex items-center mb-24 md:mb-32 lg:mb-0">
       <div ref={contentRef} className="max-w-5xl mx-auto w-full">
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center mb-16">
