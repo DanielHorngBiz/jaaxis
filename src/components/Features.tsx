@@ -8,6 +8,7 @@ import feature4Video from "@/assets/feature-4.webm";
 
 const Features = () => {
   const [activeFeature, setActiveFeature] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState<number[]>([0, 0, 0, 0]);
   const triggerRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const features = [
@@ -53,6 +54,16 @@ const Features = () => {
             if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
               setActiveFeature(index);
             }
+            
+            // Calculate scroll progress (0 to 100)
+            if (entry.isIntersecting) {
+              const progress = Math.min(100, Math.max(0, entry.intersectionRatio * 200));
+              setScrollProgress(prev => {
+                const newProgress = [...prev];
+                newProgress[index] = progress;
+                return newProgress;
+              });
+            }
           });
         },
         {
@@ -96,17 +107,44 @@ const Features = () => {
             {features.map((feature, index) => {
               const Icon = feature.icon;
               const isActive = activeFeature === index;
+              const progress = scrollProgress[index];
               
               return (
                 <div key={index}>
                   <div
                     ref={(el) => (triggerRefs.current[index] = el)}
-                    className={`w-full p-8 rounded-xl border transition-all duration-300 ${
-                      isActive
-                        ? "border-primary bg-primary/5 shadow-lg"
-                        : "border-border bg-card"
-                    }`}
+                    className="relative"
                   >
+                    {/* Progress border - SVG wrapping around the card */}
+                    <svg
+                      className="absolute inset-0 w-full h-full pointer-events-none"
+                      style={{ overflow: 'visible' }}
+                    >
+                      <rect
+                        x="2"
+                        y="2"
+                        width="calc(100% - 4px)"
+                        height="calc(100% - 4px)"
+                        rx="12"
+                        fill="none"
+                        stroke="hsl(var(--primary))"
+                        strokeWidth="3"
+                        strokeDasharray="1000"
+                        strokeDashoffset={1000 - (progress * 10)}
+                        className="transition-all duration-300"
+                        style={{
+                          opacity: progress > 0 ? 0.6 : 0,
+                        }}
+                      />
+                    </svg>
+                    
+                    <div
+                      className={`w-full p-8 rounded-xl border transition-all duration-300 relative ${
+                        isActive
+                          ? "border-primary bg-primary/5 shadow-lg"
+                          : "border-border bg-card"
+                      }`}
+                    >
                     <div className="flex items-start gap-4">
                       <div
                         className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
@@ -130,6 +168,7 @@ const Features = () => {
                         )}
                       </div>
                     </div>
+                  </div>
                   </div>
                   
                   {/* Scroll spacer between features */}
