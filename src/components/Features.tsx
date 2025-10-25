@@ -123,7 +123,7 @@ const Features = () => {
           }));
         });
       },
-      { threshold: 0.9 }
+      { threshold: 0.8 }
     );
 
     observer.observe(sectionRef.current);
@@ -248,6 +248,7 @@ const Features = () => {
                       key={index}
                       ref={(el) => (videoRefs.current[index] = el)}
                       src={feature.video}
+                      autoPlay
                       loop
                       muted
                       playsInline
