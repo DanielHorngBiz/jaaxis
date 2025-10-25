@@ -46,17 +46,22 @@ const Features = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const activeTrigger = triggerRefs.current[activeFeature];
-      if (!activeTrigger) return;
+      const section = document.querySelector("#features");
+      if (!section) return;
 
-      const rect = activeTrigger.getBoundingClientRect();
-      const triggerHeight = rect.height;
-      const viewportCenter = window.innerHeight / 2;
-      const triggerCenter = rect.top + triggerHeight / 2;
-      const distanceFromCenter = viewportCenter - triggerCenter;
+      const rect = section.getBoundingClientRect();
+      const sectionHeight = rect.height;
+      const viewportHeight = window.innerHeight;
+      const totalScrollable = sectionHeight - viewportHeight;
       
-      // Calculate progress based on how far through the trigger we've scrolled
-      const progress = Math.min(Math.max(((distanceFromCenter + triggerHeight / 2) / triggerHeight) * 100, 0), 100);
+      // How far we've scrolled into the section (0 to totalScrollable)
+      const scrolledIntoSection = Math.min(Math.max(-rect.top, 0), totalScrollable);
+      
+      // Convert to 0-1 ratio
+      const ratio = totalScrollable > 0 ? scrolledIntoSection / totalScrollable : 0;
+      
+      // Map to 0-400 (full perimeter)
+      const progress = ratio * 400;
       
       setScrollProgress(progress);
     };
@@ -64,21 +69,21 @@ const Features = () => {
     window.addEventListener("scroll", handleScroll);
     handleScroll(); // Initial calculation
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [activeFeature]);
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.3) {
             const index = Number((entry.target as HTMLElement).dataset.index);
             setActiveFeature(index);
           }
         });
       },
       {
-        threshold: [0, 0.25, 0.5, 0.75, 1],
-        rootMargin: "-35% 0px -35% 0px",
+        threshold: [0, 0.3, 0.5, 0.7, 1],
+        rootMargin: "-40% 0px -40% 0px",
       }
     );
 
@@ -109,8 +114,8 @@ const Features = () => {
             {/* TWO STICKY COLUMNS */}
             <div className="grid lg:grid-cols-[1fr_2fr] gap-12 lg:gap-16">
               
-              {/* LEFT: All feature cards (sticky container) */}
-              <div className="lg:sticky lg:top-24 lg:self-start h-fit space-y-4">
+              {/* LEFT: All feature cards (no longer sticky) */}
+              <div className="h-fit space-y-4">
                 {features.map((feature, index) => {
                   const Icon = feature.icon;
                   const isActive = activeFeature === index;
@@ -120,24 +125,29 @@ const Features = () => {
                       {/* Progress ring - only visible on active card */}
                       {isActive && (
                         <svg 
-                          className="absolute inset-0 w-full h-full pointer-events-none" 
-                          style={{ overflow: 'visible' }}
+                          className="absolute inset-0 w-full h-full pointer-events-none"
+                          viewBox="0 0 100 100"
+                          preserveAspectRatio="xMidYMid meet"
                         >
+                          {/* Background track (optional) */}
+                          <rect
+                            x="2" y="2" width="96" height="96" rx="10"
+                            fill="none"
+                            stroke="hsl(var(--border))"
+                            strokeWidth="2"
+                            opacity="0.2"
+                            pathLength="400"
+                          />
                           {/* Animated progress - travels around all 4 sides */}
                           <rect
-                            x="2"
-                            y="2"
-                            width="calc(100% - 4px)"
-                            height="calc(100% - 4px)"
-                            rx="12"
+                            x="2" y="2" width="96" height="96" rx="10"
                             fill="none"
                             stroke="hsl(var(--primary))"
                             strokeWidth="3"
                             pathLength="400"
                             strokeDasharray="400"
-                            strokeDashoffset={400 - (activeFeature * 100 + scrollProgress)}
+                            strokeDashoffset={400 - scrollProgress}
                             strokeLinecap="round"
-                            className="transition-[stroke-dashoffset] duration-150 ease-out"
                             style={{ opacity: 0.8 }}
                           />
                         </svg>
