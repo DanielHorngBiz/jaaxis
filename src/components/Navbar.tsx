@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import logo from "@/assets/jaxxis-logo.png";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -10,8 +11,8 @@ const Navbar = () => {
       <div className="max-w-6xl mx-auto px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <a href="/" className="text-xl font-semibold text-foreground">
-              Jaaxis
+            <a href="/" className="flex items-center">
+              <img src={logo} alt="Jaaxis" className="h-8" />
             </a>
           </div>
 
