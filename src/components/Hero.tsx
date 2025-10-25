@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
-import heroDemo from "@/assets/hero-demo.webm";
 
 const Hero = () => {
   return (
@@ -59,7 +58,7 @@ const Hero = () => {
             {/* Demo Video */}
             <div className="relative w-full" style={{ paddingBottom: '75%' }}>
               <video
-                src={heroDemo}
+                src="https://jaaxis.com/wp-content/uploads/2025/06/GIF-5.webm"
                 loop
                 muted
                 playsInline
