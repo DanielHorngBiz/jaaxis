@@ -9,10 +9,7 @@ import feature4Video from "@/assets/feature-4.webm";
 const Features = () => {
   const [activeFeature, setActiveFeature] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [smoothProgress, setSmoothProgress] = useState(0);
   const triggerRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const targetRef = useRef(0);
-  const rafRef = useRef<number | null>(null);
 
   const features = [
     {
@@ -46,26 +43,6 @@ const Features = () => {
   ];
 
   const activeFeatureData = features[activeFeature];
-
-  // Update target ref when scroll progress changes
-  useEffect(() => {
-    targetRef.current = scrollProgress;
-  }, [scrollProgress]);
-
-  // Smooth easing animation
-  useEffect(() => {
-    const tick = () => {
-      setSmoothProgress((prev) => {
-        const next = prev + (targetRef.current - prev) * 0.15;
-        return next;
-      });
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -142,40 +119,20 @@ const Features = () => {
                     <div key={index} className="relative">
                       {/* Progress ring - only visible on active card */}
                       {isActive && (
-                        <svg
-                          className="absolute inset-0 w-full h-full pointer-events-none"
-                          viewBox="0 0 100 100"
-                          preserveAspectRatio="none"
-                          aria-hidden="true"
-                        >
-                          {/* Optional track */}
+                        <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ overflow: 'visible' }}>
                           <rect
                             x="2"
                             y="2"
-                            width="96"
-                            height="96"
-                            rx="12"
-                            fill="none"
-                            stroke="hsl(var(--border))"
-                            strokeWidth="2"
-                            opacity="0.35"
-                            pathLength={100}
-                          />
-                          {/* Animated progress */}
-                          <rect
-                            x="2"
-                            y="2"
-                            width="96"
-                            height="96"
+                            width="calc(100% - 4px)"
+                            height="calc(100% - 4px)"
                             rx="12"
                             fill="none"
                             stroke="hsl(var(--primary))"
                             strokeWidth="3"
-                            pathLength={100}
-                            strokeDasharray={100}
-                            strokeDashoffset={100 - smoothProgress}
-                            strokeLinecap="round"
-                            className="transition-[stroke-dashoffset] duration-100 ease-linear"
+                            strokeDasharray="1000"
+                            strokeDashoffset={1000 - (scrollProgress * 10)}
+                            className="transition-all duration-300"
+                            style={{ opacity: 0.8 }}
                           />
                         </svg>
                       )}
