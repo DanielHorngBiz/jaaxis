@@ -67,10 +67,6 @@ const FAQ = () => {
           ))}
         </Accordion>
 
-        <div className="text-center mt-12">
-          <p className="text-sm text-muted-foreground mb-4">Still have questions?</p>
-          <Button size="lg">Contact Support</Button>
-        </div>
       </div>
     </section>
   );
