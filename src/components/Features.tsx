@@ -154,7 +154,8 @@ const Features = () => {
 
 
   return (
-    <section ref={sectionRef} id="features" className="min-h-screen py-24 px-6 lg:px-8 bg-background flex items-center">
+    <section ref={sectionRef} id="features" className="relative bg-background">
+      <div className="min-h-screen py-24 px-6 lg:px-8 flex items-center">
       <div ref={contentRef} className="max-w-5xl mx-auto w-full">
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center mb-16">
@@ -268,6 +269,7 @@ const Features = () => {
             </div>
           </div>
         </div>
+      </div>
     </section>
   );
 };
