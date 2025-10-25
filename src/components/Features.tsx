@@ -110,43 +110,70 @@ const Features = () => {
             {/* TWO STICKY COLUMNS */}
             <div className="grid lg:grid-cols-[1fr_2fr] gap-12 lg:gap-16">
               
-              {/* LEFT: Single sticky card that changes content */}
-              <div className="lg:sticky lg:top-24 lg:self-start h-fit">
-                <div className="relative w-full">
-                  {/* SVG Progress Ring */}
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ overflow: 'visible' }}>
-                    <rect
-                      x="2"
-                      y="2"
-                      width="calc(100% - 4px)"
-                      height="calc(100% - 4px)"
-                      rx="12"
-                      fill="none"
-                      stroke="hsl(var(--primary))"
-                      strokeWidth="3"
-                      strokeDasharray="1000"
-                      strokeDashoffset={1000 - (scrollProgress * 10)}
-                      className="transition-all duration-300"
-                    />
-                  </svg>
+              {/* LEFT: All feature cards (sticky container) */}
+              <div className="lg:sticky lg:top-24 lg:self-start h-fit space-y-4">
+                {features.map((feature, index) => {
+                  const Icon = feature.icon;
+                  const isActive = activeFeature === index;
                   
-                  {/* Active Feature Content */}
-                  <div className="w-full p-8 rounded-xl border border-primary bg-primary/5 shadow-lg relative">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0">
-                        <activeFeatureData.icon className="h-6 w-6" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-xl font-bold mb-3 text-foreground">
-                          {activeFeatureData.title}
-                        </h3>
-                        <p className="text-base leading-relaxed text-muted-foreground">
-                          {activeFeatureData.description}
-                        </p>
+                  return (
+                    <div key={index} className="relative">
+                      {/* Progress ring - only visible on active card */}
+                      {isActive && (
+                        <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ overflow: 'visible' }}>
+                          <rect
+                            x="2"
+                            y="2"
+                            width="calc(100% - 4px)"
+                            height="calc(100% - 4px)"
+                            rx="12"
+                            fill="none"
+                            stroke="hsl(var(--primary))"
+                            strokeWidth="3"
+                            strokeDasharray="1000"
+                            strokeDashoffset={1000 - (scrollProgress * 10)}
+                            className="transition-all duration-300"
+                            style={{ opacity: 0.8 }}
+                          />
+                        </svg>
+                      )}
+                      
+                      {/* Feature Card */}
+                      <div
+                        className={`w-full p-6 rounded-xl border transition-all duration-300 relative ${
+                          isActive
+                            ? "border-primary bg-primary/5 shadow-lg"
+                            : "border-border bg-card opacity-50"
+                        }`}
+                      >
+                        <div className="flex items-start gap-4">
+                          <div
+                            className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
+                              isActive ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary"
+                            }`}
+                          >
+                            <Icon className="h-6 w-6" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3
+                              className={`text-xl font-bold transition-colors ${
+                                isActive ? "text-foreground mb-3" : "text-foreground/70"
+                              }`}
+                            >
+                              {feature.title}
+                            </h3>
+                            {/* Description only shown when active */}
+                            {isActive && (
+                              <p className="text-base leading-relaxed text-muted-foreground animate-fade-in">
+                                {feature.description}
+                              </p>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
 
               {/* RIGHT: Sticky video with scroll triggers */}
