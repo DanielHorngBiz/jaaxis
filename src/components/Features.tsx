@@ -84,10 +84,10 @@ const Features = () => {
       ScrollTrigger.create({
         trigger: sectionRef.current,
         pin: true,
-        start: "center center",
+        start: "top top",
         end: () => `+=${totalScrollDistance}`,
-        pinSpacing: true,
-        scrub: 0.5,
+        pinSpacing: false,
+        scrub: 1,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
