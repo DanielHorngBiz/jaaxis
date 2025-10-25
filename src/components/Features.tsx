@@ -75,12 +75,13 @@ const Features = () => {
 
     // Desktop: GSAP ScrollTrigger
     const ctx = gsap.context(() => {
-      const totalScrollDistance = features.length * window.innerHeight * 2.5;
+      const step = window.innerHeight * 2;
+      const totalScrollDistance = features.length * step;
 
-      // Pin the entire content (header + grid) at center
+      // Pin the entire section at center
       ScrollTrigger.create({
         trigger: sectionRef.current,
-        pin: contentRef.current,
+        pin: true,
         start: "center center",
         end: () => `+=${totalScrollDistance}`,
         pinSpacing: true,
@@ -92,8 +93,8 @@ const Features = () => {
       features.forEach((_, index) => {
         ScrollTrigger.create({
           trigger: sectionRef.current,
-          start: () => `top+=${index * window.innerHeight * 2.5} top`,
-          end: () => `top+=${(index + 1) * window.innerHeight * 2.5} top`,
+          start: () => `top+=${index * step} top`,
+          end: () => `top+=${(index + 1) * step} top`,
           scrub: true,
           onUpdate: (self) => {
             const progress = self.progress * 400;
@@ -109,7 +110,7 @@ const Features = () => {
 
 
   return (
-    <section ref={sectionRef} id="features" className="py-24 px-6 lg:px-8 bg-background mb-24">
+    <section ref={sectionRef} id="features" className="min-h-screen py-24 px-6 lg:px-8 bg-background flex items-center">
       <div ref={contentRef} className="max-w-5xl mx-auto w-full">
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center mb-16">
