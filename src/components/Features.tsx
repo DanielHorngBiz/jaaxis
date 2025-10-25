@@ -57,7 +57,7 @@ const Features = () => {
         },
         {
           threshold: 0.5,
-          rootMargin: "-30% 0px -30% 0px",
+          rootMargin: "-40% 0px -40% 0px",
         }
       );
 
@@ -91,53 +91,47 @@ const Features = () => {
         {/* Features Grid - Desktop: Side by side with sticky, Mobile: Stacked */}
         <div className="grid lg:grid-cols-[1fr_2fr] gap-12 lg:gap-16 relative">
 
-          {/* Left Column - Scrollable Feature List */}
-          <div className="space-y-6 z-10">
+          {/* Left Column - Sticky Feature List */}
+          <div className="lg:sticky lg:top-24 lg:self-start space-y-6 h-fit z-10">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               const isActive = activeFeature === index;
               
               return (
-                <div key={index}>
-                  <button
-                    ref={(el) => (triggerRefs.current[index] = el)}
-                    onClick={() => setActiveFeature(index)}
-                    className={`w-full text-left p-8 rounded-xl border transition-all duration-300 ${
-                      isActive
-                        ? "border-primary bg-primary/5 shadow-lg"
-                        : "border-border bg-card hover:border-primary/30 hover:bg-secondary/50"
-                    }`}
-                  >
-                    <div className="flex items-start gap-4">
-                      <div
-                        className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
-                          isActive ? "bg-primary text-primary-foreground scale-110" : "bg-primary/10 text-primary"
+                <button
+                  ref={(el) => (triggerRefs.current[index] = el)}
+                  key={index}
+                  onClick={() => setActiveFeature(index)}
+                  className={`w-full text-left p-8 rounded-xl border transition-all duration-300 ${
+                    isActive
+                      ? "border-primary bg-primary/5 shadow-lg"
+                      : "border-border bg-card hover:border-primary/30 hover:bg-secondary/50"
+                  }`}
+                >
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
+                        isActive ? "bg-primary text-primary-foreground scale-110" : "bg-primary/10 text-primary"
+                      }`}
+                    >
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3
+                        className={`text-xl font-bold mb-3 transition-colors ${
+                          isActive ? "text-foreground" : "text-foreground/70"
                         }`}
                       >
-                        <Icon className="h-6 w-6" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3
-                          className={`text-xl font-bold mb-3 transition-colors ${
-                            isActive ? "text-foreground" : "text-foreground/70"
-                          }`}
-                        >
-                          {feature.title}
-                        </h3>
-                        {isActive && (
-                          <p className="text-base leading-relaxed text-muted-foreground animate-fade-in">
-                            {feature.description}
-                          </p>
-                        )}
-                      </div>
+                        {feature.title}
+                      </h3>
+                      {isActive && (
+                        <p className="text-base leading-relaxed text-muted-foreground animate-fade-in">
+                          {feature.description}
+                        </p>
+                      )}
                     </div>
-                  </button>
-                  
-                  {/* Spacer between features for smooth scroll */}
-                  {index < features.length - 1 && (
-                    <div className="h-[60vh]" aria-hidden="true" />
-                  )}
-                </div>
+                  </div>
+                </button>
               );
             })}
           </div>
