@@ -139,6 +139,7 @@ const Features = () => {
     videoRefs.current.forEach((video, index) => {
       if (video) {
         if (index === featureState.activeFeature && featureState.isInViewport) {
+          video.currentTime = 0; // Reset to start when switching to this feature
           video.play().catch(() => {
             // Ignore autoplay errors
           });
@@ -249,11 +250,10 @@ const Features = () => {
                       key={index}
                       ref={(el) => (videoRefs.current[index] = el)}
                       src={feature.video}
-                      autoPlay
                       loop
                       muted
                       playsInline
-                      preload="auto"
+                      preload="none"
                       className={`w-full h-auto transition-opacity duration-500 ${
                         index === featureState.activeFeature
                           ? "opacity-100 relative" 
