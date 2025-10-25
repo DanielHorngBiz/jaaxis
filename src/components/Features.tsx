@@ -116,7 +116,7 @@ const Features = () => {
           setIsInViewport(entry.isIntersecting);
         });
       },
-      { threshold: 0.5 }
+      { threshold: 0.9 }
     );
 
     observer.observe(sectionRef.current);
