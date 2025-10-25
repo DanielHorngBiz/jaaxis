@@ -8,7 +8,7 @@ import feature4Video from "@/assets/feature-4.webm";
 
 const Features = () => {
   const [activeFeature, setActiveFeature] = useState(0);
-  const [scrollProgress, setScrollProgress] = useState<number[]>([0, 0, 0, 0]);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const triggerRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const features = [
@@ -45,40 +45,46 @@ const Features = () => {
   const activeFeatureData = features[activeFeature];
 
   useEffect(() => {
-    const observers = triggerRefs.current.map((trigger, index) => {
-      if (!trigger) return null;
+    const section = document.querySelector("#features");
+    if (!section) return;
+
+    const handleScroll = () => {
+      const rect = section.getBoundingClientRect();
+      const sectionHeight = rect.height;
+      const scrolled = -rect.top;
+      const totalScrollDistance = sectionHeight - window.innerHeight;
       
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-              setActiveFeature(index);
-            }
-            
-            // Calculate scroll progress (0 to 100)
-            if (entry.isIntersecting) {
-              const progress = Math.min(100, Math.max(0, entry.intersectionRatio * 200));
-              setScrollProgress(prev => {
-                const newProgress = [...prev];
-                newProgress[index] = progress;
-                return newProgress;
-              });
-            }
-          });
-        },
-        {
-          threshold: [0, 0.25, 0.5, 0.75, 1],
-          rootMargin: "-30% 0px -30% 0px",
-        }
-      );
-
-      observer.observe(trigger);
-      return observer;
-    });
-
-    return () => {
-      observers.forEach((observer) => observer?.disconnect());
+      // Calculate overall progress (0-100)
+      const overallProgress = Math.min(Math.max((scrolled / totalScrollDistance) * 100, 0), 100);
+      
+      // Calculate per-feature progress (0-100 for current feature)
+      const featureProgress = (overallProgress % 25) * 4; // 4 features = 25% each
+      
+      setScrollProgress(featureProgress);
     };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            const index = Number((entry.target as HTMLElement).dataset.index);
+            setActiveFeature(index);
+          }
+        });
+      },
+      {
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+        rootMargin: "-35% 0px -35% 0px",
+      }
+    );
+
+    triggerRefs.current.forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -100,26 +106,14 @@ const Features = () => {
           </div>
 
           {/* Features Grid - Desktop: Side by side with sticky, Mobile: Stacked */}
-          <div className="grid lg:grid-cols-[1fr_2fr] gap-12 lg:gap-16 relative">
-
-          {/* Left Column - Sticky Feature List */}
-          <div className="lg:sticky lg:top-24 lg:self-start space-y-6 h-fit z-10">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-              const isActive = activeFeature === index;
-              const progress = scrollProgress[index];
+          <div className="relative min-h-[500vh]">
+            <div className="grid lg:grid-cols-[1fr_2fr] gap-12 lg:gap-16">
               
-              return (
-                <div
-                  key={index}
-                  ref={(el) => (triggerRefs.current[index] = el)}
-                  className="relative"
-                >
-                  {/* Progress border - SVG wrapping around the card */}
-                  <svg
-                    className="absolute inset-0 w-full h-full pointer-events-none"
-                    style={{ overflow: 'visible' }}
-                  >
+              {/* LEFT: Single sticky card that changes content */}
+              <div className="lg:sticky lg:top-24 lg:h-screen flex items-center">
+                <div className="relative w-full">
+                  {/* SVG Progress Ring */}
+                  <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ overflow: 'visible' }}>
                     <rect
                       x="2"
                       y="2"
@@ -130,77 +124,58 @@ const Features = () => {
                       stroke="hsl(var(--primary))"
                       strokeWidth="3"
                       strokeDasharray="1000"
-                      strokeDashoffset={1000 - (progress * 10)}
-                      className="transition-all duration-100"
-                      style={{
-                        opacity: isActive ? 0.8 : 0,
-                      }}
+                      strokeDashoffset={1000 - (scrollProgress * 10)}
+                      className="transition-all duration-300"
                     />
                   </svg>
                   
-                  <div
-                    className={`w-full p-8 rounded-xl border transition-all duration-300 relative ${
-                      isActive
-                        ? "border-primary bg-primary/5 shadow-lg"
-                        : "border-border bg-card opacity-30"
-                    }`}
-                  >
+                  {/* Active Feature Content */}
+                  <div className="w-full p-8 rounded-xl border border-primary bg-primary/5 shadow-lg relative">
                     <div className="flex items-start gap-4">
-                      <div
-                        className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
-                          isActive ? "bg-primary text-primary-foreground scale-110" : "bg-primary/10 text-primary"
-                        }`}
-                      >
-                        <Icon className="h-6 w-6" />
+                      <div className="w-12 h-12 rounded-lg bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0">
+                        <activeFeatureData.icon className="h-6 w-6" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3
-                          className={`text-xl font-bold mb-3 transition-colors ${
-                            isActive ? "text-foreground" : "text-foreground/70"
-                          }`}
-                        >
-                          {feature.title}
+                        <h3 className="text-xl font-bold mb-3 text-foreground">
+                          {activeFeatureData.title}
                         </h3>
-                        {isActive && (
-                          <p className="text-base leading-relaxed text-muted-foreground animate-fade-in">
-                            {feature.description}
-                          </p>
-                        )}
+                        <p className="text-base leading-relaxed text-muted-foreground">
+                          {activeFeatureData.description}
+                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-          {/* Scroll spacers between sections */}
-          <div className="lg:col-span-2">
-            {features.map((_, index) => (
-              index < features.length - 1 && (
-                <div key={index} className="h-[100vh]" aria-hidden="true" />
-              )
-            ))}
-          </div>
+              </div>
 
-          {/* Right Column - Sticky Visual */}
-          <div className="lg:sticky lg:top-24 lg:self-start z-10 lg:col-start-2 lg:row-start-1">
-            <div className="min-h-0 flex items-start">
-              <div
-                key={activeFeature}
-                className="w-full rounded-2xl border border-border overflow-hidden shadow-xl animate-fade-in"
-              >
-                <video
-                  src={activeFeatureData.video}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-full h-auto"
-                />
+              {/* RIGHT: Sticky video */}
+              <div className="lg:sticky lg:top-24 lg:h-screen flex items-center">
+                <div className="w-full rounded-2xl border border-border overflow-hidden shadow-xl">
+                  <video
+                    key={activeFeature}
+                    src={activeFeatureData.video}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-auto"
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
+            {/* INVISIBLE SCROLL TRIGGERS (positioned absolutely below) */}
+            <div className="absolute top-[100vh] left-0 w-full space-y-[100vh]">
+              {features.map((_, index) => (
+                <div
+                  key={index}
+                  ref={(el) => (triggerRefs.current[index] = el)}
+                  data-index={index}
+                  className="h-[100vh]"
+                  aria-hidden="true"
+                />
+              ))}
+            </div>
           </div>
         </div>
     </section>
