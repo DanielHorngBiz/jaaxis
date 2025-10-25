@@ -8,7 +8,7 @@ import feature4Video from "@/assets/feature-4.webm";
 
 const Features = () => {
   const [activeFeature, setActiveFeature] = useState(0);
-  const triggerRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const triggerRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const features = [
     {
@@ -98,14 +98,13 @@ const Features = () => {
               const isActive = activeFeature === index;
               
               return (
-                <button
+                <div
                   ref={(el) => (triggerRefs.current[index] = el)}
                   key={index}
-                  onClick={() => setActiveFeature(index)}
-                  className={`w-full text-left p-8 rounded-xl border transition-all duration-300 ${
+                  className={`w-full p-8 rounded-xl border transition-all duration-300 ${
                     isActive
                       ? "border-primary bg-primary/5 shadow-lg"
-                      : "border-border bg-card hover:border-primary/30 hover:bg-secondary/50"
+                      : "border-border bg-card"
                   }`}
                 >
                   <div className="flex items-start gap-4">
@@ -131,7 +130,7 @@ const Features = () => {
                       )}
                     </div>
                   </div>
-                </button>
+                </div>
               );
             })}
           </div>
