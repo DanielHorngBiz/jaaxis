@@ -84,7 +84,6 @@ const Features = () => {
       ScrollTrigger.create({
         trigger: sectionRef.current,
         pin: true,
-        pinType: "transform",
         start: "center center",
         end: () => `+=${totalScrollDistance}`,
         pinSpacing: true,
@@ -94,8 +93,9 @@ const Features = () => {
         onUpdate: (self) => {
           // Calculate which feature based on overall progress
           const totalProgress = self.progress;
-          const featureIndex = Math.min(Math.floor(totalProgress * features.length), features.length - 1);
-          const progressWithinFeature = (totalProgress * features.length) % 1;
+          const exactFeaturePosition = totalProgress * features.length;
+          const featureIndex = Math.min(Math.floor(exactFeaturePosition), features.length - 1);
+          const progressWithinFeature = exactFeaturePosition - featureIndex;
           
           setActiveFeature(featureIndex);
           setScrollProgress(progressWithinFeature * 400);
