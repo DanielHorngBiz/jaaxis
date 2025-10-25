@@ -15,6 +15,7 @@ const Features = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   const features = [
     {
@@ -101,6 +102,21 @@ const Features = () => {
 
     return () => ctx.revert();
   }, [features.length]);
+
+  // Control video playback based on active feature
+  useEffect(() => {
+    videoRefs.current.forEach((video, index) => {
+      if (video) {
+        if (index === activeFeature) {
+          video.play().catch(() => {
+            // Ignore autoplay errors
+          });
+        } else {
+          video.pause();
+        }
+      }
+    });
+  }, [activeFeature]);
 
 
   return (
@@ -193,8 +209,8 @@ const Features = () => {
                   {features.map((feature, index) => (
                     <video
                       key={index}
+                      ref={(el) => (videoRefs.current[index] = el)}
                       src={feature.video}
-                      autoPlay
                       loop
                       muted
                       playsInline
