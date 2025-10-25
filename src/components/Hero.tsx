@@ -85,7 +85,7 @@ const Hero = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
 
             {/* Demo Video */}
-            <div className="relative">
+            <div className="relative aspect-[4/3]">
               <video
                 ref={videoRef}
                 src={heroDemo}
@@ -94,7 +94,7 @@ const Hero = () => {
                 playsInline
                 autoPlay
                 preload="auto"
-                className="w-full h-auto"
+                className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
           </div>
