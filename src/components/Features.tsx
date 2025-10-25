@@ -156,11 +156,11 @@ const Features = () => {
 
           {/* Scroll Triggers to drive pinned section (compact) */}
           <div className="hidden lg:block col-span-2" aria-hidden="true">
-            {features.slice(1).map((_, index) => (
+            {features.map((_, index) => (
               <div
                 key={index}
-                ref={(el) => (triggerRefs.current[index + 1] = el)}
-                className="h-[20vh]"
+                ref={(el) => (triggerRefs.current[index] = el)}
+                className="h-[30vh]"
               />
             ))}
           </div>
