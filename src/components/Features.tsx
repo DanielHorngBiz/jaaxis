@@ -85,10 +85,10 @@ const Features = () => {
         trigger: sectionRef.current,
         pin: true,
         pinType: "transform",
-        start: "top+=100 top",
-        end: () => `+=${totalScrollDistance + 200}`,
+        start: "center center",
+        end: () => `+=${totalScrollDistance}`,
         pinSpacing: true,
-        scrub: 1,
+        scrub: 0.5,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
