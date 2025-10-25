@@ -108,7 +108,10 @@ const Features = () => {
       });
     }, sectionRef);
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+      if (sectionRef.current) sectionRef.current.style.height = "";
+    };
   }, [features.length]);
 
   // Viewport detection for videos
