@@ -1,14 +1,19 @@
 import { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "./ui/button";
 import feature1Video from "@/assets/feature-1.webm";
 import feature2Video from "@/assets/feature-2.webm";
 import feature3Video from "@/assets/feature-3.webm";
 import feature4Video from "@/assets/feature-4.webm";
 
+gsap.registerPlugin(ScrollTrigger);
+
 const Features = () => {
   const [activeFeature, setActiveFeature] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const triggerRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const features = [
     {
@@ -40,41 +45,69 @@ const Features = () => {
   const activeFeatureData = features[activeFeature];
 
   useEffect(() => {
-    const handleScroll = () => {
-      const section = document.querySelector("#features");
-      if (!section) return;
+    if (!sectionRef.current || !gridRef.current) return;
 
-      const rect = section.getBoundingClientRect();
-      const sectionHeight = rect.height;
-      const viewportHeight = window.innerHeight;
-      const totalScrollable = sectionHeight - viewportHeight;
-      
-      // How far we've scrolled into the section (0 to totalScrollable)
-      const scrolledIntoSection = Math.min(Math.max(-rect.top, 0), totalScrollable);
-      
-      // Convert to 0-1 ratio
-      const ratio = totalScrollable > 0 ? scrolledIntoSection / totalScrollable : 0;
-      
-      // Map to 0-1600 (400 per feature × 4 features)
-      const totalProgress = ratio * 1600;
-      
-      // Update active feature based on total progress
-      const newActiveFeature = Math.min(Math.floor(totalProgress / 400), 3);
-      setActiveFeature(newActiveFeature);
-      
-      // Progress within current feature (0-400 for all 4 sides)
-      const progressWithinFeature = totalProgress % 400;
-      setScrollProgress(progressWithinFeature);
-    };
+    // Only apply ScrollTrigger on desktop
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    
+    if (!mediaQuery.matches) {
+      // Mobile: simple scroll-based progress
+      const handleScroll = () => {
+        const section = sectionRef.current;
+        if (!section) return;
+        const rect = section.getBoundingClientRect();
+        const sectionHeight = rect.height;
+        const viewportHeight = window.innerHeight;
+        const totalScrollable = sectionHeight - viewportHeight;
+        const scrolledIntoSection = Math.min(Math.max(-rect.top, 0), totalScrollable);
+        const ratio = totalScrollable > 0 ? scrolledIntoSection / totalScrollable : 0;
+        const totalProgress = ratio * 1600;
+        const newActiveFeature = Math.min(Math.floor(totalProgress / 400), 3);
+        setActiveFeature(newActiveFeature);
+        const progressWithinFeature = totalProgress % 400;
+        setScrollProgress(progressWithinFeature);
+      };
+      window.addEventListener("scroll", handleScroll);
+      handleScroll();
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
 
-    window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Initial calculation
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    // Desktop: GSAP ScrollTrigger
+    const ctx = gsap.context(() => {
+      const totalScrollDistance = features.length * window.innerHeight * 4;
+
+      // Pin the entire grid container
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        pin: gridRef.current,
+        start: "top top",
+        end: () => `+=${totalScrollDistance}`,
+        pinSpacing: true,
+        scrub: true,
+      });
+
+      // Create progress animations for each feature
+      features.forEach((_, index) => {
+        ScrollTrigger.create({
+          trigger: sectionRef.current,
+          start: () => `top+=${index * window.innerHeight * 4} top`,
+          end: () => `top+=${(index + 1) * window.innerHeight * 4} top`,
+          scrub: true,
+          onUpdate: (self) => {
+            const progress = self.progress * 400;
+            setScrollProgress(progress);
+            setActiveFeature(index);
+          },
+        });
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [features.length]);
 
 
   return (
-    <section id="features" className="py-24 px-6 lg:px-8 bg-background">
+    <section ref={sectionRef} id="features" className="py-24 px-6 lg:px-8 bg-background">
       <div className="max-w-5xl mx-auto w-full">
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center mb-16">
@@ -91,13 +124,13 @@ const Features = () => {
             </p>
           </div>
 
-          {/* Features Grid - Desktop: Side by side with sticky, Mobile: Stacked */}
+          {/* Features Grid - Desktop: Side by side with pinning, Mobile: Stacked */}
           <div className="relative">
-            {/* TWO STICKY COLUMNS */}
-            <div className="grid lg:grid-cols-[1fr_2fr] gap-12 lg:gap-16">
+            {/* TWO COLUMNS */}
+            <div ref={gridRef} className="grid lg:grid-cols-[1fr_2fr] gap-12 lg:gap-16">
               
-              {/* LEFT: All feature cards (sticky container) */}
-              <div className="lg:sticky lg:top-24 lg:self-start h-fit space-y-4">
+              {/* LEFT: All feature cards */}
+              <div className="h-fit space-y-4">
                 {features.map((feature, index) => {
                   const isActive = activeFeature === index;
                   
@@ -157,33 +190,18 @@ const Features = () => {
                 })}
               </div>
 
-              {/* RIGHT: Sticky video with scroll triggers */}
+              {/* RIGHT: Video display */}
               <div className="relative">
-                <div className="lg:sticky lg:top-24 lg:self-start">
-                  <div className="w-full rounded-2xl border border-border overflow-hidden shadow-xl">
-                    <video
-                      key={activeFeature}
-                      src={activeFeatureData.video}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      className="w-full h-auto"
-                    />
-                  </div>
-                </div>
-
-                {/* SCROLL TRIGGERS (in the right column to create scroll height) */}
-                <div className="space-y-[100vh] mt-[50vh]">
-                  {features.map((_, index) => (
-                    <div
-                      key={index}
-                      ref={(el) => (triggerRefs.current[index] = el)}
-                      data-index={index}
-                      className="h-[100vh]"
-                      aria-hidden="true"
-                    />
-                  ))}
+                <div className="w-full rounded-2xl border border-border overflow-hidden shadow-xl">
+                  <video
+                    key={activeFeature}
+                    src={activeFeatureData.video}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-auto"
+                  />
                 </div>
               </div>
             </div>
