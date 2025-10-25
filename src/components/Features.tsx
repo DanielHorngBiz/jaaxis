@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "./ui/button";
+import feature2 from "@/assets/feature-2.webm";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -26,7 +27,7 @@ const Features = () => {
     {
       title: "Smart Store Integration",
       description: "Connect with Shopify and WooCommerce so your AI handles orders, refunds, and support automatically.",
-      video: "https://jaaxis.com/wp-content/uploads/2025/06/GIF-2.webm",
+      video: feature2,
       visual: "gradient-from-accent/20 to-accent/5",
     },
     {
