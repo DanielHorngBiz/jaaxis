@@ -109,7 +109,7 @@ const Features = () => {
 
 
   return (
-    <section ref={sectionRef} id="features" className="py-24 px-6 lg:px-8 bg-background pb-48">
+    <section ref={sectionRef} id="features" className="py-24 px-6 lg:px-8 bg-background mb-24">
       <div ref={contentRef} className="max-w-5xl mx-auto w-full">
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center mb-16">
