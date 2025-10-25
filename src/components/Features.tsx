@@ -221,7 +221,7 @@ const Features = () => {
                           )}
                           {/* Desktop: Reserve space to prevent layout shift */}
                           <div className="mt-3 hidden lg:block">
-                            <div className="transition-all duration-300 overflow-hidden lg:h-[64px]">
+                            <div className="transition-all duration-300 overflow-hidden lg:min-h-[96px]">
                               <p className={`text-base leading-relaxed text-muted-foreground ${isActive ? 'opacity-100' : 'opacity-0'}`}>
                                 {feature.description}
                               </p>
