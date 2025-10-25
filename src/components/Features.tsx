@@ -160,7 +160,7 @@ const Features = () => {
               <div
                 key={index}
                 ref={(el) => (triggerRefs.current[index] = el)}
-                className="h-[100vh]"
+                className="h-[50vh]"
               />
             ))}
           </div>
