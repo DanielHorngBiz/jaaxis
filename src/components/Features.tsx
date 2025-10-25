@@ -89,7 +89,7 @@ const Features = () => {
         </div>
 
         {/* Features Grid - Desktop: Side by side with sticky, Mobile: Stacked */}
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 relative">
+        <div className="grid lg:grid-cols-[2fr_3fr] gap-12 lg:gap-16 relative">
 
           {/* Left Column - Sticky Feature List */}
           <div className="lg:sticky lg:top-24 lg:self-start space-y-6 h-fit z-10">
