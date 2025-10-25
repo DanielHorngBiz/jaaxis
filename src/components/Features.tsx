@@ -208,21 +208,19 @@ const Features = () => {
                         <div className="w-full">
                           <h3
                             className={`text-xl font-bold transition-colors ${
-                              isActive ? "text-foreground mb-3" : "text-foreground/70"
+                              isActive ? "text-foreground" : "text-foreground/70"
                             }`}
                           >
                             {feature.title}
                           </h3>
-                          {/* Mobile: Show description only when active */}
-                          {isActive && (
-                            <p className="text-base leading-relaxed text-muted-foreground lg:hidden">
-                              {feature.description}
-                            </p>
-                          )}
-                          {/* Desktop: Reserve space to prevent layout shift */}
-                          <div className="mt-3 hidden lg:block">
-                            <div className="transition-all duration-300 overflow-hidden lg:min-h-[96px]">
-                              <p className={`text-base leading-relaxed text-muted-foreground ${isActive ? 'opacity-100' : 'opacity-0'}`}>
+                          {/* Description with smooth expand/collapse */}
+                          <div 
+                            className={`grid transition-all duration-300 ${
+                              isActive ? 'grid-rows-[1fr] mt-3' : 'grid-rows-[0fr]'
+                            }`}
+                          >
+                            <div className="overflow-hidden">
+                              <p className="text-base leading-relaxed text-muted-foreground">
                                 {feature.description}
                               </p>
                             </div>
