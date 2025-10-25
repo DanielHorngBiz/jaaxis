@@ -126,21 +126,15 @@ const Features = () => {
                       {isActive && (
                         <svg 
                           className="absolute inset-0 w-full h-full pointer-events-none"
-                          viewBox="0 0 100 100"
-                          preserveAspectRatio="xMidYMid meet"
+                          preserveAspectRatio="none"
                         >
-                          {/* Background track (optional) */}
-                          <rect
-                            x="2" y="2" width="96" height="96" rx="10"
-                            fill="none"
-                            stroke="hsl(var(--border))"
-                            strokeWidth="2"
-                            opacity="0.2"
-                            pathLength="400"
-                          />
                           {/* Animated progress - travels around all 4 sides */}
                           <rect
-                            x="2" y="2" width="96" height="96" rx="10"
+                            x="1.5"
+                            y="1.5"
+                            width="calc(100% - 3px)"
+                            height="calc(100% - 3px)"
+                            rx="12"
                             fill="none"
                             stroke="hsl(var(--primary))"
                             strokeWidth="3"
