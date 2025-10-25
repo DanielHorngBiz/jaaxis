@@ -114,8 +114,8 @@ const Features = () => {
             {/* TWO STICKY COLUMNS */}
             <div className="grid lg:grid-cols-[1fr_2fr] gap-12 lg:gap-16">
               
-              {/* LEFT: All feature cards (no longer sticky) */}
-              <div className="h-fit space-y-4">
+              {/* LEFT: All feature cards (sticky container) */}
+              <div className="lg:sticky lg:top-24 lg:self-start h-fit space-y-4">
                 {features.map((feature, index) => {
                   const Icon = feature.icon;
                   const isActive = activeFeature === index;
