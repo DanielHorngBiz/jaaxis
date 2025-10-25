@@ -283,7 +283,6 @@ const Features = () => {
                       muted
                       playsInline
                       preload="metadata"
-                      crossOrigin="anonymous"
                       className={`w-full h-auto transition-opacity duration-500 ${
                         index === featureState.activeFeature
                           ? "opacity-100 relative" 
