@@ -102,49 +102,49 @@ const Features = () => {
           {/* Features Grid - Desktop: Side by side with sticky, Mobile: Stacked */}
           <div className="grid lg:grid-cols-[1fr_2fr] gap-12 lg:gap-16 relative">
 
-          {/* Left Column - Scrolling Feature List */}
-          <div className="space-y-6 z-10">
+          {/* Left Column - Sticky Feature List */}
+          <div className="lg:sticky lg:top-24 lg:self-start space-y-6 h-fit z-10">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               const isActive = activeFeature === index;
               const progress = scrollProgress[index];
               
               return (
-                <div key={index}>
-                  <div
-                    ref={(el) => (triggerRefs.current[index] = el)}
-                    className="relative"
+                <div
+                  key={index}
+                  ref={(el) => (triggerRefs.current[index] = el)}
+                  className="relative"
+                >
+                  {/* Progress border - SVG wrapping around the card */}
+                  <svg
+                    className="absolute inset-0 w-full h-full pointer-events-none"
+                    style={{ overflow: 'visible' }}
                   >
-                    {/* Progress border - SVG wrapping around the card */}
-                    <svg
-                      className="absolute inset-0 w-full h-full pointer-events-none"
-                      style={{ overflow: 'visible' }}
-                    >
-                      <rect
-                        x="2"
-                        y="2"
-                        width="calc(100% - 4px)"
-                        height="calc(100% - 4px)"
-                        rx="12"
-                        fill="none"
-                        stroke="hsl(var(--primary))"
-                        strokeWidth="3"
-                        strokeDasharray="1000"
-                        strokeDashoffset={1000 - (progress * 10)}
-                        className="transition-all duration-300"
-                        style={{
-                          opacity: progress > 0 ? 0.6 : 0,
-                        }}
-                      />
-                    </svg>
-                    
-                    <div
-                      className={`w-full p-8 rounded-xl border transition-all duration-300 relative ${
-                        isActive
-                          ? "border-primary bg-primary/5 shadow-lg"
-                          : "border-border bg-card"
-                      }`}
-                    >
+                    <rect
+                      x="2"
+                      y="2"
+                      width="calc(100% - 4px)"
+                      height="calc(100% - 4px)"
+                      rx="12"
+                      fill="none"
+                      stroke="hsl(var(--primary))"
+                      strokeWidth="3"
+                      strokeDasharray="1000"
+                      strokeDashoffset={1000 - (progress * 10)}
+                      className="transition-all duration-100"
+                      style={{
+                        opacity: isActive ? 0.8 : 0,
+                      }}
+                    />
+                  </svg>
+                  
+                  <div
+                    className={`w-full p-8 rounded-xl border transition-all duration-300 relative ${
+                      isActive
+                        ? "border-primary bg-primary/5 shadow-lg"
+                        : "border-border bg-card opacity-30"
+                    }`}
+                  >
                     <div className="flex items-start gap-4">
                       <div
                         className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
@@ -169,19 +169,21 @@ const Features = () => {
                       </div>
                     </div>
                   </div>
-                  </div>
-                  
-                  {/* Scroll spacer between features */}
-                  {index < features.length - 1 && (
-                    <div className="h-[100vh]" aria-hidden="true" />
-                  )}
                 </div>
               );
             })}
           </div>
+          {/* Scroll spacers between sections */}
+          <div className="lg:col-span-2">
+            {features.map((_, index) => (
+              index < features.length - 1 && (
+                <div key={index} className="h-[100vh]" aria-hidden="true" />
+              )
+            ))}
+          </div>
 
-          {/* Right Column - Fixed Visual with Fade Transitions */}
-          <div className="lg:sticky lg:top-24 lg:self-start z-10">
+          {/* Right Column - Sticky Visual */}
+          <div className="lg:sticky lg:top-24 lg:self-start z-10 lg:col-start-2 lg:row-start-1">
             <div className="min-h-0 flex items-start">
               <div
                 key={activeFeature}
