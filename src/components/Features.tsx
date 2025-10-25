@@ -86,7 +86,7 @@ const Features = () => {
         pin: true,
         start: "top top",
         end: () => `+=${totalScrollDistance}`,
-        pinSpacing: false,
+        pinSpacing: true,
         scrub: 1,
         anticipatePin: 1,
         invalidateOnRefresh: true,
