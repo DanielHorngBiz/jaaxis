@@ -76,11 +76,11 @@ const Features = () => {
     const ctx = gsap.context(() => {
       const totalScrollDistance = features.length * window.innerHeight * 3.5;
 
-      // Pin the entire grid container
+      // Pin the entire grid container at center
       ScrollTrigger.create({
         trigger: sectionRef.current,
         pin: gridRef.current,
-        start: "top top",
+        start: "center center",
         end: () => `+=${totalScrollDistance}`,
         pinSpacing: true,
         scrub: true,
