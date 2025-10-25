@@ -1,4 +1,3 @@
-import { Bot, Zap, MessageSquare, Users, ArrowRight } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 import feature1Video from "@/assets/feature-1.webm";
@@ -13,28 +12,24 @@ const Features = () => {
 
   const features = [
     {
-      icon: Zap,
       title: "Launch in Minutes",
       description: "Turn your docs into an AI agent and deploy across web, Messenger, and Instagram instantly.",
       video: feature1Video,
       visual: "gradient-from-primary/20 to-primary/5",
     },
     {
-      icon: MessageSquare,
       title: "Smart Store Integration",
       description: "Connect with Shopify and WooCommerce so your AI handles orders, refunds, and support automatically.",
       video: feature2Video,
       visual: "gradient-from-accent/20 to-accent/5",
     },
     {
-      icon: Bot,
       title: "Learn From Every Chat",
       description: "Edit past conversations to improve responses. No training required, changes apply instantly.",
       video: feature3Video,
       visual: "gradient-from-primary/15 to-secondary",
     },
     {
-      icon: Users,
       title: "Seamless Human Handoff",
       description: "Set custom rules to route complex cases to your team while capturing customer details automatically.",
       video: feature4Video,
@@ -117,7 +112,6 @@ const Features = () => {
               {/* LEFT: All feature cards (sticky container) */}
               <div className="lg:sticky lg:top-24 lg:self-start h-fit space-y-4">
                 {features.map((feature, index) => {
-                  const Icon = feature.icon;
                   const isActive = activeFeature === index;
                   
                   return (
@@ -155,29 +149,20 @@ const Features = () => {
                             : "border-border bg-card opacity-50"
                         }`}
                       >
-                        <div className="flex items-start gap-4">
-                          <div
-                            className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
-                              isActive ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary"
+                        <div className="w-full">
+                          <h3
+                            className={`text-xl font-bold transition-colors ${
+                              isActive ? "text-foreground mb-3" : "text-foreground/70"
                             }`}
                           >
-                            <Icon className="h-6 w-6" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3
-                              className={`text-xl font-bold transition-colors ${
-                                isActive ? "text-foreground mb-3" : "text-foreground/70"
-                              }`}
-                            >
-                              {feature.title}
-                            </h3>
-                            {/* Description only shown when active */}
-                            {isActive && (
-                              <p className="text-base leading-relaxed text-muted-foreground animate-fade-in">
-                                {feature.description}
-                              </p>
-                            )}
-                          </div>
+                            {feature.title}
+                          </h3>
+                          {/* Description only shown when active */}
+                          {isActive && (
+                            <p className="text-base leading-relaxed text-muted-foreground animate-fade-in">
+                              {feature.description}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>
