@@ -10,7 +10,7 @@ const Features = () => {
   const [featureState, setFeatureState] = useState({
     activeFeature: 0,
     scrollProgress: 0,
-    isInViewport: false
+    isInViewport: true
   });
   const sectionRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -93,6 +93,10 @@ const Features = () => {
         scrub: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
+        onEnter: () => setFeatureState(prev => ({ ...prev, isInViewport: true })),
+        onLeave: () => setFeatureState(prev => ({ ...prev, isInViewport: false })),
+        onEnterBack: () => setFeatureState(prev => ({ ...prev, isInViewport: true })),
+        onLeaveBack: () => setFeatureState(prev => ({ ...prev, isInViewport: false })),
         onUpdate: (self) => {
           // Calculate which feature based on overall progress
           const totalProgress = self.progress;
@@ -112,9 +116,12 @@ const Features = () => {
     return () => ctx.revert();
   }, []);
 
-  // Viewport detection for videos
+  // Viewport detection for videos (mobile only - desktop uses ScrollTrigger callbacks)
   useEffect(() => {
-    if (!sectionRef.current) return;
+    if (!contentRef.current) return;
+
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    if (mediaQuery.matches) return; // Skip on desktop
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -125,28 +132,49 @@ const Features = () => {
           }));
         });
       },
-      { threshold: 0.8 }
+      { threshold: 0.1 }
     );
 
-    observer.observe(sectionRef.current);
+    observer.observe(contentRef.current);
 
     return () => {
       observer.disconnect();
     };
   }, []);
 
+  // Reset video to start when feature changes
+  useEffect(() => {
+    const video = videoRefs.current[featureState.activeFeature];
+    if (!video) return;
+    video.currentTime = 0;
+  }, [featureState.activeFeature]);
+
   // Control video playback based on active feature AND viewport visibility
   useEffect(() => {
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+    
     videoRefs.current.forEach((video, index) => {
-      if (video) {
-        if (index === featureState.activeFeature && featureState.isInViewport) {
-          video.currentTime = 0; // Reset to start when switching to this feature
+      if (!video) return;
+      
+      if (index === featureState.activeFeature && (featureState.isInViewport || isDesktop)) {
+        const tryPlay = () => {
           video.play().catch(() => {
             // Ignore autoplay errors
           });
+        };
+        
+        if (video.readyState >= 2) {
+          tryPlay();
         } else {
-          video.pause();
+          const onCanPlay = () => {
+            tryPlay();
+            video.removeEventListener('canplay', onCanPlay);
+          };
+          video.addEventListener('canplay', onCanPlay);
+          video.load();
         }
+      } else {
+        video.pause();
       }
     });
   }, [featureState.activeFeature, featureState.isInViewport]);
@@ -255,6 +283,7 @@ const Features = () => {
                       muted
                       playsInline
                       preload="metadata"
+                      crossOrigin="anonymous"
                       className={`w-full h-auto transition-opacity duration-500 ${
                         index === featureState.activeFeature
                           ? "opacity-100 relative" 
