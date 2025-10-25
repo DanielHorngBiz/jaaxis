@@ -82,13 +82,13 @@ const Features = () => {
 
     // Desktop: GSAP ScrollTrigger
     const ctx = gsap.context(() => {
-      const step = window.innerHeight * 2;
+      const step = window.innerHeight * 1.5;
       const totalScrollDistance = features.length * step;
 
       // Single ScrollTrigger that pins section and handles all feature switching
       ScrollTrigger.create({
         trigger: sectionRef.current,
-        pin: true,
+        pin: contentRef.current,
         start: "top top",
         end: () => `+=${totalScrollDistance}`,
         pinSpacing: true,
