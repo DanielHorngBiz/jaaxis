@@ -1,3 +1,5 @@
+import logo from "@/assets/jaxxis-logo.png";
+
 const Footer = () => {
   return (
     <footer className="border-t border-border py-16 px-6 lg:px-8 bg-secondary/30">
@@ -110,7 +112,7 @@ const Footer = () => {
 
         <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center mb-4 md:mb-0">
-            <span className="text-xl font-semibold text-foreground">Jaaxis</span>
+            <img src={logo} alt="Jaaxis" className="h-8" />
           </div>
           <p className="text-muted-foreground text-sm">
             © 2025 Jaaxis. All rights reserved.
