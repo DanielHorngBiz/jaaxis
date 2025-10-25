@@ -123,13 +123,11 @@ const Features = () => {
                       >
                         {feature.title}
                       </h3>
-                      <p
-                        className={`text-base leading-relaxed transition-all duration-300 ${
-                          isActive ? "text-muted-foreground opacity-100" : "text-muted-foreground/60 opacity-60"
-                        }`}
-                      >
-                        {feature.description}
-                      </p>
+                      {isActive && (
+                        <p className="text-base leading-relaxed text-muted-foreground animate-fade-in">
+                          {feature.description}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </button>
