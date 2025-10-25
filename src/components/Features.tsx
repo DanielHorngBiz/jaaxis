@@ -8,7 +8,7 @@ import feature4Video from "@/assets/feature-4.webm";
 
 const Features = () => {
   const [activeFeature, setActiveFeature] = useState(0);
-  const triggerRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const triggerRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const features = [
     {
@@ -99,6 +99,7 @@ const Features = () => {
               
               return (
                 <button
+                  ref={(el) => (triggerRefs.current[index] = el)}
                   key={index}
                   onClick={() => setActiveFeature(index)}
                   className={`w-full text-left p-8 rounded-xl border transition-all duration-300 ${
@@ -154,16 +155,6 @@ const Features = () => {
             </div>
           </div>
 
-          {/* Scroll Triggers to drive pinned section (compact) */}
-          <div className="hidden lg:block col-span-2" aria-hidden="true">
-            {features.map((_, index) => (
-              <div
-                key={index}
-                ref={(el) => (triggerRefs.current[index] = el)}
-                className="h-[8vh]"
-              />
-            ))}
-          </div>
         </div>
       </div>
     </section>
