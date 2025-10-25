@@ -197,7 +197,7 @@ const Features = () => {
                     loop
                     muted
                     playsInline
-                    className="w-full h-auto"
+                    className="w-full h-auto animate-fade-in"
                   />
                 </div>
               </div>
