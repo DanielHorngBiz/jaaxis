@@ -252,9 +252,6 @@ const Features = () => {
                       muted
                       playsInline
                       preload="auto"
-                      crossOrigin="anonymous"
-                      onError={(e) => console.error(`Video ${index} failed to load:`, feature.video, e)}
-                      onLoadedData={() => console.log(`Video ${index} loaded successfully:`, feature.video)}
                       className={`w-full h-auto transition-opacity duration-500 ${
                         index === featureState.activeFeature
                           ? "opacity-100 relative" 
