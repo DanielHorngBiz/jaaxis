@@ -137,7 +137,7 @@ const Features = () => {
 
           {/* Right Column - Fixed Visual with Fade Transitions */}
           <div className="lg:sticky lg:top-24 lg:self-start z-10">
-            <div className="min-h-[60vh] lg:min-h-[70vh] flex items-center">
+            <div className="min-h-[60vh] lg:min-h-[70vh] flex items-start">
               <div
                 key={activeFeature}
                 className="w-full rounded-2xl border border-border overflow-hidden shadow-xl animate-fade-in"
