@@ -80,13 +80,18 @@ const Features = () => {
       const step = window.innerHeight * 2;
       const totalScrollDistance = features.length * step;
 
+      // Pre-allocate section height to prevent layout shift when pin activates
+      if (sectionRef.current) {
+        sectionRef.current.style.height = `${totalScrollDistance}px`;
+      }
+
       // Single ScrollTrigger that pins section and handles all feature switching
       ScrollTrigger.create({
         trigger: sectionRef.current,
         pin: true,
         start: "top top",
         end: () => `+=${totalScrollDistance}`,
-        pinSpacing: true,
+        pinSpacing: false,
         scrub: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
@@ -143,7 +148,12 @@ const Features = () => {
 
 
   return (
-    <section ref={sectionRef} id="features" className="min-h-screen py-24 px-6 lg:px-8 bg-background flex items-center">
+    <section 
+      ref={sectionRef} 
+      id="features" 
+      className="min-h-screen py-24 px-6 lg:px-8 bg-background flex items-center"
+      style={{ willChange: 'transform', transform: 'translateZ(0)' }}
+    >
       <div ref={contentRef} className="max-w-5xl mx-auto w-full">
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center mb-16">
