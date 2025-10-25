@@ -253,7 +253,7 @@ const Features = () => {
                       loop
                       muted
                       playsInline
-                      preload="none"
+                      preload="metadata"
                       className={`w-full h-auto transition-opacity duration-500 ${
                         index === featureState.activeFeature
                           ? "opacity-100 relative" 
