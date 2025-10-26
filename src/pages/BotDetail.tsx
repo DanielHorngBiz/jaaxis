@@ -36,24 +36,24 @@ const BotDetail = () => {
 
   return (
     <DashboardLayout>
-      <div className="flex h-screen">
-        {/* Vertical Navigation */}
-        <aside className="w-[220px] bg-background border-r border-border flex flex-col">
-          {/* Header */}
-          <div className="p-6 border-b border-border">
-            <div className="flex items-center gap-3 mb-2">
+      <div className="flex flex-col h-screen">
+        {/* Header */}
+        <div className="border-b bg-background shadow-sm">
+          <div className="px-8 py-5 flex items-center justify-between">
+            <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-foreground flex items-center justify-center shadow-sm">
                 <img src="/placeholder.svg" alt="Jaaxis" className="w-7 h-7" />
               </div>
               <div>
-                <h2 className="font-semibold text-base">Jaaxis</h2>
-                <p className="text-xs text-muted-foreground">AI Chatbot</p>
+                <h1 className="text-xl font-semibold">Jaaxis</h1>
+                <p className="text-sm text-muted-foreground">AI Chatbot</p>
               </div>
             </div>
+            <Button variant="outline" className="shadow-sm">View Live Chat</Button>
           </div>
 
-          {/* Navigation Items */}
-          <nav className="flex-1 p-4 space-y-1">
+          {/* Tab Navigation */}
+          <div className="px-8 flex gap-2 -mb-px">
             {tabs.map((tabItem) => {
               const Icon = tabItem.icon;
               const isActive = currentTab === tabItem.id;
@@ -63,27 +63,23 @@ const BotDetail = () => {
                   to={`/dashboard/bot/${botId}/${tabItem.id}`}
                 >
                   <button
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                    className={`flex items-center gap-2 px-4 py-3 rounded-t-lg transition-all relative ${
                       isActive
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/80"
+                        ? "bg-gradient-subtle text-foreground font-medium"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     }`}
                   >
-                    <Icon className="w-4 h-4 shrink-0" />
-                    <span className="text-sm font-medium">{tabItem.label}</span>
+                    <Icon className="w-4 h-4" />
+                    <span className="text-sm">{tabItem.label}</span>
+                    {isActive && (
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+                    )}
                   </button>
                 </Link>
               );
             })}
-          </nav>
-
-          {/* Footer Action */}
-          <div className="p-4 border-t border-border">
-            <Button variant="outline" className="w-full shadow-sm" size="sm">
-              View Live Chat
-            </Button>
           </div>
-        </aside>
+        </div>
 
         {/* Content */}
         <div className="flex-1 overflow-auto bg-gradient-subtle">
