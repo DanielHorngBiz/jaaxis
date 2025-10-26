@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Settings, User, Bell, CreditCard } from "lucide-react";
@@ -7,7 +8,15 @@ import BillingTab from "@/components/account/BillingTab";
 import NotificationsTab from "@/components/account/NotificationsTab";
 
 const AccountSettings = () => {
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<"account" | "notifications" | "billing">("account");
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "billing" || tab === "notifications" || tab === "account") {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   return (
     <DashboardLayout>
