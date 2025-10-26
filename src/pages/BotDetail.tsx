@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Wand2, Eye, Link2, Settings } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import TrainingTab from "@/components/dashboard/tabs/TrainingTab";
@@ -17,6 +17,7 @@ const tabs = [
 
 const BotDetail = () => {
   const { botId, tab = "training" } = useParams();
+  const navigate = useNavigate();
   const currentTab = tab || "training";
 
   const renderTabContent = () => {
@@ -41,7 +42,7 @@ const BotDetail = () => {
         tabs={tabs}
         activeTab={currentTab}
         onTabChange={(tabId) => {
-          window.location.href = `/dashboard/bot/${botId}/${tabId}`;
+          navigate(`/dashboard/bot/${botId}/${tabId}`);
         }}
       >
         <ContentContainer>
