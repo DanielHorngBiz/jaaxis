@@ -13,7 +13,7 @@ const PreviewTab = ({ botName }: PreviewTabProps) => {
       <Card className="w-full max-w-md shadow-xl border-border overflow-hidden">
         {/* Chat Header */}
         <div className="bg-[#9b8b6f] text-white p-5 flex items-center gap-4">
-          <div className="w-11 h-11 rounded-xl bg-foreground flex items-center justify-center shadow-sm">
+          <div className="w-11 h-11 rounded-full bg-foreground flex items-center justify-center shadow-sm">
             <img src="/placeholder.svg" alt={botName} className="w-6 h-6" />
           </div>
           <div>

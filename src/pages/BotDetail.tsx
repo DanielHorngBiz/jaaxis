@@ -61,7 +61,7 @@ const BotDetail = () => {
         <div className="border-b bg-background shadow-sm">
           <div className="px-8 py-5 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-foreground flex items-center justify-center shadow-sm">
+              <div className="w-12 h-12 rounded-full bg-foreground flex items-center justify-center shadow-sm">
                 <img src="/placeholder.svg" alt="Jaaxis" className="w-7 h-7" />
               </div>
               <div>
