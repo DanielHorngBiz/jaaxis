@@ -124,45 +124,46 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               </div>
 
               {/* Usage Section */}
-              <PopoverTrigger asChild>
-                <button
-                  onClick={() => navigate('/account-settings?tab=billing')}
-                  className="w-full p-3 border-b border-border hover:bg-secondary/50 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="relative w-12 h-12 flex-shrink-0">
-                      <svg className="w-12 h-12 transform -rotate-90">
-                        <circle
-                          cx="24"
-                          cy="24"
-                          r="22"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          fill="none"
-                          className="text-muted"
-                        />
-                        <circle
-                          cx="24"
-                          cy="24"
-                          r="22"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          fill="none"
-                          strokeDasharray={`${(1000 / 3000) * 138.2} 138.2`}
-                          className="text-primary"
-                        />
-                      </svg>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-xs font-bold">33%</span>
-                      </div>
-                    </div>
-                    <div className="flex-1 text-left">
-                      <p className="text-sm font-semibold">1,000 Remaining</p>
-                      <p className="text-xs text-muted-foreground">of 3,000 replies</p>
+              <button
+                onClick={() => {
+                  navigate('/account-settings?tab=billing');
+                  document.body.click(); // Close popover
+                }}
+                className="w-full p-3 border-b border-border hover:bg-secondary/50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="relative w-12 h-12 flex-shrink-0">
+                    <svg className="w-12 h-12 transform -rotate-90">
+                      <circle
+                        cx="24"
+                        cy="24"
+                        r="22"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        fill="none"
+                        className="text-muted"
+                      />
+                      <circle
+                        cx="24"
+                        cy="24"
+                        r="22"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        fill="none"
+                        strokeDasharray={`${(1000 / 3000) * 138.2} 138.2`}
+                        className="text-primary"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-xs font-bold">33%</span>
                     </div>
                   </div>
-                </button>
-              </PopoverTrigger>
+                  <div className="flex-1 text-left">
+                    <p className="text-sm font-semibold">1,000 Remaining</p>
+                    <p className="text-xs text-muted-foreground">of 3,000 replies</p>
+                  </div>
+                </div>
+              </button>
               
               <div className="p-2">
                 <Button
