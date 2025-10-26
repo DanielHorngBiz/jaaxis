@@ -6,55 +6,32 @@ import { UserCircle, Lightbulb } from "lucide-react";
 
 const TrainingTab = () => {
   return (
-    <div className="p-8 lg:p-12 max-w-5xl mx-auto animate-fade-in">
-      <h2 className="text-3xl font-bold mb-2">Training</h2>
-      <p className="text-muted-foreground mb-8">Configure your bot's personality and knowledge base</p>
+    <div className="p-8 space-y-8">
+      <h2 className="text-2xl font-bold">Training</h2>
 
       {/* Persona Section */}
-      <Card className="mb-8 shadow-sm border-border hover:shadow-md transition-shadow">
-        <CardHeader>
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-              <UserCircle className="w-6 h-6 text-primary" />
-            </div>
-            <div>
-              <CardTitle className="text-xl">Persona</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">Define how your bot communicates</p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <div className="pb-8 border-b">
+        <h3 className="text-lg font-semibold mb-6">Persona</h3>
+        <div className="space-y-4">
           <Textarea
-            className="min-h-[140px] resize-none text-sm leading-relaxed"
+            className="min-h-[140px] resize-none"
             defaultValue="You are a friendly and helpful assistant. Only when the customer is using Chinese, respond in Traditional Chinese (zh-hant), and use a Taiwan friendly tone; never use Simplified Chinese (zh-cn). Otherwise, please respond in the same language they're using."
           />
-          <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center justify-between">
             <div className="flex gap-2">
               <Button variant="outline" size="sm">Friendly</Button>
               <Button variant="outline" size="sm">Professional</Button>
               <Button variant="outline" size="sm">Witty</Button>
             </div>
-            <Button size="sm" className="shadow-sm">Save</Button>
+            <Button>Save</Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Knowledge Section */}
-      <Card className="shadow-sm border-border hover:shadow-md transition-shadow">
-        <CardHeader>
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-              <Lightbulb className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <CardTitle className="text-xl">Knowledge</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                Provide information about your products & services
-              </p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
+      <div>
+        <h3 className="text-lg font-semibold mb-6">Knowledge</h3>
+        <div>
           <Tabs defaultValue="text" className="w-full">
             <TabsList className="grid grid-cols-5 w-full">
               <TabsTrigger value="text">Text</TabsTrigger>
@@ -90,8 +67,8 @@ const TrainingTab = () => {
               </div>
             </TabsContent>
           </Tabs>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

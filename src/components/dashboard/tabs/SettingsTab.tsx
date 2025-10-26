@@ -16,20 +16,15 @@ const colors = [
 
 const SettingsTab = () => {
   return (
-    <div className="p-8 lg:p-12 max-w-4xl mx-auto animate-fade-in">
-      <h2 className="text-3xl font-bold mb-2">Settings</h2>
-      <p className="text-muted-foreground mb-8">Customize your chatbot's appearance and behavior</p>
+    <div className="p-8 space-y-8">
+      <h2 className="text-2xl font-bold">Settings</h2>
 
       {/* General Section */}
-      <Card className="mb-8 shadow-sm border-border hover:shadow-md transition-shadow">
-        <CardHeader>
-          <CardTitle className="text-xl">General</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div>
-            <Label htmlFor="bot-name" className="text-sm font-medium mb-2 block">
-              Bot Name
-            </Label>
+      <div className="pb-8 border-b">
+        <h3 className="text-lg font-semibold mb-6">General</h3>
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="bot-name">Bot Name</Label>
             <div className="flex items-center gap-3">
               <Input id="bot-name" defaultValue="Jaaxis" className="flex-1" />
               <Button variant="ghost" size="icon" className="shrink-0">
@@ -37,31 +32,29 @@ const SettingsTab = () => {
               </Button>
             </div>
           </div>
-          <div className="flex justify-end pt-2">
-            <Button size="sm" className="shadow-sm">Save Changes</Button>
+          <div className="flex justify-end">
+            <Button>Save Changes</Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Appearance Section */}
-      <Card className="shadow-sm border-border hover:shadow-md transition-shadow">
-        <CardHeader>
-          <CardTitle className="text-xl">Appearance</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-8">
+      <div>
+        <h3 className="text-lg font-semibold mb-6">Appearance</h3>
+        <div className="space-y-8">
           {/* Brand Logo */}
           <div>
-            <Label className="text-sm font-medium mb-4 block">Brand Logo</Label>
+            <Label className="mb-4 block">Brand Logo</Label>
             <div className="flex items-center gap-4">
               <div className="w-24 h-24 rounded-xl bg-foreground flex items-center justify-center shadow-sm">
                 <img src="/placeholder.svg" alt="Logo" className="w-14 h-14" />
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" className="gap-2 shadow-sm">
+                <Button variant="outline" className="gap-2">
                   <Upload className="w-4 h-4" />
                   Upload Image
                 </Button>
-                <Button variant="outline" size="sm" className="shadow-sm">
+                <Button variant="outline">
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
@@ -70,7 +63,7 @@ const SettingsTab = () => {
 
           {/* Color Picker */}
           <div>
-            <Label className="text-sm font-medium mb-4 block">Primary Color</Label>
+            <Label className="mb-4 block">Primary Color</Label>
             <div className="flex items-center gap-4 flex-wrap">
               <div className="flex gap-2">
                 {colors.map((color) => (
@@ -81,7 +74,7 @@ const SettingsTab = () => {
                   />
                 ))}
               </div>
-              <Button variant="outline" size="sm" className="shadow-sm">
+              <Button variant="outline">
                 Custom
               </Button>
               <div className="flex items-center gap-2">
@@ -92,7 +85,7 @@ const SettingsTab = () => {
                   readOnly
                 />
                 <div
-                  className="w-10 h-10 rounded-lg border shadow-sm"
+                  className="w-10 h-10 rounded-lg border"
                   style={{ backgroundColor: "#9b835a" }}
                 />
               </div>
@@ -101,7 +94,7 @@ const SettingsTab = () => {
 
           {/* Alignment */}
           <div>
-            <Label className="text-sm font-medium mb-4 block">Chat Position</Label>
+            <Label className="mb-4 block">Chat Position</Label>
             <RadioGroup defaultValue="right" className="flex gap-4">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="left" id="left" />
@@ -116,7 +109,7 @@ const SettingsTab = () => {
 
           {/* Show on Mobile */}
           <div>
-            <Label className="text-sm font-medium mb-4 block">Mobile Display</Label>
+            <Label className="mb-4 block">Mobile Display</Label>
             <RadioGroup defaultValue="show" className="flex gap-4">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="show" id="show" />
@@ -130,10 +123,10 @@ const SettingsTab = () => {
           </div>
 
           <div className="flex justify-end pt-4 border-t">
-            <Button size="sm" className="shadow-sm">Save Changes</Button>
+            <Button>Save Changes</Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
