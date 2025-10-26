@@ -26,7 +26,7 @@ const Navbar = () => {
                 Pricing
               </a>
               <a href="#resources" className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary">
-                Resources
+                Guide
               </a>
             </div>
           </div>
@@ -58,7 +58,7 @@ const Navbar = () => {
               Pricing
             </a>
             <a href="#resources" className="block px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary">
-              Resources
+              Guide
             </a>
             <div className="flex flex-col gap-2 pt-4">
               <Button variant="ghost" size="sm">Log In</Button>
