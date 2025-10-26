@@ -3,7 +3,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Pencil, Upload, Trash2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Pencil, Upload, Trash2, Plus, MoreHorizontal } from "lucide-react";
 
 const colors = [
   "#FF9800",
@@ -126,6 +128,98 @@ const SettingsTab = () => {
             <Button>Save Changes</Button>
           </div>
         </div>
+      </div>
+
+      {/* Blocklist Section */}
+      <div className="pb-8 border-b">
+        <h3 className="text-lg font-semibold mb-2">Blocklist</h3>
+        <p className="text-sm text-muted-foreground mb-6">
+          The bot won't respond if the message contains these words (separated by comma)
+        </p>
+        <div className="space-y-6">
+          <Textarea
+            placeholder="社群導則, meta, 撒反政黨, 您的其他, whatsapp, 智慧財產"
+            className="min-h-[100px]"
+          />
+          <div className="flex justify-end">
+            <Button>Save</Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Team Section */}
+      <div className="pb-8 border-b">
+        <h3 className="text-lg font-semibold mb-6">Team</h3>
+        <div className="space-y-6">
+          <div className="border rounded-lg overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>E-mail</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-medium">metal666grin@gmail.com</TableCell>
+                  <TableCell>Owner</TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontal className="w-4 h-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">contact@flexpresets.com</TableCell>
+                  <TableCell>support</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Pencil className="w-4 h-4 text-primary" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Trash2 className="w-4 h-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">metal66grin@gmail.com</TableCell>
+                  <TableCell>admin</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Pencil className="w-4 h-4 text-primary" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Trash2 className="w-4 h-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+          <div className="flex justify-center">
+            <Button className="gap-2">
+              <Plus className="w-4 h-4" />
+              Add Member
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Delete Bot Section */}
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Delete Bot</h3>
+        <p className="text-sm text-muted-foreground mb-6">
+          Delete this bot and all data. The action is not reversible
+        </p>
+        <Button variant="destructive" className="gap-2">
+          <Trash2 className="w-4 h-4" />
+          Delete the Bot
+        </Button>
       </div>
     </div>
   );
