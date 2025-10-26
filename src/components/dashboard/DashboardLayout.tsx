@@ -53,34 +53,37 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           {isCollapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
         </Button>
 
-        <div className="p-6">
-          <Link to="/" className="flex items-center gap-2 group justify-center">
-            <img src={logoImage} alt="Jaaxis" className="h-8 transition-transform group-hover:scale-105" />
-          </Link>
-        </div>
+        {!isCollapsed && (
+          <div className="p-6">
+            <Link to="/" className="flex items-center gap-2 group justify-center">
+              <img src={logoImage} alt="Jaaxis" className="h-8 transition-transform group-hover:scale-105" />
+            </Link>
+          </div>
+        )}
 
-        <div className="px-4 mb-6">
-          <Button className={`w-full gap-2 shadow-sm ${isCollapsed ? 'px-0' : ''}`} size="sm">
-            <Plus className="w-4 h-4" />
+        <div className={`px-4 ${isCollapsed ? 'mt-16' : 'mb-6'}`}>
+          <Button className={`w-full gap-2 shadow-sm ${isCollapsed ? 'justify-center px-0' : ''}`} size="sm">
+            <Plus className={`${isCollapsed ? 'w-4 h-4' : 'w-4 h-4'}`} />
             {!isCollapsed && "Create Chatbot"}
           </Button>
         </div>
 
-        <div className="flex-1 px-4 space-y-1">
+        <div className="flex-1 px-4 space-y-1 overflow-y-auto">
           {!isCollapsed && (
             <p className="px-3 mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">Your Bots</p>
           )}
           {mockBots.map((bot) => (
             <Link key={bot.id} to={`/dashboard/bot/${bot.id}`}>
               <div
-                className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} p-3 rounded-lg transition-all hover:bg-secondary/80 ${
+                className={`flex items-center ${isCollapsed ? 'justify-center p-2' : 'gap-3 p-3'} rounded-lg transition-all hover:bg-secondary/80 ${
                   location.pathname.includes(bot.id) ? "bg-secondary shadow-sm" : ""
                 }`}
+                title={isCollapsed ? bot.name : undefined}
               >
-                <div className={`w-8 h-8 rounded-lg ${bot.color} flex items-center justify-center shadow-sm`}>
-                  <img src={bot.avatar} alt={bot.name} className="w-5 h-5" />
+                <div className={`${isCollapsed ? 'w-9 h-9' : 'w-8 h-8'} rounded-lg ${bot.color} flex items-center justify-center shadow-sm flex-shrink-0`}>
+                  <img src={bot.avatar} alt={bot.name} className={`${isCollapsed ? 'w-6 h-6' : 'w-5 h-5'}`} />
                 </div>
-                {!isCollapsed && <span className="text-sm font-medium">{bot.name}</span>}
+                {!isCollapsed && <span className="text-sm font-medium truncate">{bot.name}</span>}
               </div>
             </Link>
           ))}
