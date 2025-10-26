@@ -32,8 +32,7 @@ const PLANS = [
 const BillingTab = () => {
   const totalReplies = 3000;
   const remainingReplies = 1000;
-  const usedReplies = totalReplies - remainingReplies;
-  const usagePercentage = (usedReplies / totalReplies) * 100;
+  const remainingPercentage = (remainingReplies / totalReplies) * 100;
 
   return (
     <div className="space-y-8">
@@ -50,7 +49,7 @@ const BillingTab = () => {
                 <p className="text-sm text-muted-foreground">of {totalReplies.toLocaleString()} remaining</p>
               </div>
             </div>
-            <Progress value={usagePercentage} className="h-2" />
+            <Progress value={remainingPercentage} className="h-2" />
           </div>
         </CardContent>
       </Card>
