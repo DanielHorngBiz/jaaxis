@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, User, Bell, CreditCard } from "lucide-react";
 import AccountTab from "@/components/account/AccountTab";
 import BillingTab from "@/components/account/BillingTab";
@@ -19,42 +18,64 @@ const AccountSettings = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-8 lg:p-12 max-w-6xl">
-        <div className="flex items-center gap-2 mb-6">
-          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-            <Settings className="w-4 h-4 text-primary" />
+      <div className="flex flex-col h-screen">
+        {/* Header */}
+        <div className="border-b bg-background shadow-sm">
+          <div className="px-8 py-5 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+              <Settings className="w-4 h-4 text-primary" />
+            </div>
+            <h1 className="text-xl font-semibold">Account Settings</h1>
           </div>
-          <h1 className="text-xl font-semibold">Account Settings</h1>
+
+          {/* Tab Navigation */}
+          <div className="px-8 border-b border-border">
+            <div className="flex gap-2 -mb-px">
+              <button
+                onClick={() => setSearchParams({ tab: "account" })}
+                className={`flex items-center gap-2 px-4 py-3 rounded-t-lg transition-all duration-200 relative ${
+                  activeTab === "account"
+                    ? "bg-gradient-subtle text-foreground font-medium"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                }`}
+              >
+                <User className="w-4 h-4" />
+                <span className="text-sm">Account</span>
+              </button>
+              <button
+                onClick={() => setSearchParams({ tab: "notifications" })}
+                className={`flex items-center gap-2 px-4 py-3 rounded-t-lg transition-all duration-200 relative ${
+                  activeTab === "notifications"
+                    ? "bg-gradient-subtle text-foreground font-medium"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                }`}
+              >
+                <Bell className="w-4 h-4" />
+                <span className="text-sm">Notifications</span>
+              </button>
+              <button
+                onClick={() => setSearchParams({ tab: "billing" })}
+                className={`flex items-center gap-2 px-4 py-3 rounded-t-lg transition-all duration-200 relative ${
+                  activeTab === "billing"
+                    ? "bg-gradient-subtle text-foreground font-medium"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                }`}
+              >
+                <CreditCard className="w-4 h-4" />
+                <span className="text-sm">Pricing</span>
+              </button>
+            </div>
+          </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={(value) => setSearchParams({ tab: value })}>
-          <TabsList className="mb-6">
-            <TabsTrigger value="account" className="gap-2">
-              <User className="w-4 h-4" />
-              Account
-            </TabsTrigger>
-            <TabsTrigger value="notifications" className="gap-2">
-              <Bell className="w-4 h-4" />
-              Notifications
-            </TabsTrigger>
-            <TabsTrigger value="billing" className="gap-2">
-              <CreditCard className="w-4 h-4" />
-              Pricing
-            </TabsTrigger>
-          </TabsList>
-
-          <div className="max-w-3xl">
-            <TabsContent value="account">
-              <AccountTab />
-            </TabsContent>
-            <TabsContent value="notifications">
-              <NotificationsTab />
-            </TabsContent>
-            <TabsContent value="billing">
-              <BillingTab />
-            </TabsContent>
+        {/* Content */}
+        <div className="flex-1 overflow-auto bg-gradient-subtle">
+          <div className="p-8 max-w-4xl">
+            {activeTab === "account" && <AccountTab />}
+            {activeTab === "notifications" && <NotificationsTab />}
+            {activeTab === "billing" && <BillingTab />}
           </div>
-        </Tabs>
+        </div>
       </div>
     </DashboardLayout>
   );
