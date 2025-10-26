@@ -19,7 +19,7 @@ const AccountSettings = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-8">
+      <div className="p-8 lg:p-12 max-w-6xl">
         <div className="flex items-center gap-2 mb-6">
           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
             <Settings className="w-4 h-4 text-primary" />
