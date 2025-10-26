@@ -188,7 +188,7 @@ const Features = () => {
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/50 mb-4">
               <span className="text-xs font-medium text-foreground">Features</span>
             </div>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
               Powerful Features for
               <br />
               Modern Customer Support
