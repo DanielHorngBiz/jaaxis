@@ -264,7 +264,7 @@ const Auth = () => {
           <Button 
             type="button" 
             variant="outline" 
-            className="w-full hover:bg-accent transition-colors"
+            className="w-full hover:bg-muted/50 transition-colors"
             onClick={() => {
               toast({
                 title: "Coming soon",
