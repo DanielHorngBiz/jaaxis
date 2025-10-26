@@ -169,31 +169,26 @@ const Auth = () => {
       </Link>
 
       <div className="w-full max-w-md animate-scale-in">
-        <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl shadow-2xl p-8 relative overflow-hidden">
-          {/* Decorative gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-accent opacity-5 pointer-events-none" />
-          
-          <div className="relative z-10">
-            {/* Logo */}
-            <div className="flex justify-center mb-8">
-              <img src={logo} alt="Jaaxis" className="h-12 animate-fade-in" />
-            </div>
+        <div className="bg-card border border-border rounded-2xl shadow-lg p-8 relative overflow-hidden">
+          {/* Logo */}
+          <div className="flex justify-center mb-8">
+            <img src={logo} alt="Jaaxis" className="h-12 animate-fade-in" />
+          </div>
 
-            {/* Title */}
-            <div className="text-center mb-8 animate-fade-in">
-              <h1 className="text-3xl font-bold text-foreground mb-3 bg-gradient-accent bg-clip-text text-transparent">
-                {isLogin ? "Welcome back" : "Create your account"}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                {isLogin
-                  ? "Enter your credentials to access your account"
-                  : "Sign up to get started with Jaaxis"}
-              </p>
-            </div>
+          {/* Title */}
+          <div className="text-center mb-8 animate-fade-in">
+            <h1 className="text-3xl font-bold text-foreground mb-3">
+              {isLogin ? "Welcome back" : "Create your account"}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {isLogin
+                ? "Enter your credentials to access your account"
+                : "Sign up to get started with Jaaxis"}
+            </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={isLogin ? handleLogin : handleSignup} className="space-y-5 relative z-10 animate-fade-in">
+          <form onSubmit={isLogin ? handleLogin : handleSignup} className="space-y-5 animate-fade-in">
             {!isLogin && (
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -253,7 +248,7 @@ const Auth = () => {
 
             <Button 
               type="submit" 
-              className="w-full bg-gradient-accent hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg mt-6" 
+              className="w-full hover:scale-[1.02] transition-transform mt-6" 
               disabled={isLoading}
             >
               {isLoading ? "Please wait..." : isLogin ? "Log In" : "Sign Up"}
@@ -261,7 +256,7 @@ const Auth = () => {
           </form>
 
           {/* Toggle */}
-          <div className="mt-8 text-center relative z-10">
+          <div className="mt-8 text-center">
             <button
               type="button"
               onClick={() => {
