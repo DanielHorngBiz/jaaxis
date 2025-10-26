@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Settings, User, Bell, CreditCard } from "lucide-react";
 import AccountTab from "@/components/account/AccountTab";
 import BillingTab from "@/components/account/BillingTab";
+import NotificationsTab from "@/components/account/NotificationsTab";
 
 const AccountSettings = () => {
-  const [activeTab, setActiveTab] = useState<"account" | "billing">("account");
+  const [activeTab, setActiveTab] = useState<"account" | "notifications" | "billing">("account");
 
   return (
     <DashboardLayout>
-      <div className="flex gap-6 max-w-7xl mx-auto">
+      <div className="flex gap-8 p-8">
         {/* Left Sidebar */}
         <div className="w-64 flex-shrink-0">
           <div className="flex items-center gap-2 mb-8">
@@ -30,9 +31,9 @@ const AccountSettings = () => {
               Account
             </Button>
             <Button
-              variant="ghost"
+              variant={activeTab === "notifications" ? "secondary" : "ghost"}
               className="w-full justify-start"
-              disabled
+              onClick={() => setActiveTab("notifications")}
             >
               <Bell className="w-4 h-4 mr-2" />
               Notifications
@@ -49,8 +50,10 @@ const AccountSettings = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1">
-          {activeTab === "account" ? <AccountTab /> : <BillingTab />}
+        <div className="flex-1 max-w-4xl">
+          {activeTab === "account" && <AccountTab />}
+          {activeTab === "notifications" && <NotificationsTab />}
+          {activeTab === "billing" && <BillingTab />}
         </div>
       </div>
     </DashboardLayout>
