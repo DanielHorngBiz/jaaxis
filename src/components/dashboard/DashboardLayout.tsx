@@ -62,8 +62,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         )}
 
         <div className={`px-4 ${isCollapsed ? 'mt-16' : 'mb-6'}`}>
-          <Button className={`w-full gap-2 shadow-sm ${isCollapsed ? 'justify-center px-0' : ''}`} size="sm">
-            <Plus className={`${isCollapsed ? 'w-4 h-4' : 'w-4 h-4'}`} />
+          <Button 
+            className={`${isCollapsed ? 'w-9 h-9 p-0' : 'w-full'} gap-2 shadow-sm`} 
+            size={isCollapsed ? "icon" : "sm"}
+          >
+            <Plus className="w-4 h-4" />
             {!isCollapsed && "Create Chatbot"}
           </Button>
         </div>
@@ -80,8 +83,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 }`}
                 title={isCollapsed ? bot.name : undefined}
               >
-                <div className={`${isCollapsed ? 'w-9 h-9' : 'w-8 h-8'} rounded-full ${bot.color} flex items-center justify-center shadow-sm flex-shrink-0`}>
-                  <img src={bot.avatar} alt={bot.name} className={`${isCollapsed ? 'w-6 h-6' : 'w-5 h-5'}`} />
+                <div className={`${isCollapsed ? 'w-9 h-9' : 'w-9 h-9'} rounded-full ${bot.color} flex items-center justify-center shadow-sm flex-shrink-0`}>
+                  <img src={bot.avatar} alt={bot.name} className="w-5 h-5" />
                 </div>
                 {!isCollapsed && <span className="text-sm font-medium truncate">{bot.name}</span>}
               </div>
