@@ -97,7 +97,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <PopoverTrigger asChild>
               {isCollapsed ? (
                 <button className="w-full flex justify-center hover:bg-secondary/50 p-2 rounded-lg transition-colors">
-                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <span className="text-sm font-semibold text-primary">DH</span>
                   </div>
                 </button>
