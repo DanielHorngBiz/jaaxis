@@ -75,7 +75,7 @@ const SettingsTab = () => {
                 {colors.map((color) => (
                   <button
                     key={color}
-                    className="w-10 h-10 rounded-full border-2 border-transparent hover:border-foreground/30 transition-all hover:scale-110"
+                    className="w-8 h-8 rounded-full border-2 border-transparent hover:border-foreground/30 transition-all hover:scale-110"
                     style={{ backgroundColor: color }}
                   />
                 ))}
@@ -91,7 +91,7 @@ const SettingsTab = () => {
                   readOnly
                 />
                 <div
-                  className="w-10 h-10 rounded-full border"
+                  className="w-8 h-8 rounded-full border"
                   style={{ backgroundColor: "#9b835a" }}
                 />
               </div>
