@@ -90,9 +90,6 @@ const TrainingTab = () => {
             placeholder="提馬退款,轉接真人"
             className="min-h-[120px] resize-none"
           />
-          <p className="text-sm text-muted-foreground">
-            These are **per assistant**. Base safety rules still apply globally.
-          </p>
           <div className="flex justify-end">
             <Button>Save</Button>
           </div>
