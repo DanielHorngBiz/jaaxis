@@ -72,6 +72,28 @@ const BillingTab = () => {
         ))}
       </div>
 
+      {/* Replies Usage */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-lg">Replies Usage</h3>
+              <div className="text-right">
+                <p className="text-2xl font-bold">1,000</p>
+                <p className="text-sm text-muted-foreground">of 3,000 remaining</p>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Progress value={66.67} className="h-2" />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>2,000 used</span>
+                <span>3,000 total</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Extra Replies */}
       <Card>
         <CardContent className="p-6">
@@ -86,28 +108,6 @@ const BillingTab = () => {
               </div>
             </div>
             <Button variant="outline">Add Now</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Replies Usage */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-lg">Replies Usage</h3>
-              <div className="text-right">
-                <p className="text-2xl font-bold">2,000</p>
-                <p className="text-sm text-muted-foreground">of 3,000 used</p>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Progress value={66.67} className="h-2" />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>66.7% used</span>
-                <span>1,000 remaining</span>
-              </div>
-            </div>
           </div>
         </CardContent>
       </Card>
