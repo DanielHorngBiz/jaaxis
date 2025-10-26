@@ -37,17 +37,17 @@ const Footer = () => {
               <h3 className="font-semibold mb-4 text-foreground">Product</h3>
               <ul className="space-y-3">
                 <li>
-                  <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+                  <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     Pricing
                   </a>
                 </li>
                 <li>
-                  <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
+                  <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     Features
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                  <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     Success stories
                   </a>
                 </li>
@@ -58,12 +58,12 @@ const Footer = () => {
               <h3 className="font-semibold mb-4 text-foreground">Resources</h3>
               <ul className="space-y-3">
                 <li>
-                  <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                  <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     Contact us
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                  <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     Guide
                   </a>
                 </li>
@@ -74,17 +74,17 @@ const Footer = () => {
               <h3 className="font-semibold mb-4 text-foreground">Company</h3>
               <ul className="space-y-3">
                 <li>
-                  <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                  <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     Privacy policy
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                  <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     Terms of service
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                  <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     Trust
                   </a>
                 </li>
