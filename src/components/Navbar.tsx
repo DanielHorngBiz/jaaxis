@@ -16,17 +16,19 @@ const Navbar = () => {
             </a>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
-            <a href="#features" className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary">
-              Features
-            </a>
-            <a href="#pricing" className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary">
-              Pricing
-            </a>
-            <a href="#resources" className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary">
-              Resources
-            </a>
+          {/* Desktop Navigation - Centered */}
+          <div className="hidden md:flex items-center justify-center absolute left-1/2 -translate-x-1/2">
+            <div className="flex items-center space-x-1">
+              <a href="#features" className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary">
+                Features
+              </a>
+              <a href="#pricing" className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary">
+                Pricing
+              </a>
+              <a href="#resources" className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-secondary">
+                Resources
+              </a>
+            </div>
           </div>
 
           <div className="hidden md:flex items-center gap-2">
