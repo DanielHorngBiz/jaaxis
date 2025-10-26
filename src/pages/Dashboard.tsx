@@ -28,7 +28,7 @@ const Dashboard = () => {
               <Card className="p-6 hover:shadow-lg hover:shadow-primary/5 transition-all border-border hover:border-primary/20">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-foreground flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                    <div className="w-14 h-14 rounded-full bg-foreground flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
                       <img src={bot.avatar} alt={bot.name} className="w-8 h-8" />
                     </div>
                     <div>
