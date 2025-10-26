@@ -4,7 +4,7 @@ import { MessageCircle, Frame, Instagram, Facebook } from "lucide-react";
 
 const ConnectTab = () => {
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-8 max-w-4xl mx-auto space-y-8">
       <h2 className="text-2xl font-bold">Connect</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

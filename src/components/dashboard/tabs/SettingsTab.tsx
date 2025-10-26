@@ -16,7 +16,7 @@ const colors = [
 
 const SettingsTab = () => {
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-8 max-w-4xl mx-auto space-y-8">
       <h2 className="text-2xl font-bold">Settings</h2>
 
       {/* General Section */}

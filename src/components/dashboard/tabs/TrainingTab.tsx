@@ -6,7 +6,7 @@ import { UserCircle, Lightbulb } from "lucide-react";
 
 const TrainingTab = () => {
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-8 max-w-4xl mx-auto space-y-8">
       <h2 className="text-2xl font-bold">Training</h2>
 
       {/* Persona Section */}
