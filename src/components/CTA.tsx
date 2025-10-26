@@ -18,9 +18,11 @@ const CTA = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <Button size="lg" className="group h-11 px-6">
-            Get Started Free
-            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+          <Button size="lg" className="group h-11 px-6" asChild>
+            <a href="/auth">
+              Get Started Free
+              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+            </a>
           </Button>
           <Button size="lg" variant="outline" className="h-11 px-6">
             Schedule a Demo
