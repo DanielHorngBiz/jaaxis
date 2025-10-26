@@ -85,17 +85,14 @@ const TrainingTab = () => {
             Tell the bot when to forward to a human (one per line, or use regex+ lines)
           </p>
         </div>
-        <div className="space-y-4">
+        <div>
           <Textarea
             placeholder="提馬退款,轉接真人"
             className="min-h-[120px] resize-none"
           />
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground mt-4">
             These are **per assistant**. Base safety rules still apply globally.
           </p>
-          <div className="flex justify-end">
-            <Button>Save</Button>
-          </div>
         </div>
       </div>
     </div>
