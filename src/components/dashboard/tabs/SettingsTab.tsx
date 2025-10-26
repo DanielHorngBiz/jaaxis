@@ -220,7 +220,7 @@ const SettingsTab = () => {
         <p className="text-sm text-muted-foreground mb-6">
           Delete this bot and all data. The action is not reversible
         </p>
-        <Button variant="destructive" className="gap-2">
+        <Button variant="outline" className="gap-2 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground">
           <Trash2 className="w-4 h-4" />
           Delete the Bot
         </Button>
