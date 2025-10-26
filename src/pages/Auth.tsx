@@ -177,14 +177,9 @@ const Auth = () => {
 
           {/* Title */}
           <div className="text-center mb-8 animate-fade-in">
-            <h1 className="text-3xl font-bold text-foreground mb-3">
+            <h1 className="text-3xl font-bold text-foreground">
               {isLogin ? "Welcome back" : "Create your account"}
             </h1>
-            <p className="text-sm text-muted-foreground">
-              {isLogin
-                ? "Enter your credentials to access your account"
-                : "Sign up to get started with Jaaxis"}
-            </p>
           </div>
 
           {/* Form */}
