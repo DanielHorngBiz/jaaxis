@@ -65,11 +65,13 @@ const BillingTab = () => {
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold">{plan.name}</h3>
                 </div>
-                {plan.renewsAt && (
-                  <p className="text-xs text-muted-foreground mb-2">
-                    (Renews at {plan.renewsAt})
-                  </p>
-                )}
+                <div className="min-h-[20px] mb-2">
+                  {plan.renewsAt && (
+                    <p className="text-xs text-muted-foreground">
+                      (Renews at {plan.renewsAt})
+                    </p>
+                  )}
+                </div>
                 <p className="text-3xl font-bold">${plan.price}/month</p>
               </div>
 
@@ -98,14 +100,9 @@ const BillingTab = () => {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <MessageCircle className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg">Extra Replies</h3>
-                <p className="text-muted-foreground">$10 Per 100 Replies</p>
-              </div>
+            <div>
+              <h3 className="font-semibold text-lg">Extra Replies</h3>
+              <p className="text-sm text-muted-foreground">$10 Per 100 Replies</p>
             </div>
             <Button variant="outline">Add Now</Button>
           </div>
