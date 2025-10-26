@@ -43,15 +43,17 @@ const AccountSettings = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="account">
-            <AccountTab />
-          </TabsContent>
-          <TabsContent value="notifications">
-            <NotificationsTab />
-          </TabsContent>
-          <TabsContent value="billing">
-            <BillingTab />
-          </TabsContent>
+          <div className="max-w-3xl">
+            <TabsContent value="account">
+              <AccountTab />
+            </TabsContent>
+            <TabsContent value="notifications">
+              <NotificationsTab />
+            </TabsContent>
+            <TabsContent value="billing">
+              <BillingTab />
+            </TabsContent>
+          </div>
         </Tabs>
       </div>
     </DashboardLayout>
