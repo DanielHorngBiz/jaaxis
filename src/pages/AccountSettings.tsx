@@ -100,7 +100,7 @@ const AccountSettings = () => {
 
         {/* Content */}
         <div className="flex-1 overflow-auto bg-gradient-subtle">
-          <div className="p-8 max-w-4xl">
+          <div className="p-8 max-w-4xl mx-auto">
             {activeTab === "account" && <AccountTab />}
             {activeTab === "notifications" && <NotificationsTab />}
             {activeTab === "billing" && <BillingTab />}
