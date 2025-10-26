@@ -5,6 +5,11 @@ import logoImage from "@/assets/jaxxis-logo.png";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const mockBots = [
   {
@@ -82,39 +87,37 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </div>
 
         <div className="p-4 border-t border-border">
-          {isCollapsed ? (
-            <div className="flex flex-col gap-2 items-center">
-              <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-sm font-semibold text-primary">DH</span>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+          <Popover>
+            <PopoverTrigger asChild>
+              {isCollapsed ? (
+                <button className="w-full flex justify-center hover:bg-secondary/50 p-2 rounded-lg transition-colors">
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="text-sm font-semibold text-primary">DH</span>
+                  </div>
+                </button>
+              ) : (
+                <button className="w-full flex items-center gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors">
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="text-sm font-semibold text-primary">DH</span>
+                  </div>
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="text-sm font-medium truncate">Daniel Hung</p>
+                    <p className="text-xs text-muted-foreground truncate">daniel@jaaxis.com</p>
+                  </div>
+                </button>
+              )}
+            </PopoverTrigger>
+            <PopoverContent className="w-56 p-2" align="end" side="top">
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
                 onClick={handleLogout}
               >
                 <LogOut className="w-4 h-4" />
+                Logout
               </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/50">
-              <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-sm font-semibold text-primary">DH</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">Daniel Hung</p>
-                <p className="text-xs text-muted-foreground truncate">daniel@jaaxis.com</p>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                onClick={handleLogout}
-              >
-                <LogOut className="w-4 h-4" />
-              </Button>
-            </div>
-          )}
+            </PopoverContent>
+          </Popover>
         </div>
       </aside>
 
