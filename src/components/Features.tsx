@@ -193,9 +193,6 @@ const Features = () => {
               <br />
               Modern Customer Support
             </h2>
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Everything you need to deliver exceptional customer experiences with AI.
-            </p>
           </div>
 
           {/* Features Grid - Desktop: Side by side with pinning, Mobile: Stacked */}
