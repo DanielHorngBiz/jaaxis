@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Plus, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, LogOut, ChevronLeft, ChevronRight, Settings } from "lucide-react";
 import logoImage from "@/assets/jaxxis-logo.png";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -100,7 +100,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 </button>
               ) : (
                 <button className="w-full flex items-center gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors">
-                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <span className="text-sm font-semibold text-primary">DH</span>
                   </div>
                   <div className="flex-1 min-w-0 text-left">
@@ -110,15 +110,36 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 </button>
               )}
             </PopoverTrigger>
-            <PopoverContent className="w-56 p-2" align="end" side="top">
-              <Button
-                variant="ghost"
-                className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
-                onClick={handleLogout}
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </Button>
+            <PopoverContent className="w-64 p-0" align="end" side="top">
+              <div className="p-3 border-b border-border">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm font-semibold text-primary">DH</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">Daniel Hung</p>
+                    <p className="text-xs text-muted-foreground truncate">daniel@jaaxis.com</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-2">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+                  onClick={() => navigate('/account-settings')}
+                >
+                  <Settings className="w-4 h-4" />
+                  Account Settings
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="w-4 h-4" />
+                  Log out
+                </Button>
+              </div>
             </PopoverContent>
           </Popover>
         </div>
