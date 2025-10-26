@@ -19,11 +19,12 @@ const colors = [
 const SettingsTab = () => {
   return (
     <div className="p-8 max-w-4xl mx-auto space-y-8">
-      <h2 className="text-2xl font-bold">Settings</h2>
-
       {/* General Section */}
       <div className="pb-8 border-b">
-        <h3 className="text-lg font-semibold mb-6">General</h3>
+        <h3 className="text-lg font-semibold mb-2">General</h3>
+        <p className="text-sm text-muted-foreground mb-6">
+          Basic bot configuration and settings
+        </p>
         <div className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="bot-name">Bot Name</Label>
@@ -35,14 +36,17 @@ const SettingsTab = () => {
             </div>
           </div>
           <div className="flex justify-end">
-            <Button>Save Changes</Button>
+            <Button>Save</Button>
           </div>
         </div>
       </div>
 
       {/* Appearance Section */}
-      <div>
-        <h3 className="text-lg font-semibold mb-6">Appearance</h3>
+      <div className="pb-8 border-b">
+        <h3 className="text-lg font-semibold mb-2">Appearance</h3>
+        <p className="text-sm text-muted-foreground mb-6">
+          Customize how your bot looks and appears to users
+        </p>
         <div className="space-y-8">
           {/* Brand Logo */}
           <div>
@@ -124,8 +128,8 @@ const SettingsTab = () => {
             </RadioGroup>
           </div>
 
-          <div className="flex justify-end pt-4 border-t">
-            <Button>Save Changes</Button>
+          <div className="flex justify-end pt-4">
+            <Button>Save</Button>
           </div>
         </div>
       </div>

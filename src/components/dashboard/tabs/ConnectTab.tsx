@@ -5,7 +5,12 @@ import { MessageCircle, Frame, Instagram, Facebook } from "lucide-react";
 const ConnectTab = () => {
   return (
     <div className="p-8 max-w-4xl mx-auto space-y-8">
-      <h2 className="text-2xl font-bold">Connect</h2>
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Integration Options</h3>
+        <p className="text-sm text-muted-foreground mb-6">
+          Connect your bot to various platforms and embed it on your website
+        </p>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Chat Widget */}

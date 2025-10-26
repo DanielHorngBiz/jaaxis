@@ -7,11 +7,12 @@ import { UserCircle, Lightbulb, AlertTriangle } from "lucide-react";
 const TrainingTab = () => {
   return (
     <div className="p-8 max-w-4xl mx-auto space-y-8">
-      <h2 className="text-2xl font-bold">Training</h2>
-
       {/* Persona Section */}
       <div className="pb-8 border-b">
-        <h3 className="text-lg font-semibold mb-6">Persona</h3>
+        <h3 className="text-lg font-semibold mb-2">Persona</h3>
+        <p className="text-sm text-muted-foreground mb-6">
+          Define your bot's personality and communication style
+        </p>
         <div className="space-y-4">
           <Textarea
             className="min-h-[140px] resize-none"
@@ -30,7 +31,10 @@ const TrainingTab = () => {
 
       {/* Knowledge Section */}
       <div className="pb-8 border-b">
-        <h3 className="text-lg font-semibold mb-6">Knowledge</h3>
+        <h3 className="text-lg font-semibold mb-2">Knowledge</h3>
+        <p className="text-sm text-muted-foreground mb-6">
+          Tell the bot everything it needs to know about your products & services
+        </p>
         <div>
           <Tabs defaultValue="text" className="w-full">
             <TabsList className="grid grid-cols-5 w-full">
@@ -40,11 +44,14 @@ const TrainingTab = () => {
               <TabsTrigger value="files">Files</TabsTrigger>
               <TabsTrigger value="trained">Trained</TabsTrigger>
             </TabsList>
-            <TabsContent value="text" className="mt-6">
+            <TabsContent value="text" className="mt-6 space-y-4">
               <Textarea
                 placeholder="Type here..."
-                className="min-h-[240px] resize-none"
+                className="min-h-[200px] resize-none"
               />
+              <div className="flex justify-end">
+                <Button>Save</Button>
+              </div>
             </TabsContent>
             <TabsContent value="qa" className="mt-6">
               <div className="text-center py-12 text-muted-foreground">
