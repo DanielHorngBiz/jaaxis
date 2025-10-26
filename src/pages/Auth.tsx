@@ -43,7 +43,7 @@ const Auth = () => {
   useEffect(() => {
     const currentUser = sessionStorage.getItem("currentUser");
     if (currentUser) {
-      navigate("/");
+      navigate("/dashboard");
     }
   }, [navigate]);
 
@@ -66,7 +66,7 @@ const Auth = () => {
           title: "Welcome back!",
           description: `Logged in as ${MOCK_ACCOUNT.firstName} ${MOCK_ACCOUNT.lastName}`,
         });
-        navigate("/");
+        navigate("/dashboard");
         return;
       }
 
@@ -84,7 +84,7 @@ const Auth = () => {
           title: "Welcome back!",
           description: `Logged in as ${account.firstName} ${account.lastName}`,
         });
-        navigate("/");
+        navigate("/dashboard");
       } else {
         toast({
           variant: "destructive",
@@ -143,7 +143,7 @@ const Auth = () => {
         title: "Account created!",
         description: `Welcome, ${firstName} ${lastName}!`,
       });
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast({
