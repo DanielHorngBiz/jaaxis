@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserCircle, Lightbulb } from "lucide-react";
+import { UserCircle, Lightbulb, AlertTriangle } from "lucide-react";
 
 const TrainingTab = () => {
   return (
@@ -29,7 +29,7 @@ const TrainingTab = () => {
       </div>
 
       {/* Knowledge Section */}
-      <div>
+      <div className="pb-8 border-b">
         <h3 className="text-lg font-semibold mb-6">Knowledge</h3>
         <div>
           <Tabs defaultValue="text" className="w-full">
@@ -67,6 +67,31 @@ const TrainingTab = () => {
               </div>
             </TabsContent>
           </Tabs>
+        </div>
+      </div>
+
+      {/* Forwarding Rules Section */}
+      <div>
+        <div className="flex items-start gap-3 mb-6">
+          <AlertTriangle className="w-5 h-5 text-orange-500 mt-0.5" />
+          <div>
+            <h3 className="text-lg font-semibold">Forwarding Rules</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Tell the bot when to forward to a human (one per line, or use regex+ lines)
+            </p>
+          </div>
+        </div>
+        <div className="space-y-4">
+          <Textarea
+            placeholder="提馬退款,轉接真人"
+            className="min-h-[120px] resize-none"
+          />
+          <p className="text-sm text-muted-foreground">
+            These are **per assistant**. Base safety rules still apply globally.
+          </p>
+          <div className="flex justify-end">
+            <Button>Save</Button>
+          </div>
         </div>
       </div>
     </div>
