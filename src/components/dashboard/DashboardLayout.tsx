@@ -111,6 +111,45 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               )}
             </PopoverTrigger>
             <PopoverContent className="w-64 p-0" align="end" side="top">
+              {/* Usage Section */}
+              <button
+                onClick={() => navigate('/account-settings?tab=billing')}
+                className="w-full p-4 border-b border-border hover:bg-secondary/50 transition-colors"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="relative w-16 h-16 flex-shrink-0">
+                    <svg className="w-16 h-16 transform -rotate-90">
+                      <circle
+                        cx="32"
+                        cy="32"
+                        r="28"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                        className="text-muted"
+                      />
+                      <circle
+                        cx="32"
+                        cy="32"
+                        r="28"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                        strokeDasharray={`${(1000 / 3000) * 176} 176`}
+                        className="text-primary"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-xs font-bold">33%</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className="text-sm font-semibold">1,000 Remaining</p>
+                    <p className="text-xs text-muted-foreground">of 3,000 replies</p>
+                  </div>
+                </div>
+              </button>
+              
               <div className="p-3 border-b border-border">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
