@@ -111,31 +111,43 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               )}
             </PopoverTrigger>
             <PopoverContent className="w-64 p-0" align="end" side="top">
+              <div className="p-3 border-b border-border">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm font-semibold text-primary">DH</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">Daniel Hung</p>
+                    <p className="text-xs text-muted-foreground truncate">daniel@jaaxis.com</p>
+                  </div>
+                </div>
+              </div>
+
               {/* Usage Section */}
               <button
                 onClick={() => navigate('/account-settings?tab=billing')}
-                className="w-full p-4 border-b border-border hover:bg-secondary/50 transition-colors"
+                className="w-full p-3 border-b border-border hover:bg-secondary/50 transition-colors"
               >
-                <div className="flex items-center gap-4">
-                  <div className="relative w-16 h-16 flex-shrink-0">
-                    <svg className="w-16 h-16 transform -rotate-90">
+                <div className="flex items-center gap-3">
+                  <div className="relative w-12 h-12 flex-shrink-0">
+                    <svg className="w-12 h-12 transform -rotate-90">
                       <circle
-                        cx="32"
-                        cy="32"
-                        r="28"
+                        cx="24"
+                        cy="24"
+                        r="20"
                         stroke="currentColor"
-                        strokeWidth="4"
+                        strokeWidth="3"
                         fill="none"
                         className="text-muted"
                       />
                       <circle
-                        cx="32"
-                        cy="32"
-                        r="28"
+                        cx="24"
+                        cy="24"
+                        r="20"
                         stroke="currentColor"
-                        strokeWidth="4"
+                        strokeWidth="3"
                         fill="none"
-                        strokeDasharray={`${(1000 / 3000) * 176} 176`}
+                        strokeDasharray={`${(1000 / 3000) * 125.6} 125.6`}
                         className="text-primary"
                       />
                     </svg>
@@ -150,17 +162,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 </div>
               </button>
               
-              <div className="p-3 border-b border-border">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-semibold text-primary">DH</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">Daniel Hung</p>
-                    <p className="text-xs text-muted-foreground truncate">daniel@jaaxis.com</p>
-                  </div>
-                </div>
-              </div>
               <div className="p-2">
                 <Button
                   variant="ghost"
