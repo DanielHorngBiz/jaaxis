@@ -34,6 +34,28 @@ const BillingTab = () => {
     <div className="space-y-8">
       <h2 className="text-2xl font-bold">Plans & Billing</h2>
 
+      {/* Replies Usage */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-lg">Replies Usage</h3>
+              <div className="text-right">
+                <p className="text-2xl font-bold">1,000</p>
+                <p className="text-sm text-muted-foreground">of 3,000 remaining</p>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Progress value={66.67} className="h-2" />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>2,000 used</span>
+                <span>3,000 total</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Pricing Plans */}
       <div className="grid grid-cols-3 gap-4">
         {PLANS.map((plan) => (
@@ -71,28 +93,6 @@ const BillingTab = () => {
           </Card>
         ))}
       </div>
-
-      {/* Replies Usage */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-lg">Replies Usage</h3>
-              <div className="text-right">
-                <p className="text-2xl font-bold">1,000</p>
-                <p className="text-sm text-muted-foreground">of 3,000 remaining</p>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Progress value={66.67} className="h-2" />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>2,000 used</span>
-                <span>3,000 total</span>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Extra Replies */}
       <Card>
