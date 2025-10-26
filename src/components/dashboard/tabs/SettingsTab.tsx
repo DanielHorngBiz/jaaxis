@@ -16,51 +16,52 @@ const colors = [
 
 const SettingsTab = () => {
   return (
-    <div className="p-8 max-w-4xl">
-      <h2 className="text-3xl font-bold mb-8">Settings</h2>
+    <div className="p-8 lg:p-12 max-w-4xl mx-auto animate-fade-in">
+      <h2 className="text-3xl font-bold mb-2">Settings</h2>
+      <p className="text-muted-foreground mb-8">Customize your chatbot's appearance and behavior</p>
 
       {/* General Section */}
-      <Card className="mb-6">
+      <Card className="mb-8 shadow-sm border-border hover:shadow-md transition-shadow">
         <CardHeader>
-          <CardTitle>General</CardTitle>
+          <CardTitle className="text-xl">General</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <div>
             <Label htmlFor="bot-name" className="text-sm font-medium mb-2 block">
               Bot Name
             </Label>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Input id="bot-name" defaultValue="Jaaxis" className="flex-1" />
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="shrink-0">
                 <Pencil className="w-4 h-4" />
               </Button>
             </div>
           </div>
-          <div className="flex justify-end">
-            <Button size="sm">Save</Button>
+          <div className="flex justify-end pt-2">
+            <Button size="sm" className="shadow-sm">Save Changes</Button>
           </div>
         </CardContent>
       </Card>
 
       {/* Appearance Section */}
-      <Card>
+      <Card className="shadow-sm border-border hover:shadow-md transition-shadow">
         <CardHeader>
-          <CardTitle>Appearance</CardTitle>
+          <CardTitle className="text-xl">Appearance</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-8">
           {/* Brand Logo */}
           <div>
-            <Label className="text-sm font-medium mb-3 block">Brand Logo :</Label>
+            <Label className="text-sm font-medium mb-4 block">Brand Logo</Label>
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full bg-foreground flex items-center justify-center">
-                <img src="/placeholder.svg" alt="Logo" className="w-12 h-12" />
+              <div className="w-24 h-24 rounded-xl bg-foreground flex items-center justify-center shadow-sm">
+                <img src="/placeholder.svg" alt="Logo" className="w-14 h-14" />
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" className="gap-2">
+                <Button variant="outline" size="sm" className="gap-2 shadow-sm">
                   <Upload className="w-4 h-4" />
-                  Upload Images
+                  Upload Image
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="shadow-sm">
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
@@ -69,65 +70,67 @@ const SettingsTab = () => {
 
           {/* Color Picker */}
           <div>
-            <Label className="text-sm font-medium mb-3 block">Color :</Label>
-            <div className="flex items-center gap-3">
+            <Label className="text-sm font-medium mb-4 block">Primary Color</Label>
+            <div className="flex items-center gap-4 flex-wrap">
               <div className="flex gap-2">
                 {colors.map((color) => (
                   <button
                     key={color}
-                    className="w-8 h-8 rounded-full border-2 border-transparent hover:border-foreground transition-colors"
+                    className="w-10 h-10 rounded-lg border-2 border-transparent hover:border-foreground/30 transition-all hover:scale-110"
                     style={{ backgroundColor: color }}
                   />
                 ))}
               </div>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="shadow-sm">
                 Custom
               </Button>
-              <Input
-                type="text"
-                defaultValue="#9b835a"
-                className="w-24"
-                readOnly
-              />
-              <div
-                className="w-8 h-8 rounded-full border"
-                style={{ backgroundColor: "#9b835a" }}
-              />
+              <div className="flex items-center gap-2">
+                <Input
+                  type="text"
+                  defaultValue="#9b835a"
+                  className="w-28"
+                  readOnly
+                />
+                <div
+                  className="w-10 h-10 rounded-lg border shadow-sm"
+                  style={{ backgroundColor: "#9b835a" }}
+                />
+              </div>
             </div>
           </div>
 
           {/* Alignment */}
           <div>
-            <Label className="text-sm font-medium mb-3 block">Alignment :</Label>
+            <Label className="text-sm font-medium mb-4 block">Chat Position</Label>
             <RadioGroup defaultValue="right" className="flex gap-4">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="left" id="left" />
-                <Label htmlFor="left" className="cursor-pointer">Left</Label>
+                <Label htmlFor="left" className="cursor-pointer font-normal">Left</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="right" id="right" />
-                <Label htmlFor="right" className="cursor-pointer">Right</Label>
+                <Label htmlFor="right" className="cursor-pointer font-normal">Right</Label>
               </div>
             </RadioGroup>
           </div>
 
           {/* Show on Mobile */}
           <div>
-            <Label className="text-sm font-medium mb-3 block">Show on Mobile :</Label>
+            <Label className="text-sm font-medium mb-4 block">Mobile Display</Label>
             <RadioGroup defaultValue="show" className="flex gap-4">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="show" id="show" />
-                <Label htmlFor="show" className="cursor-pointer">Show</Label>
+                <Label htmlFor="show" className="cursor-pointer font-normal">Show</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="hide" id="hide" />
-                <Label htmlFor="hide" className="cursor-pointer">Hide</Label>
+                <Label htmlFor="hide" className="cursor-pointer font-normal">Hide</Label>
               </div>
             </RadioGroup>
           </div>
 
-          <div className="flex justify-end pt-4">
-            <Button size="sm">Save</Button>
+          <div className="flex justify-end pt-4 border-t">
+            <Button size="sm" className="shadow-sm">Save Changes</Button>
           </div>
         </CardContent>
       </Card>

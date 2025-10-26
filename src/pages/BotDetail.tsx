@@ -1,4 +1,4 @@
-import { useParams, Link, useLocation } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Wand2, Eye, Link2, Settings } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
@@ -16,7 +16,6 @@ const tabs = [
 
 const BotDetail = () => {
   const { botId, tab = "training" } = useParams();
-  const location = useLocation();
   
   const currentTab = tab || "training";
 
@@ -39,19 +38,22 @@ const BotDetail = () => {
     <DashboardLayout>
       <div className="flex flex-col h-screen">
         {/* Header */}
-        <div className="border-b bg-background">
-          <div className="px-8 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-foreground flex items-center justify-center">
-                <img src="/placeholder.svg" alt="Jaaxis" className="w-6 h-6" />
+        <div className="border-b bg-background shadow-sm">
+          <div className="px-8 py-5 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-foreground flex items-center justify-center shadow-sm">
+                <img src="/placeholder.svg" alt="Jaaxis" className="w-7 h-7" />
               </div>
-              <h1 className="text-xl font-semibold">Jaaxis</h1>
+              <div>
+                <h1 className="text-xl font-semibold">Jaaxis</h1>
+                <p className="text-sm text-muted-foreground">AI Chatbot</p>
+              </div>
             </div>
-            <Button variant="outline">Chat Dashboard</Button>
+            <Button variant="outline" className="shadow-sm">View Live Chat</Button>
           </div>
 
           {/* Tab Navigation */}
-          <div className="px-8 flex gap-1">
+          <div className="px-8 flex gap-2 -mb-px">
             {tabs.map((tabItem) => {
               const Icon = tabItem.icon;
               const isActive = currentTab === tabItem.id;
@@ -61,14 +63,17 @@ const BotDetail = () => {
                   to={`/dashboard/bot/${botId}/${tabItem.id}`}
                 >
                   <button
-                    className={`flex items-center gap-2 px-4 py-3 rounded-t-lg transition-colors ${
+                    className={`flex items-center gap-2 px-4 py-3 rounded-t-lg transition-all relative ${
                       isActive
-                        ? "bg-background border-t border-x"
+                        ? "bg-gradient-subtle text-foreground font-medium"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     }`}
                   >
                     <Icon className="w-4 h-4" />
-                    <span className="text-sm font-medium">{tabItem.label}</span>
+                    <span className="text-sm">{tabItem.label}</span>
+                    {isActive && (
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+                    )}
                   </button>
                 </Link>
               );
@@ -77,7 +82,7 @@ const BotDetail = () => {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-auto bg-muted/30">
+        <div className="flex-1 overflow-auto bg-gradient-subtle">
           {renderTabContent()}
         </div>
       </div>
