@@ -11,6 +11,7 @@ interface Tab {
 interface TabbedPageLayoutProps {
   title: string;
   icon?: LucideIcon;
+  avatarSrc?: string;
   tabs: Tab[];
   activeTab: string;
   onTabChange: (tabId: string) => void;
@@ -21,6 +22,7 @@ interface TabbedPageLayoutProps {
 export const TabbedPageLayout = ({
   title,
   icon: Icon,
+  avatarSrc,
   tabs,
   activeTab,
   onTabChange,
@@ -57,11 +59,15 @@ export const TabbedPageLayout = ({
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              {Icon && (
+              {avatarSrc ? (
+                <div className="w-10 h-10 rounded-full bg-foreground flex items-center justify-center">
+                  <img src={avatarSrc} alt={title} className="w-6 h-6" />
+                </div>
+              ) : Icon ? (
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                   <Icon className="w-5 h-5 text-primary" />
                 </div>
-              )}
+              ) : null}
               <h1 className="text-2xl font-bold">{title}</h1>
             </div>
             {headerAction}

@@ -39,6 +39,7 @@ const BotDetail = () => {
     <DashboardLayout>
       <TabbedPageLayout
         title="Jaaxis"
+        avatarSrc="/placeholder.svg"
         tabs={tabs}
         activeTab={currentTab}
         onTabChange={(tabId) => {
