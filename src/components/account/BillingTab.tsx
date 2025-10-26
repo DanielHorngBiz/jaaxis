@@ -30,6 +30,11 @@ const PLANS = [
 ];
 
 const BillingTab = () => {
+  const totalReplies = 3000;
+  const remainingReplies = 1000;
+  const usedReplies = totalReplies - remainingReplies;
+  const usagePercentage = (usedReplies / totalReplies) * 100;
+
   return (
     <div className="space-y-8">
       <h2 className="text-2xl font-bold">Plans & Billing</h2>
@@ -41,11 +46,11 @@ const BillingTab = () => {
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-lg">Replies Usage</h3>
               <div className="text-right">
-                <p className="text-2xl font-bold">1,000</p>
-                <p className="text-sm text-muted-foreground">of 3,000 remaining</p>
+                <p className="text-2xl font-bold">{remainingReplies.toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">of {totalReplies.toLocaleString()} remaining</p>
               </div>
             </div>
-            <Progress value={66.67} className="h-2" />
+            <Progress value={usagePercentage} className="h-2" />
           </div>
         </CardContent>
       </Card>
