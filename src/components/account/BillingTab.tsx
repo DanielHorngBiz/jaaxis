@@ -45,13 +45,7 @@ const BillingTab = () => {
                 <p className="text-sm text-muted-foreground">of 3,000 remaining</p>
               </div>
             </div>
-            <div className="space-y-2">
-              <Progress value={66.67} className="h-2" />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>2,000 used</span>
-                <span>3,000 total</span>
-              </div>
-            </div>
+            <Progress value={66.67} className="h-2" />
           </div>
         </CardContent>
       </Card>
