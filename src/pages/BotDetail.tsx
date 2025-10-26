@@ -6,6 +6,7 @@ import TrainingTab from "@/components/dashboard/tabs/TrainingTab";
 import PreviewTab from "@/components/dashboard/tabs/PreviewTab";
 import ConnectTab from "@/components/dashboard/tabs/ConnectTab";
 import SettingsTab from "@/components/dashboard/tabs/SettingsTab";
+import { useEffect, useRef, useState } from "react";
 
 const tabs = [
   { id: "training", label: "Training", icon: Wand2 },
@@ -16,8 +17,27 @@ const tabs = [
 
 const BotDetail = () => {
   const { botId, tab = "training" } = useParams();
-  
   const currentTab = tab || "training";
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+
+  useEffect(() => {
+    const updateIndicator = () => {
+      const activeTab = tabsContainerRef.current?.querySelector('[data-state="active"]') as HTMLElement;
+      if (activeTab && tabsContainerRef.current) {
+        const containerRect = tabsContainerRef.current.getBoundingClientRect();
+        const tabRect = activeTab.getBoundingClientRect();
+        setIndicatorStyle({
+          left: tabRect.left - containerRect.left,
+          width: tabRect.width,
+        });
+      }
+    };
+
+    updateIndicator();
+    window.addEventListener('resize', updateIndicator);
+    return () => window.removeEventListener('resize', updateIndicator);
+  }, [currentTab]);
 
   const renderTabContent = () => {
     switch (currentTab) {
@@ -53,31 +73,38 @@ const BotDetail = () => {
           </div>
 
           {/* Tab Navigation */}
-          <div className="px-8 flex gap-2 -mb-px">
-            {tabs.map((tabItem) => {
-              const Icon = tabItem.icon;
-              const isActive = currentTab === tabItem.id;
-              return (
-                <Link
-                  key={tabItem.id}
-                  to={`/dashboard/bot/${botId}/${tabItem.id}`}
-                >
-                  <button
-                    className={`flex items-center gap-2 px-4 py-3 rounded-t-lg transition-all relative ${
-                      isActive
-                        ? "bg-gradient-subtle text-foreground font-medium"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                    }`}
+          <div className="px-8 border-b border-border relative">
+            <div className="flex gap-2 -mb-px relative" ref={tabsContainerRef}>
+              {tabs.map((tabItem) => {
+                const Icon = tabItem.icon;
+                const isActive = currentTab === tabItem.id;
+                return (
+                  <Link
+                    key={tabItem.id}
+                    to={`/dashboard/bot/${botId}/${tabItem.id}`}
                   >
-                    <Icon className="w-4 h-4" />
-                    <span className="text-sm">{tabItem.label}</span>
-                    {isActive && (
-                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
-                    )}
-                  </button>
-                </Link>
-              );
-            })}
+                    <button
+                      data-state={isActive ? "active" : "inactive"}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-t-lg transition-all duration-200 relative ${
+                        isActive
+                          ? "bg-gradient-subtle text-foreground font-medium"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span className="text-sm">{tabItem.label}</span>
+                    </button>
+                  </Link>
+                );
+              })}
+              <div
+                className="absolute bottom-0 h-0.5 bg-primary transition-all duration-300 ease-out"
+                style={{
+                  left: `${indicatorStyle.left}px`,
+                  width: `${indicatorStyle.width}px`,
+                }}
+              />
+            </div>
           </div>
         </div>
 
