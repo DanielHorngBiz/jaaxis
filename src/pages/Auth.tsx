@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
+import { ArrowLeft } from "lucide-react";
 import logo from "@/assets/jaxxis-logo.png";
 
 // Mock account credentials
@@ -157,32 +158,46 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-gradient-hero">
-      <div className="w-full max-w-md">
-        <div className="bg-card border border-border rounded-lg shadow-lg p-8">
-          {/* Logo */}
-          <div className="flex justify-center mb-8">
-            <img src={logo} alt="Jaaxis" className="h-10" />
-          </div>
+    <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-gradient-hero relative">
+      {/* Back button */}
+      <Link 
+        to="/" 
+        className="absolute top-6 left-6 flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors group"
+      >
+        <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+        <span className="text-sm font-medium">Back to home</span>
+      </Link>
 
-          {/* Title */}
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-foreground mb-2">
-              {isLogin ? "Welcome back" : "Create your account"}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {isLogin
-                ? "Enter your credentials to access your account"
-                : "Sign up to get started with Jaaxis"}
-            </p>
+      <div className="w-full max-w-md animate-scale-in">
+        <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl shadow-2xl p-8 relative overflow-hidden">
+          {/* Decorative gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-accent opacity-5 pointer-events-none" />
+          
+          <div className="relative z-10">
+            {/* Logo */}
+            <div className="flex justify-center mb-8">
+              <img src={logo} alt="Jaaxis" className="h-12 animate-fade-in" />
+            </div>
+
+            {/* Title */}
+            <div className="text-center mb-8 animate-fade-in">
+              <h1 className="text-3xl font-bold text-foreground mb-3 bg-gradient-accent bg-clip-text text-transparent">
+                {isLogin ? "Welcome back" : "Create your account"}
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                {isLogin
+                  ? "Enter your credentials to access your account"
+                  : "Sign up to get started with Jaaxis"}
+              </p>
+            </div>
           </div>
 
           {/* Form */}
-          <form onSubmit={isLogin ? handleLogin : handleSignup} className="space-y-4">
+          <form onSubmit={isLogin ? handleLogin : handleSignup} className="space-y-5 relative z-10 animate-fade-in">
             {!isLogin && (
-              <>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="firstName">First name</Label>
+                  <Label htmlFor="firstName" className="text-foreground/90">First name</Label>
                   <Input
                     id="firstName"
                     type="text"
@@ -190,10 +205,11 @@ const Auth = () => {
                     onChange={(e) => setFirstName(e.target.value)}
                     required
                     disabled={isLoading}
+                    className="mt-1.5 transition-all focus:scale-[1.02]"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="lastName">Last name</Label>
+                  <Label htmlFor="lastName" className="text-foreground/90">Last name</Label>
                   <Input
                     id="lastName"
                     type="text"
@@ -201,13 +217,14 @@ const Auth = () => {
                     onChange={(e) => setLastName(e.target.value)}
                     required
                     disabled={isLoading}
+                    className="mt-1.5 transition-all focus:scale-[1.02]"
                   />
                 </div>
-              </>
+              </div>
             )}
             
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-foreground/90">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -215,11 +232,13 @@ const Auth = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
+                className="mt-1.5 transition-all focus:scale-[1.02]"
+                placeholder="you@example.com"
               />
             </div>
 
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-foreground/90">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -227,16 +246,22 @@ const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
+                className="mt-1.5 transition-all focus:scale-[1.02]"
+                placeholder={isLogin ? "Enter your password" : "Min. 6 characters"}
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button 
+              type="submit" 
+              className="w-full bg-gradient-accent hover:opacity-90 transition-all hover:scale-[1.02] shadow-lg mt-6" 
+              disabled={isLoading}
+            >
               {isLoading ? "Please wait..." : isLogin ? "Log In" : "Sign Up"}
             </Button>
           </form>
 
           {/* Toggle */}
-          <div className="mt-6 text-center">
+          <div className="mt-8 text-center relative z-10">
             <button
               type="button"
               onClick={() => {
@@ -246,11 +271,14 @@ const Auth = () => {
                 setEmail("");
                 setPassword("");
               }}
-              className="text-sm text-primary hover:underline"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium group"
             >
               {isLogin
-                ? "Don't have an account? Sign up"
-                : "Already have an account? Log in"}
+                ? "Don't have an account? "
+                : "Already have an account? "}
+              <span className="text-primary group-hover:underline">
+                {isLogin ? "Sign up" : "Log in"}
+              </span>
             </button>
           </div>
         </div>
