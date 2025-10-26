@@ -113,8 +113,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <PopoverContent className="w-64 p-0" align="end" side="top">
               <div className="p-3 border-b border-border">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-semibold text-primary">DH</span>
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <span className="text-base font-semibold text-primary">DH</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">Daniel Hung</p>
@@ -124,43 +124,45 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               </div>
 
               {/* Usage Section */}
-              <button
-                onClick={() => navigate('/account-settings?tab=billing')}
-                className="w-full p-3 border-b border-border hover:bg-secondary/50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="relative w-12 h-12 flex-shrink-0">
-                    <svg className="w-12 h-12 transform -rotate-90">
-                      <circle
-                        cx="24"
-                        cy="24"
-                        r="20"
-                        stroke="currentColor"
-                        strokeWidth="3"
-                        fill="none"
-                        className="text-muted"
-                      />
-                      <circle
-                        cx="24"
-                        cy="24"
-                        r="20"
-                        stroke="currentColor"
-                        strokeWidth="3"
-                        fill="none"
-                        strokeDasharray={`${(1000 / 3000) * 125.6} 125.6`}
-                        className="text-primary"
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xs font-bold">33%</span>
+              <PopoverTrigger asChild>
+                <button
+                  onClick={() => navigate('/account-settings?tab=billing')}
+                  className="w-full p-3 border-b border-border hover:bg-secondary/50 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-12 h-12 flex-shrink-0">
+                      <svg className="w-12 h-12 transform -rotate-90">
+                        <circle
+                          cx="24"
+                          cy="24"
+                          r="22"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="none"
+                          className="text-muted"
+                        />
+                        <circle
+                          cx="24"
+                          cy="24"
+                          r="22"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="none"
+                          strokeDasharray={`${(1000 / 3000) * 138.2} 138.2`}
+                          className="text-primary"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-xs font-bold">33%</span>
+                      </div>
+                    </div>
+                    <div className="flex-1 text-left">
+                      <p className="text-sm font-semibold">1,000 Remaining</p>
+                      <p className="text-xs text-muted-foreground">of 3,000 replies</p>
                     </div>
                   </div>
-                  <div className="flex-1 text-left">
-                    <p className="text-sm font-semibold">1,000 Remaining</p>
-                    <p className="text-xs text-muted-foreground">of 3,000 replies</p>
-                  </div>
-                </div>
-              </button>
+                </button>
+              </PopoverTrigger>
               
               <div className="p-2">
                 <Button
