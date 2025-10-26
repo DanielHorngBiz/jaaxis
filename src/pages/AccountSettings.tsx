@@ -20,7 +20,7 @@ const AccountSettings = () => {
   return (
     <DashboardLayout>
       <div className="p-8">
-        <div className="flex items-center gap-2 mb-8">
+        <div className="flex items-center gap-2 mb-6">
           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
             <Settings className="w-4 h-4 text-primary" />
           </div>
@@ -28,7 +28,7 @@ const AccountSettings = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={(value) => setSearchParams({ tab: value })}>
-          <TabsList className="mb-8">
+          <TabsList className="mb-6">
             <TabsTrigger value="account" className="gap-2">
               <User className="w-4 h-4" />
               Account
