@@ -6,7 +6,7 @@ import { Trash2, Edit2 } from "lucide-react";
 
 const AccountTab = () => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-3xl">
       <h2 className="text-2xl font-bold">Account</h2>
 
       {/* Profile Picture */}
