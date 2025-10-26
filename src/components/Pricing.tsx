@@ -81,20 +81,19 @@ const Pricing = () => {
               
               <div className="text-center mb-8">
                 <h3 className="text-lg font-semibold text-foreground mb-2">{plan.name}</h3>
-                <div className="mb-2">
-                  <span className="text-4xl font-bold text-foreground">{plan.price}</span>
-                  <span className="text-muted-foreground">/{plan.period}</span>
-                </div>
-                <p className="text-sm text-muted-foreground">{plan.description}</p>
+              <div className="mb-2">
+                <span className="text-4xl font-bold text-foreground">{plan.price}</span>
+                <span className="text-muted-foreground">/{plan.period}</span>
               </div>
+            </div>
 
-              <Button
-                className="w-full mb-6"
-                variant={plan.highlighted ? "default" : "outline"}
-                size="lg"
-              >
-                Get Started
-              </Button>
+            <Button
+              className="w-full mb-6"
+              variant={plan.highlighted ? "default" : "outline"}
+              size="lg"
+            >
+              {plan.name === "Basic" ? "7-Day Free Trial" : "Get Started"}
+            </Button>
 
               <div className="space-y-3">
                 {plan.features.map((feature, featureIndex) => (
