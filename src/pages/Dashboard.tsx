@@ -1,8 +1,10 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Plus, Sparkles } from "lucide-react";
+import { ArrowRight, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import { ContentContainer } from "@/components/layout/ContentContainer";
+import { LAYOUT_CONSTANTS } from "@/lib/layout-constants";
 
 const mockBots = [
   {
@@ -16,7 +18,10 @@ const mockBots = [
 const Dashboard = () => {
   return (
     <DashboardLayout>
-      <div className="p-8 lg:p-12 max-w-6xl">
+      <ContentContainer 
+        maxWidth="dashboard" 
+        className={LAYOUT_CONSTANTS.padding.page}
+      >
         <div className="mb-12 animate-fade-in">
           <h1 className="text-4xl font-bold mb-2">Hey Daniel,</h1>
           <p className="text-muted-foreground text-lg">Great to see you back!</p>
@@ -53,7 +58,7 @@ const Dashboard = () => {
             Create a Chatbot
           </Button>
         </div>
-      </div>
+      </ContentContainer>
     </DashboardLayout>
   );
 };
