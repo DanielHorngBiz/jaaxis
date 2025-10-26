@@ -80,7 +80,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 }`}
                 title={isCollapsed ? bot.name : undefined}
               >
-                <div className={`${isCollapsed ? 'w-9 h-9' : 'w-8 h-8'} rounded-lg ${bot.color} flex items-center justify-center shadow-sm flex-shrink-0`}>
+                <div className={`${isCollapsed ? 'w-9 h-9' : 'w-8 h-8'} rounded-full ${bot.color} flex items-center justify-center shadow-sm flex-shrink-0`}>
                   <img src={bot.avatar} alt={bot.name} className={`${isCollapsed ? 'w-6 h-6' : 'w-5 h-5'}`} />
                 </div>
                 {!isCollapsed && <span className="text-sm font-medium truncate">{bot.name}</span>}
