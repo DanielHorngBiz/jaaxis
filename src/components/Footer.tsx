@@ -4,7 +4,7 @@ import { Facebook, Instagram, Youtube } from "lucide-react";
 const Footer = () => {
   return (
     <footer className="border-t border-border py-16 px-6 lg:px-8 bg-secondary/30">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between gap-12">
           {/* Left side - Logo, Copyright, Language & Social */}
           <div className="flex flex-col justify-between">
