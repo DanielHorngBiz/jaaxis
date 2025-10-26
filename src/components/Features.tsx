@@ -271,7 +271,7 @@ const Features = () => {
               </div>
 
               {/* RIGHT: Video display - All videos preloaded */}
-              <div className="relative">
+              <div className="relative lg:pl-8">
                 <div className="w-full rounded-2xl border border-border overflow-hidden shadow-xl relative">
                   {features.map((feature, index) => (
                     <video
