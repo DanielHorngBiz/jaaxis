@@ -46,7 +46,7 @@ const SettingsTab = () => {
           <div>
             <Label className="mb-4 block">Brand Logo</Label>
             <div className="flex items-center gap-4">
-              <div className="w-24 h-24 rounded-xl bg-foreground flex items-center justify-center shadow-sm">
+              <div className="w-24 h-24 rounded-full bg-foreground flex items-center justify-center shadow-sm">
                 <img src="/placeholder.svg" alt="Logo" className="w-14 h-14" />
               </div>
               <div className="flex gap-2">
@@ -69,7 +69,7 @@ const SettingsTab = () => {
                 {colors.map((color) => (
                   <button
                     key={color}
-                    className="w-10 h-10 rounded-lg border-2 border-transparent hover:border-foreground/30 transition-all hover:scale-110"
+                    className="w-10 h-10 rounded-full border-2 border-transparent hover:border-foreground/30 transition-all hover:scale-110"
                     style={{ backgroundColor: color }}
                   />
                 ))}
@@ -85,7 +85,7 @@ const SettingsTab = () => {
                   readOnly
                 />
                 <div
-                  className="w-10 h-10 rounded-lg border"
+                  className="w-10 h-10 rounded-full border"
                   style={{ backgroundColor: "#9b835a" }}
                 />
               </div>
