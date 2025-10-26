@@ -1,7 +1,36 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 const Hero = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().catch(() => {
+              // Ignore autoplay errors
+            });
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.8 }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return (
     <section id="home" className="relative pt-32 pb-24 px-6 lg:px-8 overflow-hidden">
       {/* Background gradient */}
@@ -58,11 +87,11 @@ const Hero = () => {
             {/* Demo Video */}
             <div className="relative w-full" style={{ paddingBottom: '75%' }}>
               <video
+                ref={videoRef}
                 src="https://jaaxis.com/wp-content/uploads/2025/06/GIF-5.webm"
                 loop
                 muted
                 playsInline
-                autoPlay
                 preload="metadata"
                 className="absolute inset-0 w-full h-full object-cover"
                 {...({ fetchpriority: "high" } as any)}
