@@ -2,7 +2,6 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Plus, LogOut, ChevronLeft, ChevronRight, Settings } from "lucide-react";
 import logoImage from "@/assets/jaxxis-logo.png";
-import jaaxisAvatar from "@/assets/jaaxis-avatar.jpg";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
@@ -11,14 +10,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-const mockBots = [
-  {
-    id: "jaaxis",
-    name: "Jaaxis",
-    avatar: jaaxisAvatar,
-  },
-];
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -32,6 +23,19 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     const saved = localStorage.getItem('sidebarCollapsed');
     return saved === 'true';
   });
+
+  const [botConfig, setBotConfig] = useState(() => {
+    const saved = localStorage.getItem("botConfig");
+    return saved ? JSON.parse(saved) : { botName: "Jaaxis", brandLogo: "/src/assets/jaaxis-avatar.jpg" };
+  });
+
+  const mockBots = [
+    {
+      id: "jaaxis",
+      name: botConfig.botName,
+      avatar: botConfig.brandLogo,
+    },
+  ];
 
   useEffect(() => {
     localStorage.setItem('sidebarCollapsed', String(isCollapsed));

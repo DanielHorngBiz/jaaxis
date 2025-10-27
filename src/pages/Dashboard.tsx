@@ -5,18 +5,22 @@ import { Link } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { ContentContainer } from "@/components/layout/ContentContainer";
 import { LAYOUT_CONSTANTS } from "@/lib/layout-constants";
-import jaaxisAvatar from "@/assets/jaaxis-avatar.jpg";
-
-const mockBots = [
-  {
-    id: "jaaxis",
-    name: "Jaaxis",
-    avatar: jaaxisAvatar,
-    createdAt: "10/5/2025",
-  },
-];
+import { useState, useEffect } from "react";
 
 const Dashboard = () => {
+  const [botConfig, setBotConfig] = useState(() => {
+    const saved = localStorage.getItem("botConfig");
+    return saved ? JSON.parse(saved) : { botName: "Jaaxis", brandLogo: "/src/assets/jaaxis-avatar.jpg" };
+  });
+
+  const mockBots = [
+    {
+      id: "jaaxis",
+      name: botConfig.botName,
+      avatar: botConfig.brandLogo,
+      createdAt: "10/5/2025",
+    },
+  ];
   return (
     <DashboardLayout>
       <ContentContainer 
