@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 
 interface BotConfig {
   botName: string;
@@ -15,7 +16,7 @@ interface BotConfigContextType {
 
 const defaultConfig: BotConfig = {
   botName: "Jaaxis",
-  brandLogo: "/src/assets/jaaxis-avatar.jpg",
+  brandLogo: defaultAvatar,
   primaryColor: "#9b8b6f",
   chatPosition: "right",
   mobileDisplay: "show",

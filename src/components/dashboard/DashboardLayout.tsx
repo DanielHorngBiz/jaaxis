@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Plus, LogOut, ChevronLeft, ChevronRight, Settings } from "lucide-react";
 import logoImage from "@/assets/jaxxis-logo.png";
+import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
@@ -26,7 +27,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   const [botConfig, setBotConfig] = useState(() => {
     const saved = localStorage.getItem("botConfig");
-    return saved ? JSON.parse(saved) : { botName: "Jaaxis", brandLogo: "/src/assets/jaaxis-avatar.jpg" };
+    return saved ? JSON.parse(saved) : { botName: "Jaaxis", brandLogo: defaultAvatar };
   });
 
   const mockBots = [
