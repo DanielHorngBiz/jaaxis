@@ -152,14 +152,19 @@ const SettingsTab = () => {
                 <Button
                   variant="outline"
                   onClick={() => fileInputRef.current?.click()}
-                  className="gap-2"
                 >
-                  <div
-                    className="w-4 h-4 rounded-full border"
-                    style={{ backgroundColor: selectedColor }}
-                  />
                   Custom
                 </Button>
+                <Input
+                  type="text"
+                  value={selectedColor}
+                  onChange={(e) => handleColorSelect(e.target.value)}
+                  className="w-32"
+                />
+                <div
+                  className="w-10 h-10 rounded-full border"
+                  style={{ backgroundColor: selectedColor }}
+                />
               </div>
             </div>
           </div>
