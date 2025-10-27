@@ -87,13 +87,13 @@ const SettingsTab = () => {
               <div className="flex items-center gap-2">
                 <Input
                   type="text"
-                  defaultValue="#9b835a"
+                  defaultValue="#3888FF"
                   className="w-28"
                   readOnly
                 />
                 <div
                   className="w-8 h-8 rounded-full border"
-                  style={{ backgroundColor: "#9b835a" }}
+                  style={{ backgroundColor: "#3888FF" }}
                 />
               </div>
             </div>
