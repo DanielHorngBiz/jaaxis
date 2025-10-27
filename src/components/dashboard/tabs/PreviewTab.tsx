@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Paperclip, Send } from "lucide-react";
 import { useBotConfig } from "@/contexts/BotConfigContext";
-
+import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 const PreviewTab = () => {
   const { config } = useBotConfig();
   return (
@@ -12,7 +12,15 @@ const PreviewTab = () => {
         {/* Chat Header */}
         <div className="text-white p-5 flex items-center gap-4" style={{ backgroundColor: config.primaryColor }}>
           <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm overflow-hidden">
-            <img src={config.brandLogo} alt={config.botName} className="w-full h-full object-cover" />
+            <img
+              src={config.brandLogo}
+              alt={config.botName}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.currentTarget as HTMLImageElement;
+                if (target.src !== defaultAvatar) target.src = defaultAvatar;
+              }}
+            />
           </div>
           <div>
             <h3 className="font-semibold text-base">{config.botName}</h3>

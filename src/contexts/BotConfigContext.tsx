@@ -27,7 +27,18 @@ const BotConfigContext = createContext<BotConfigContextType | undefined>(undefin
 export const BotConfigProvider = ({ children }: { children: ReactNode }) => {
   const [config, setConfig] = useState<BotConfig>(() => {
     const saved = localStorage.getItem("botConfig");
-    return saved ? JSON.parse(saved) : defaultConfig;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (!parsed.brandLogo || typeof parsed.brandLogo !== "string" || parsed.brandLogo.startsWith("/src/")) {
+          parsed.brandLogo = defaultAvatar;
+        }
+        return { ...defaultConfig, ...parsed };
+      } catch {
+        // ignore parsing error and fall back
+      }
+    }
+    return defaultConfig;
   });
 
   useEffect(() => {

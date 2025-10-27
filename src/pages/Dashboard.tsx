@@ -6,11 +6,22 @@ import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { ContentContainer } from "@/components/layout/ContentContainer";
 import { LAYOUT_CONSTANTS } from "@/lib/layout-constants";
 import { useState, useEffect } from "react";
-
+import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 const Dashboard = () => {
   const [botConfig, setBotConfig] = useState(() => {
     const saved = localStorage.getItem("botConfig");
-    return saved ? JSON.parse(saved) : { botName: "Jaaxis", brandLogo: "/src/assets/jaaxis-avatar.jpg" };
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (!parsed.brandLogo || typeof parsed.brandLogo !== "string" || parsed.brandLogo.startsWith("/src/")) {
+          parsed.brandLogo = defaultAvatar;
+        }
+        return { botName: "Jaaxis", brandLogo: defaultAvatar, ...parsed };
+      } catch {
+        // ignore
+      }
+    }
+    return { botName: "Jaaxis", brandLogo: defaultAvatar };
   });
 
   const mockBots = [
@@ -39,7 +50,15 @@ const Dashboard = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-full overflow-hidden shadow-sm flex-shrink-0">
-                      <img src={bot.avatar} alt={bot.name} className="w-full h-full object-cover" />
+                      <img
+                        src={bot.avatar}
+                        alt={bot.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.currentTarget as HTMLImageElement;
+                          if (target.src !== defaultAvatar) target.src = defaultAvatar;
+                        }}
+                      />
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg mb-1">{bot.name}</h3>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-
+import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 interface Tab {
   id: string;
   label: string;
@@ -61,7 +61,15 @@ export const TabbedPageLayout = ({
             <div className="flex items-center gap-3">
               {avatarSrc ? (
                 <div className="w-10 h-10 rounded-full overflow-hidden">
-                  <img src={avatarSrc} alt={title} className="w-full h-full object-cover" />
+                  <img
+                    src={avatarSrc}
+                    alt={title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      if (target.src !== defaultAvatar) target.src = defaultAvatar;
+                    }}
+                  />
                 </div>
               ) : Icon ? (
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">

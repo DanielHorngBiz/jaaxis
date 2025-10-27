@@ -105,7 +105,15 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 title={isCollapsed ? bot.name : undefined}
               >
                 <div className={`${isCollapsed ? 'w-9 h-9' : 'w-9 h-9'} rounded-full overflow-hidden shadow-sm flex-shrink-0`}>
-                  <img src={bot.avatar} alt={bot.name} className="w-full h-full object-cover" />
+                  <img
+                    src={bot.avatar}
+                    alt={bot.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      if (target.src !== defaultAvatar) target.src = defaultAvatar;
+                    }}
+                  />
                 </div>
                 {!isCollapsed && <span className="text-sm font-medium truncate">{bot.name}</span>}
               </div>

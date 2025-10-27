@@ -9,7 +9,7 @@ import { Pencil, Upload, Trash2, Plus, MoreHorizontal } from "lucide-react";
 import { useBotConfig } from "@/contexts/BotConfigContext";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef } from "react";
-
+import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 const colors = [
   "#FF9800",
   "#9C27B0",
@@ -24,7 +24,7 @@ const SettingsTab = () => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [botName, setBotName] = useState(config.botName);
-  const [brandLogo, setBrandLogo] = useState(config.brandLogo);
+  const [brandLogo, setBrandLogo] = useState<string>(config.brandLogo || defaultAvatar);
   const [selectedColor, setSelectedColor] = useState(config.primaryColor);
   const [customColor, setCustomColor] = useState(config.primaryColor);
   const [chatPosition, setChatPosition] = useState(config.chatPosition);
@@ -99,9 +99,17 @@ const SettingsTab = () => {
           <div>
             <Label className="mb-4 block">Brand Logo</Label>
             <div className="flex items-center gap-4">
-              <div className="w-24 h-24 rounded-full overflow-hidden shadow-sm">
-                <img src={brandLogo} alt="Brand Logo" className="w-full h-full object-cover" />
-              </div>
+                <div className="w-24 h-24 rounded-full overflow-hidden shadow-sm">
+                  <img
+                    src={brandLogo}
+                    alt="Brand Logo"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      if (target.src !== defaultAvatar) target.src = defaultAvatar;
+                    }}
+                  />
+                </div>
               <div className="flex gap-2">
                 <input
                   type="file"
@@ -120,7 +128,7 @@ const SettingsTab = () => {
                 </Button>
                 <Button 
                   variant="outline"
-                  onClick={() => setBrandLogo("/src/assets/jaaxis-avatar.jpg")}
+                  onClick={() => setBrandLogo(defaultAvatar)}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
