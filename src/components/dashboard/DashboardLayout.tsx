@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Plus, LogOut, ChevronLeft, ChevronRight, Settings } from "lucide-react";
 import logoImage from "@/assets/jaxxis-logo.png";
+import jaaxisAvatar from "@/assets/jaaxis-avatar.jpg";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
@@ -15,8 +16,7 @@ const mockBots = [
   {
     id: "jaaxis",
     name: "Jaaxis",
-    avatar: "/placeholder.svg",
-    color: "bg-foreground",
+    avatar: jaaxisAvatar,
   },
 ];
 
@@ -90,8 +90,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 }`}
                 title={isCollapsed ? bot.name : undefined}
               >
-                <div className={`${isCollapsed ? 'w-9 h-9' : 'w-9 h-9'} rounded-full ${bot.color} flex items-center justify-center shadow-sm flex-shrink-0`}>
-                  <img src={bot.avatar} alt={bot.name} className="w-5 h-5" />
+                <div className={`${isCollapsed ? 'w-9 h-9' : 'w-9 h-9'} rounded-full overflow-hidden shadow-sm flex-shrink-0`}>
+                  <img src={bot.avatar} alt={bot.name} className="w-full h-full object-cover" />
                 </div>
                 {!isCollapsed && <span className="text-sm font-medium truncate">{bot.name}</span>}
               </div>
