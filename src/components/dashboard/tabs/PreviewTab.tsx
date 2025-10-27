@@ -16,7 +16,6 @@ const PreviewTab = () => {
           </div>
           <div>
             <h3 className="font-semibold text-base">{config.botName}</h3>
-            <p className="text-xs text-white/80">AI Assistant</p>
           </div>
         </div>
 
