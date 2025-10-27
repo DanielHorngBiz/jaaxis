@@ -139,22 +139,19 @@ const SettingsTab = () => {
                 ))}
               </div>
               <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  ref={fileInputRef}
-                  value={customColor}
-                  onChange={(e) => {
-                    setCustomColor(e.target.value);
-                    handleColorSelect(e.target.value);
-                  }}
-                  className="hidden"
-                />
-                <Button
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  Custom
-                </Button>
+                <div className="relative">
+                  <Button variant="outline">Custom</Button>
+                  <input
+                    aria-label="Pick custom color"
+                    type="color"
+                    value={customColor}
+                    onChange={(e) => {
+                      setCustomColor(e.target.value);
+                      handleColorSelect(e.target.value);
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                </div>
                 <Input
                   type="text"
                   value={selectedColor}
