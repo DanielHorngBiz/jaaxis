@@ -41,6 +41,15 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     localStorage.setItem('sidebarCollapsed', String(isCollapsed));
   }, [isCollapsed]);
 
+  useEffect(() => {
+    const handleConfigUpdate = (event: CustomEvent) => {
+      setBotConfig(event.detail);
+    };
+
+    window.addEventListener("botConfigUpdated", handleConfigUpdate as EventListener);
+    return () => window.removeEventListener("botConfigUpdated", handleConfigUpdate as EventListener);
+  }, []);
+
   const handleLogout = () => {
     sessionStorage.removeItem("currentUser");
     toast({

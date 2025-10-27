@@ -31,6 +31,8 @@ export const BotConfigProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     localStorage.setItem("botConfig", JSON.stringify(config));
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new CustomEvent("botConfigUpdated", { detail: config }));
   }, [config]);
 
   const updateConfig = (updates: Partial<BotConfig>) => {
