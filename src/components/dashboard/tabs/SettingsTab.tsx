@@ -53,7 +53,7 @@ const SettingsTab = () => {
           <div>
             <Label className="mb-4 block">Brand Logo</Label>
             <div className="flex items-center gap-4">
-              <div className="w-24 h-24 rounded-full bg-background flex items-center justify-center shadow-sm overflow-hidden">
+              <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-sm overflow-hidden">
                 <img src={jaaxisAvatar} alt="Jaaxis Logo" className="w-full h-full object-cover" />
               </div>
               <div className="flex gap-2">
