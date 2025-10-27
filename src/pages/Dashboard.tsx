@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { ContentContainer } from "@/components/layout/ContentContainer";
 import { LAYOUT_CONSTANTS } from "@/lib/layout-constants";
+import { useBotConfig } from "@/contexts/BotConfigContext";
 
 const mockBots = [
   {
@@ -16,6 +17,8 @@ const mockBots = [
 ];
 
 const Dashboard = () => {
+  const { config } = useBotConfig();
+  
   return (
     <DashboardLayout>
       <ContentContainer 
@@ -33,8 +36,8 @@ const Dashboard = () => {
               <Card className="p-6 hover:shadow-lg hover:shadow-primary/5 transition-all border-border hover:border-primary/20">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-foreground flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                      <img src={bot.avatar} alt={bot.name} className="w-8 h-8" />
+                    <div className="w-14 h-14 rounded-full bg-foreground flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
+                      <img src={config.brandLogo} alt={bot.name} className="w-full h-full object-cover" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg mb-1">{bot.name}</h3>
