@@ -60,8 +60,8 @@ export const TabbedPageLayout = ({
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               {avatarSrc ? (
-                <div className="w-10 h-10 rounded-full bg-foreground flex items-center justify-center">
-                  <img src={avatarSrc} alt={title} className="w-6 h-6" />
+                <div className="w-10 h-10 rounded-full overflow-hidden">
+                  <img src={avatarSrc} alt={title} className="w-full h-full object-cover" />
                 </div>
               ) : Icon ? (
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
