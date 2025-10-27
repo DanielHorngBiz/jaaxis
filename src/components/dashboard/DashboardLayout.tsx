@@ -62,7 +62,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
         {!isCollapsed && (
           <div className="p-6">
-            <Link to="/" className="flex items-center gap-2 group justify-center">
+            <Link to="/dashboard" className="flex items-center gap-2 group justify-center">
               <img src={logoImage} alt="Jaaxis" className="h-8 transition-transform group-hover:scale-105" />
             </Link>
           </div>
