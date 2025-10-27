@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pencil, Upload, Trash2, Plus, MoreHorizontal } from "lucide-react";
 import { useBotAppearance } from "@/contexts/BotAppearanceContext";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 const colors = [
@@ -24,6 +24,43 @@ const SettingsTab = () => {
   const { toast } = useToast();
   const [localBotName, setLocalBotName] = useState(appearance.botName);
   const [localPrimaryColor, setLocalPrimaryColor] = useState(appearance.primaryColor);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid file",
+          description: "Please upload an image file.",
+          variant: "destructive",
+          duration: 3000,
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const imageUrl = reader.result as string;
+        updateAppearance({ brandLogo: imageUrl });
+        toast({
+          title: "Logo updated",
+          description: "Brand logo has been updated successfully.",
+          duration: 3000,
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDeleteLogo = () => {
+    updateAppearance({ brandLogo: appearance.brandLogo });
+    toast({
+      title: "Logo removed",
+      description: "Brand logo has been reset.",
+      duration: 3000,
+    });
+  };
 
   const handleSaveGeneral = () => {
     updateAppearance({ botName: localBotName });
@@ -89,11 +126,25 @@ const SettingsTab = () => {
                 <img src={appearance.brandLogo} alt="Bot Logo" className="w-full h-full object-cover" />
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" className="gap-2">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <Button 
+                  variant="outline" 
+                  className="gap-2"
+                  onClick={() => fileInputRef.current?.click()}
+                >
                   <Upload className="w-4 h-4" />
                   Upload Image
                 </Button>
-                <Button variant="outline">
+                <Button 
+                  variant="outline"
+                  onClick={handleDeleteLogo}
+                >
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
