@@ -224,6 +224,7 @@ const SettingsTab = () => {
         </p>
         <div className="space-y-6">
           <Textarea
+            placeholder="Type here..."
             className="min-h-[100px]"
           />
           <div className="flex justify-end">
