@@ -224,7 +224,6 @@ const SettingsTab = () => {
         </p>
         <div className="space-y-6">
           <Textarea
-            placeholder="社群導則, meta, 撒反政黨, 您的其他, whatsapp, 智慧財產"
             className="min-h-[100px]"
           />
           <div className="flex justify-end">

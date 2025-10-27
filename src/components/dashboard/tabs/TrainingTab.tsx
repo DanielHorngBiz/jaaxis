@@ -48,7 +48,6 @@ const TrainingTab = () => {
             </TabsList>
             <TabsContent value="text" className="mt-6 space-y-4">
               <Textarea
-                placeholder="Type here..."
                 className="min-h-[200px] resize-none"
               />
               <div className="flex justify-end">
@@ -69,7 +68,6 @@ const TrainingTab = () => {
                     <Label htmlFor="answer">Answer</Label>
                     <Textarea 
                       id="answer"
-                      placeholder="Our return policy allows..."
                       className="min-h-[100px] resize-none"
                     />
                   </div>
@@ -213,7 +211,6 @@ const TrainingTab = () => {
         </div>
         <div className="space-y-4">
           <Textarea
-            placeholder="提馬退款,轉接真人"
             className="min-h-[120px] resize-none"
           />
           <div className="flex justify-end">
