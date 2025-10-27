@@ -23,7 +23,6 @@ const SettingsTab = () => {
   const { config, updateConfig } = useBotConfig();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const colorInputRef = useRef<HTMLInputElement>(null);
   const [selectedColor, setSelectedColor] = useState(config.primaryColor);
   const [customColor, setCustomColor] = useState(config.primaryColor);
 
@@ -126,34 +125,40 @@ const SettingsTab = () => {
           {/* Color Picker */}
           <div>
             <Label className="mb-4 block">Primary Color</Label>
-            <div className="flex items-center gap-2 flex-wrap">
-              {colors.map((color) => (
-                <button
-                  key={color}
-                  onClick={() => handleColorSelect(color)}
-                  className={`w-10 h-10 rounded-full border-2 transition-all hover:scale-110 ${
-                    selectedColor === color ? 'border-foreground' : 'border-transparent hover:border-foreground/30'
-                  }`}
-                  style={{ backgroundColor: color }}
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex gap-2">
+                {colors.map((color) => (
+                  <button
+                    key={color}
+                    onClick={() => handleColorSelect(color)}
+                    className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 ${
+                      selectedColor === color ? 'border-foreground' : 'border-transparent hover:border-foreground/30'
+                    }`}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="color"
+                  value={customColor}
+                  onChange={(e) => {
+                    setCustomColor(e.target.value);
+                    handleColorSelect(e.target.value);
+                  }}
+                  className="w-12 h-8 p-0 border-0 cursor-pointer"
                 />
-              ))}
-              <input
-                type="color"
-                ref={colorInputRef}
-                value={customColor}
-                onChange={(e) => {
-                  setCustomColor(e.target.value);
-                  handleColorSelect(e.target.value);
-                }}
-                className="hidden"
-              />
-              <Button 
-                variant="outline" 
-                className="h-10 px-6 rounded-full"
-                onClick={() => colorInputRef.current?.click()}
-              >
-                Custom
-              </Button>
+                <Input
+                  type="text"
+                  value={selectedColor}
+                  onChange={(e) => handleColorSelect(e.target.value)}
+                  className="w-28"
+                />
+                <div
+                  className="w-8 h-8 rounded-full border"
+                  style={{ backgroundColor: selectedColor }}
+                />
+              </div>
             </div>
           </div>
 
