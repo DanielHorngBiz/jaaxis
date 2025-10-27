@@ -6,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pencil, Upload, Trash2, Plus, MoreHorizontal } from "lucide-react";
+import jaaxisAvatar from "@/assets/jaaxis-avatar.jpg";
 
 const colors = [
   "#FF9800",
@@ -52,8 +53,8 @@ const SettingsTab = () => {
           <div>
             <Label className="mb-4 block">Brand Logo</Label>
             <div className="flex items-center gap-4">
-              <div className="w-24 h-24 rounded-full bg-foreground flex items-center justify-center shadow-sm">
-                <img src="/placeholder.svg" alt="Logo" className="w-14 h-14" />
+              <div className="w-24 h-24 rounded-full bg-background flex items-center justify-center shadow-sm overflow-hidden">
+                <img src={jaaxisAvatar} alt="Jaaxis Logo" className="w-full h-full object-cover" />
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" className="gap-2">

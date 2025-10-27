@@ -7,6 +7,7 @@ import ConnectTab from "@/components/dashboard/tabs/ConnectTab";
 import SettingsTab from "@/components/dashboard/tabs/SettingsTab";
 import { TabbedPageLayout } from "@/components/layout/TabbedPageLayout";
 import { ContentContainer } from "@/components/layout/ContentContainer";
+import jaaxisAvatar from "@/assets/jaaxis-avatar.jpg";
 
 const tabs = [
   { id: "training", label: "Training", icon: Wand2 },
@@ -39,7 +40,7 @@ const BotDetail = () => {
     <DashboardLayout>
       <TabbedPageLayout
         title="Jaaxis"
-        avatarSrc="/placeholder.svg"
+        avatarSrc={jaaxisAvatar}
         tabs={tabs}
         activeTab={currentTab}
         onTabChange={(tabId) => {
