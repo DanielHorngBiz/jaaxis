@@ -30,7 +30,6 @@ const SettingsTab = () => {
     toast({
       title: "Settings saved",
       description: "Bot name has been updated successfully.",
-      duration: 3000,
     });
   };
 
@@ -41,7 +40,6 @@ const SettingsTab = () => {
     toast({
       title: "Appearance saved",
       description: "Your appearance settings have been updated successfully.",
-      duration: 3000,
     });
   };
 
