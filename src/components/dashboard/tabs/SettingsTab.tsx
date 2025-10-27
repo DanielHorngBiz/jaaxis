@@ -139,25 +139,27 @@ const SettingsTab = () => {
                 ))}
               </div>
               <div className="flex items-center gap-2">
-                <Input
+                <input
                   type="color"
+                  ref={fileInputRef}
                   value={customColor}
                   onChange={(e) => {
                     setCustomColor(e.target.value);
                     handleColorSelect(e.target.value);
                   }}
-                  className="w-12 h-8 p-0 border-0 cursor-pointer"
+                  className="hidden"
                 />
-                <Input
-                  type="text"
-                  value={selectedColor}
-                  onChange={(e) => handleColorSelect(e.target.value)}
-                  className="w-28"
-                />
-                <div
-                  className="w-8 h-8 rounded-full border"
-                  style={{ backgroundColor: selectedColor }}
-                />
+                <Button
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="gap-2"
+                >
+                  <div
+                    className="w-4 h-4 rounded-full border"
+                    style={{ backgroundColor: selectedColor }}
+                  />
+                  Custom
+                </Button>
               </div>
             </div>
           </div>
