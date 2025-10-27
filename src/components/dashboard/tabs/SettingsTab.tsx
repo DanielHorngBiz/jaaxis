@@ -6,9 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pencil, Upload, Trash2, Plus, MoreHorizontal } from "lucide-react";
-import { useBotAppearance } from "@/contexts/BotAppearanceContext";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+import jaaxisAvatar from "@/assets/jaaxis-avatar.jpg";
 
 const colors = [
   "#FF9800",
@@ -20,29 +18,6 @@ const colors = [
 ];
 
 const SettingsTab = () => {
-  const { appearance, updateAppearance } = useBotAppearance();
-  const { toast } = useToast();
-  const [localBotName, setLocalBotName] = useState(appearance.botName);
-  const [localPrimaryColor, setLocalPrimaryColor] = useState(appearance.primaryColor);
-
-  const handleSaveGeneral = () => {
-    updateAppearance({ botName: localBotName });
-    toast({
-      title: "Settings saved",
-      description: "Bot name has been updated successfully.",
-    });
-  };
-
-  const handleSaveAppearance = () => {
-    updateAppearance({ 
-      primaryColor: localPrimaryColor,
-    });
-    toast({
-      title: "Appearance saved",
-      description: "Your appearance settings have been updated successfully.",
-    });
-  };
-
   return (
     <div className="p-8 max-w-4xl mx-auto space-y-8">
       {/* General Section */}
@@ -55,19 +30,14 @@ const SettingsTab = () => {
           <div className="space-y-2">
             <Label htmlFor="bot-name">Bot Name</Label>
             <div className="flex items-center gap-3">
-              <Input 
-                id="bot-name" 
-                value={localBotName} 
-                onChange={(e) => setLocalBotName(e.target.value)}
-                className="flex-1" 
-              />
+              <Input id="bot-name" defaultValue="Jaaxis" className="flex-1" />
               <Button variant="ghost" size="icon" className="shrink-0">
                 <Pencil className="w-4 h-4" />
               </Button>
             </div>
           </div>
           <div className="flex justify-end">
-            <Button onClick={handleSaveGeneral}>Save</Button>
+            <Button>Save</Button>
           </div>
         </div>
       </div>
@@ -84,7 +54,7 @@ const SettingsTab = () => {
             <Label className="mb-4 block">Brand Logo</Label>
             <div className="flex items-center gap-4">
               <div className="w-24 h-24 rounded-full overflow-hidden shadow-sm">
-                <img src={appearance.brandLogo} alt="Bot Logo" className="w-full h-full object-cover" />
+                <img src={jaaxisAvatar} alt="Jaaxis Logo" className="w-full h-full object-cover" />
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" className="gap-2">
@@ -106,12 +76,8 @@ const SettingsTab = () => {
                 {colors.map((color) => (
                   <button
                     key={color}
-                    onClick={() => setLocalPrimaryColor(color)}
-                    className="w-8 h-8 rounded-full border-2 hover:border-foreground/30 transition-all hover:scale-110"
-                    style={{ 
-                      backgroundColor: color,
-                      borderColor: localPrimaryColor === color ? 'hsl(var(--foreground))' : 'transparent'
-                    }}
+                    className="w-8 h-8 rounded-full border-2 border-transparent hover:border-foreground/30 transition-all hover:scale-110"
+                    style={{ backgroundColor: color }}
                   />
                 ))}
               </div>
@@ -121,13 +87,13 @@ const SettingsTab = () => {
               <div className="flex items-center gap-2">
                 <Input
                   type="text"
-                  value={localPrimaryColor}
-                  onChange={(e) => setLocalPrimaryColor(e.target.value)}
+                  defaultValue="#3888FF"
                   className="w-28"
+                  readOnly
                 />
                 <div
                   className="w-8 h-8 rounded-full border"
-                  style={{ backgroundColor: localPrimaryColor }}
+                  style={{ backgroundColor: "#3888FF" }}
                 />
               </div>
             </div>
@@ -136,11 +102,7 @@ const SettingsTab = () => {
           {/* Alignment */}
           <div>
             <Label className="mb-4 block">Chat Position</Label>
-            <RadioGroup 
-              value={appearance.chatPosition} 
-              onValueChange={(value) => updateAppearance({ chatPosition: value as "left" | "right" })}
-              className="flex gap-4"
-            >
+            <RadioGroup defaultValue="right" className="flex gap-4">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="left" id="left" />
                 <Label htmlFor="left" className="cursor-pointer font-normal">Left</Label>
@@ -155,11 +117,7 @@ const SettingsTab = () => {
           {/* Show on Mobile */}
           <div>
             <Label className="mb-4 block">Mobile Display</Label>
-            <RadioGroup 
-              value={appearance.mobileDisplay}
-              onValueChange={(value) => updateAppearance({ mobileDisplay: value as "show" | "hide" })}
-              className="flex gap-4"
-            >
+            <RadioGroup defaultValue="show" className="flex gap-4">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="show" id="show" />
                 <Label htmlFor="show" className="cursor-pointer font-normal">Show</Label>
@@ -172,7 +130,7 @@ const SettingsTab = () => {
           </div>
 
           <div className="flex justify-end pt-4">
-            <Button onClick={handleSaveAppearance}>Save</Button>
+            <Button>Save</Button>
           </div>
         </div>
       </div>

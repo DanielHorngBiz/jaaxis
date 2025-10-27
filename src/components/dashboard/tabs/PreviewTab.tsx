@@ -2,21 +2,22 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Paperclip, Send } from "lucide-react";
-import { useBotAppearance } from "@/contexts/BotAppearanceContext";
 
-const PreviewTab = () => {
-  const { appearance } = useBotAppearance();
-  
+interface PreviewTabProps {
+  botName: string;
+}
+
+const PreviewTab = ({ botName }: PreviewTabProps) => {
   return (
     <div className="flex items-center justify-center p-8 lg:p-12 min-h-full animate-fade-in">
       <Card className="w-full max-w-md shadow-xl border-border overflow-hidden">
         {/* Chat Header */}
-        <div className="text-white p-5 flex items-center gap-4" style={{ backgroundColor: appearance.primaryColor }}>
-          <div className="w-11 h-11 rounded-full overflow-hidden shadow-sm">
-            <img src={appearance.brandLogo} alt={appearance.botName} className="w-full h-full object-cover" />
+        <div className="bg-[#9b8b6f] text-white p-5 flex items-center gap-4">
+          <div className="w-11 h-11 rounded-full bg-foreground flex items-center justify-center shadow-sm">
+            <img src="/placeholder.svg" alt={botName} className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="font-semibold text-base">{appearance.botName}</h3>
+            <h3 className="font-semibold text-base">{botName}</h3>
             <p className="text-xs text-white/80">AI Assistant</p>
           </div>
         </div>
@@ -37,13 +38,7 @@ const PreviewTab = () => {
             placeholder="Write a message"
             className="flex-1 border-none shadow-none focus-visible:ring-0 px-0"
           />
-          <Button 
-            size="icon" 
-            className="shrink-0 shadow-sm"
-            style={{ 
-              backgroundColor: appearance.primaryColor,
-            }}
-          >
+          <Button size="icon" className="bg-[#9b8b6f] hover:bg-[#8a7a5f] shrink-0 shadow-sm">
             <Send className="w-4 h-4" />
           </Button>
         </div>
