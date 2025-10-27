@@ -23,6 +23,7 @@ const SettingsTab = () => {
   const { config, updateConfig } = useBotConfig();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const colorInputRef = useRef<HTMLInputElement>(null);
   const [selectedColor, setSelectedColor] = useState(config.primaryColor);
   const [customColor, setCustomColor] = useState(config.primaryColor);
 
@@ -139,25 +140,28 @@ const SettingsTab = () => {
                 ))}
               </div>
               <div className="flex items-center gap-2">
-                <Input
+                <input
                   type="color"
+                  ref={colorInputRef}
                   value={customColor}
                   onChange={(e) => {
                     setCustomColor(e.target.value);
                     handleColorSelect(e.target.value);
                   }}
-                  className="w-12 h-8 p-0 border-0 cursor-pointer"
+                  className="hidden"
                 />
-                <Input
-                  type="text"
-                  value={selectedColor}
-                  onChange={(e) => handleColorSelect(e.target.value)}
-                  className="w-28"
-                />
-                <div
-                  className="w-8 h-8 rounded-full border"
-                  style={{ backgroundColor: selectedColor }}
-                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => colorInputRef.current?.click()}
+                  className="gap-2 h-9"
+                >
+                  <div
+                    className="w-5 h-5 rounded border"
+                    style={{ backgroundColor: selectedColor }}
+                  />
+                  Custom
+                </Button>
               </div>
             </div>
           </div>
