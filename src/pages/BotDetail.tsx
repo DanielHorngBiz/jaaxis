@@ -26,7 +26,7 @@ const BotDetail = () => {
       case "training":
         return <TrainingTab />;
       case "preview":
-        return <PreviewTab botName="Jaaxis" />;
+        return <PreviewTab />;
       case "connect":
         return <ConnectTab />;
       case "settings":
