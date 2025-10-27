@@ -7,7 +7,7 @@ import ConnectTab from "@/components/dashboard/tabs/ConnectTab";
 import SettingsTab from "@/components/dashboard/tabs/SettingsTab";
 import { TabbedPageLayout } from "@/components/layout/TabbedPageLayout";
 import { ContentContainer } from "@/components/layout/ContentContainer";
-import jaaxisAvatar from "@/assets/jaaxis-avatar.jpg";
+import { BotConfigProvider, useBotConfig } from "@/contexts/BotConfigContext";
 
 const tabs = [
   { id: "training", label: "Training", icon: Wand2 },
@@ -16,17 +16,18 @@ const tabs = [
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
-const BotDetail = () => {
+const BotDetailContent = () => {
   const { botId, tab = "training" } = useParams();
   const navigate = useNavigate();
   const currentTab = tab || "training";
+  const { config } = useBotConfig();
 
   const renderTabContent = () => {
     switch (currentTab) {
       case "training":
         return <TrainingTab />;
       case "preview":
-        return <PreviewTab botName="Jaaxis" />;
+        return <PreviewTab />;
       case "connect":
         return <ConnectTab />;
       case "settings":
@@ -39,8 +40,8 @@ const BotDetail = () => {
   return (
     <DashboardLayout>
       <TabbedPageLayout
-        title="Jaaxis"
-        avatarSrc={jaaxisAvatar}
+        title={config.botName}
+        avatarSrc={config.brandLogo}
         tabs={tabs}
         activeTab={currentTab}
         onTabChange={(tabId) => {
@@ -52,6 +53,14 @@ const BotDetail = () => {
         </ContentContainer>
       </TabbedPageLayout>
     </DashboardLayout>
+  );
+};
+
+const BotDetail = () => {
+  return (
+    <BotConfigProvider>
+      <BotDetailContent />
+    </BotConfigProvider>
   );
 };
 
