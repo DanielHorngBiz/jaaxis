@@ -17,7 +17,7 @@ interface BotConfigContextType {
 const defaultConfig: BotConfig = {
   botName: "Jaaxis",
   brandLogo: defaultAvatar,
-  primaryColor: "#9b8b6f",
+  primaryColor: "#3888FF",
   chatPosition: "right",
   mobileDisplay: "show",
 };
