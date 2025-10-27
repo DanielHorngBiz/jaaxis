@@ -93,17 +93,11 @@ const SettingsTab = () => {
         <div className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="bot-name">Bot Name</Label>
-            <div className="flex items-center gap-3">
-              <Input 
-                id="bot-name" 
-                value={localBotName} 
-                onChange={(e) => setLocalBotName(e.target.value)}
-                className="flex-1" 
-              />
-              <Button variant="ghost" size="icon" className="shrink-0">
-                <Pencil className="w-4 h-4" />
-              </Button>
-            </div>
+            <Input 
+              id="bot-name" 
+              value={localBotName} 
+              onChange={(e) => setLocalBotName(e.target.value)}
+            />
           </div>
           <div className="flex justify-end">
             <Button onClick={handleSaveGeneral}>Save</Button>
