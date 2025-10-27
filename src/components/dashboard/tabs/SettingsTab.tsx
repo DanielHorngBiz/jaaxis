@@ -23,8 +23,12 @@ const SettingsTab = () => {
   const { config, updateConfig } = useBotConfig();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [botName, setBotName] = useState(config.botName);
+  const [brandLogo, setBrandLogo] = useState(config.brandLogo);
   const [selectedColor, setSelectedColor] = useState(config.primaryColor);
   const [customColor, setCustomColor] = useState(config.primaryColor);
+  const [chatPosition, setChatPosition] = useState(config.chatPosition);
+  const [mobileDisplay, setMobileDisplay] = useState(config.mobileDisplay);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -32,19 +36,24 @@ const SettingsTab = () => {
       const reader = new FileReader();
       reader.onload = (event) => {
         const imageUrl = event.target?.result as string;
-        updateConfig({ brandLogo: imageUrl });
-        toast({ title: "Brand logo updated successfully" });
+        setBrandLogo(imageUrl);
       };
       reader.readAsDataURL(file);
     }
   };
 
   const handleSaveBotName = () => {
+    updateConfig({ botName });
     toast({ title: "Bot name saved successfully" });
   };
 
   const handleSaveAppearance = () => {
-    updateConfig({ primaryColor: selectedColor });
+    updateConfig({ 
+      brandLogo,
+      primaryColor: selectedColor,
+      chatPosition,
+      mobileDisplay
+    });
     toast({ title: "Appearance settings saved successfully" });
   };
 
@@ -67,8 +76,8 @@ const SettingsTab = () => {
             <div className="flex items-center gap-3">
               <Input 
                 id="bot-name" 
-                value={config.botName}
-                onChange={(e) => updateConfig({ botName: e.target.value })}
+                value={botName}
+                onChange={(e) => setBotName(e.target.value)}
                 className="flex-1" 
               />
             </div>
@@ -91,7 +100,7 @@ const SettingsTab = () => {
             <Label className="mb-4 block">Brand Logo</Label>
             <div className="flex items-center gap-4">
               <div className="w-24 h-24 rounded-full overflow-hidden shadow-sm">
-                <img src={config.brandLogo} alt="Brand Logo" className="w-full h-full object-cover" />
+                <img src={brandLogo} alt="Brand Logo" className="w-full h-full object-cover" />
               </div>
               <div className="flex gap-2">
                 <input
@@ -111,10 +120,7 @@ const SettingsTab = () => {
                 </Button>
                 <Button 
                   variant="outline"
-                  onClick={() => {
-                    updateConfig({ brandLogo: "/src/assets/jaaxis-avatar.jpg" });
-                    toast({ title: "Brand logo reset to default" });
-                  }}
+                  onClick={() => setBrandLogo("/src/assets/jaaxis-avatar.jpg")}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
@@ -170,8 +176,8 @@ const SettingsTab = () => {
           <div>
             <Label className="mb-4 block">Chat Position</Label>
             <RadioGroup 
-              value={config.chatPosition} 
-              onValueChange={(value) => updateConfig({ chatPosition: value as "left" | "right" })}
+              value={chatPosition} 
+              onValueChange={(value) => setChatPosition(value as "left" | "right")}
               className="flex gap-4"
             >
               <div className="flex items-center space-x-2">
@@ -189,8 +195,8 @@ const SettingsTab = () => {
           <div>
             <Label className="mb-4 block">Mobile Display</Label>
             <RadioGroup 
-              value={config.mobileDisplay}
-              onValueChange={(value) => updateConfig({ mobileDisplay: value as "show" | "hide" })}
+              value={mobileDisplay}
+              onValueChange={(value) => setMobileDisplay(value as "show" | "hide")}
               className="flex gap-4"
             >
               <div className="flex items-center space-x-2">
