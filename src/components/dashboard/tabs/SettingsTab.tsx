@@ -5,7 +5,6 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Pencil, Upload, Trash2, Plus, MoreHorizontal } from "lucide-react";
 import { useBotConfig } from "@/contexts/BotConfigContext";
 import { useToast } from "@/hooks/use-toast";
@@ -140,24 +139,22 @@ const SettingsTab = () => {
                 ))}
               </div>
               <div className="flex items-center gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline">
-                      Custom
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-3">
-                    <Input
-                      type="color"
-                      value={customColor}
-                      onChange={(e) => {
-                        setCustomColor(e.target.value);
-                        handleColorSelect(e.target.value);
-                      }}
-                      className="w-40 h-40 p-1 cursor-pointer"
-                    />
-                  </PopoverContent>
-                </Popover>
+                <input
+                  type="color"
+                  ref={fileInputRef}
+                  value={customColor}
+                  onChange={(e) => {
+                    setCustomColor(e.target.value);
+                    handleColorSelect(e.target.value);
+                  }}
+                  className="hidden"
+                />
+                <Button
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  Custom
+                </Button>
                 <Input
                   type="text"
                   value={selectedColor}
