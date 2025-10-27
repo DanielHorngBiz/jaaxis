@@ -1,16 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Plus, LogOut, ChevronLeft, ChevronRight, Settings } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import logoImage from "@/assets/jaxxis-logo.png";
 import jaaxisAvatar from "@/assets/jaaxis-avatar.jpg";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { BotAppearanceProvider } from "@/contexts/BotAppearanceContext";
 
 const mockBots = [
@@ -38,6 +33,15 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     localStorage.setItem('sidebarCollapsed', String(isCollapsed));
   }, [isCollapsed]);
 
+  const user = (() => {
+    try {
+      const raw = sessionStorage.getItem("currentUser");
+      return raw ? (JSON.parse(raw) as { firstName?: string; lastName?: string; email?: string }) : null;
+    } catch {
+      return null;
+    }
+  })();
+
   const handleLogout = () => {
     sessionStorage.removeItem("currentUser");
     toast({
@@ -53,37 +57,51 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {/* Sidebar */}
         <aside className={`${isCollapsed ? 'w-[72px]' : 'w-[240px]'} bg-background border-r border-border flex flex-col transition-all duration-300 relative h-screen`}>
           {/* Logo */}
-          <div className="p-4 border-b border-border flex items-center justify-between">
-            {!isCollapsed && (
-              <img src={logoImage} alt="Jaxxis" className="h-8" />
+          <div className="p-4 border-b border-border">
+            <img src={logoImage} alt="Jaaxis" className={`${isCollapsed ? 'h-8 mx-auto' : 'h-8'}`} />
+          </div>
+
+          {/* Collapse toggle */}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="absolute -right-3 top-16 h-7 w-7 rounded-full shadow-sm"
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
             )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="shrink-0"
-            >
-              {isCollapsed ? (
-                <ChevronRight className="h-4 w-4" />
-              ) : (
-                <ChevronLeft className="h-4 w-4" />
-              )}
+          </Button>
+
+          {/* Create */}
+          <div className="p-3">
+            <Button className="w-full justify-center gap-2">
+              <Plus className="h-4 w-4 shrink-0" />
+              {!isCollapsed && <span>Create Chatbot</span>}
             </Button>
           </div>
 
-          {/* Bot List */}
-          <div className="flex-1 overflow-auto p-3">
-            <div className="space-y-2">
+          {/* Your bots */}
+          {!isCollapsed && (
+            <div className="px-4 py-2 text-xs font-medium tracking-wide text-muted-foreground/80">
+              YOUR BOTS
+            </div>
+          )}
+
+          <div className="flex-1 overflow-auto p-3 pt-0">
+            <div className="space-y-1">
               {mockBots.map((bot) => {
                 const isActive = location.pathname.includes(`/bot/${bot.id}`);
                 return (
                   <Link
                     key={bot.id}
                     to={`/dashboard/bot/${bot.id}/training`}
-                    className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                       isActive
-                        ? "bg-primary/10 text-primary"
-                        : "hover:bg-accent text-muted-foreground hover:text-foreground"
+                        ? "bg-primary/10 text-foreground"
+                        : "hover:bg-accent text-foreground"
                     }`}
                   >
                     <img
@@ -100,47 +118,19 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             </div>
           </div>
 
-          {/* Bottom Actions */}
-          <div className="p-3 border-t border-border space-y-2">
-            <Button
-              variant="outline"
-              className="w-full justify-start gap-2"
-              onClick={() => navigate("/dashboard")}
-            >
-              <Plus className="h-4 w-4 shrink-0" />
-              {!isCollapsed && <span>New Bot</span>}
-            </Button>
-
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2"
-                >
-                  <Settings className="h-4 w-4 shrink-0" />
-                  {!isCollapsed && <span>Settings</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-48" align="end">
-                <div className="space-y-2">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start"
-                    onClick={() => navigate("/account")}
-                  >
-                    Account Settings
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start text-destructive hover:text-destructive"
-                    onClick={handleLogout}
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Logout
-                  </Button>
+          {/* Account Card */}
+          <div className="p-3 border-t border-border">
+            <div className="bg-muted/30 rounded-xl p-3 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold">
+                {`${(user?.firstName?.[0] || 'D').toUpperCase()}${(user?.lastName?.[0] || 'H').toUpperCase()}`}
+              </div>
+              {!isCollapsed && (
+                <div className="leading-tight">
+                  <div className="text-sm font-medium">{user ? `${user.firstName} ${user.lastName}` : 'Daniel Hung'}</div>
+                  <div className="text-xs text-muted-foreground">{user?.email || 'daniel@jaaxis.com'}</div>
                 </div>
-              </PopoverContent>
-            </Popover>
+              )}
+            </div>
           </div>
         </aside>
 
