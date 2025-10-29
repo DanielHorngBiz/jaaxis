@@ -28,7 +28,7 @@ const PreviewTab = () => {
         </div>
 
         {/* Chat Content */}
-        <div className="bg-white h-[650px] p-6">
+        <div className="bg-white h-[500px] p-6">
           <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
             Start a conversation to preview your bot
           </div>
