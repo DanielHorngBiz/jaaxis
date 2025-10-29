@@ -23,7 +23,7 @@ const ConnectTab = () => {
             <p className="text-sm text-muted-foreground mb-6 flex-1">
               Embed a collapsible chat widget on your website.
             </p>
-            <Button className="w-full">Get Code</Button>
+            <Button variant="outline" className="w-full">Get Code</Button>
           </CardContent>
         </Card>
 
