@@ -30,7 +30,7 @@ const AccountSettings = () => {
         activeTab={activeTab}
         onTabChange={handleTabChange}
       >
-        <ContentContainer className="px-8 pt-12">
+        <ContentContainer maxWidth="dashboard" className="p-8 lg:p-12">
           {activeTab === "account" && <AccountTab />}
           {activeTab === "notifications" && <NotificationsTab />}
           {activeTab === "billing" && <BillingTab />}
