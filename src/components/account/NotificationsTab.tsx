@@ -4,6 +4,8 @@ const NotificationsTab = () => {
   return (
     <div className="space-y-8">
       <div className="space-y-6">
+        <h3 className="text-lg font-semibold">Notification info</h3>
+
         <div className="space-y-6">
           {/* General Notifications */}
           <div className="flex items-start justify-between gap-8 pb-6 border-b">

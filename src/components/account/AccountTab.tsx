@@ -9,6 +9,7 @@ const AccountTab = () => {
     <div className="space-y-8">
       {/* Profile Picture */}
       <div className="pb-8 border-b">
+        <h3 className="text-lg font-semibold mb-6">Profile Picture</h3>
         <div className="flex items-center gap-6">
           <Avatar className="w-20 h-20">
             <AvatarImage src="" />
@@ -26,6 +27,7 @@ const AccountTab = () => {
 
       {/* Personal Info */}
       <div className="pb-8 border-b">
+        <h3 className="text-lg font-semibold mb-6">Personal Info</h3>
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label htmlFor="firstName">First name</Label>
@@ -53,6 +55,7 @@ const AccountTab = () => {
 
       {/* Address */}
       <div className="pb-8 border-b">
+        <h3 className="text-lg font-semibold mb-6">Address</h3>
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label htmlFor="street">Street/Avenue</Label>
