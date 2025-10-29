@@ -55,8 +55,8 @@ export const TabbedPageLayout = ({
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="p-6">
+      <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="px-6 pt-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               {avatarSrc ? (
