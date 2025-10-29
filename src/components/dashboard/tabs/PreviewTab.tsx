@@ -7,8 +7,8 @@ import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 const PreviewTab = () => {
   const { config } = useBotConfig();
   return (
-    <div className="flex items-center justify-center p-8 lg:p-12 min-h-full animate-fade-in">
-      <Card className="w-full max-w-md shadow-xl border-border overflow-hidden rounded-2xl">
+    <div className="flex items-center justify-center p-8 lg:p-12 h-full overflow-hidden animate-fade-in">
+      <Card className="w-full max-w-md shadow-xl border-border overflow-hidden rounded-2xl flex flex-col max-h-full">
         {/* Chat Header */}
         <div className="text-white p-5 flex items-center gap-4" style={{ backgroundColor: config.primaryColor }}>
           <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm overflow-hidden">
@@ -28,7 +28,7 @@ const PreviewTab = () => {
         </div>
 
         {/* Chat Content */}
-        <div className="bg-white h-[500px] p-6">
+        <div className="bg-white flex-1 min-h-0 p-6">
           <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
             Start a conversation to preview your bot
           </div>
