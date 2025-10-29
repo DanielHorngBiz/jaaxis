@@ -36,8 +36,6 @@ const BillingTab = () => {
 
   return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-bold">Plans & Billing</h2>
-
       {/* Replies Usage */}
       <Card>
         <CardContent className="p-6">
@@ -109,7 +107,6 @@ const BillingTab = () => {
 
       {/* Payment Methods */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-lg">Payment Methods</h3>
         <div className="grid grid-cols-3 gap-4">
           {/* Black Card */}
           <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg p-6 text-white aspect-[1.586/1]">
