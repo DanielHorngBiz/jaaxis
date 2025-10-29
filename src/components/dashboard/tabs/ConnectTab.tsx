@@ -120,24 +120,24 @@ const ConnectTab = () => {
                         <button
                           type="button"
                           onClick={() => setStoreType("shopify")}
-                          className={`p-4 rounded-lg border-2 transition-all text-center ${
+                          className={`px-4 py-3 rounded-lg border-2 transition-all text-center font-medium text-sm ${
                             storeType === "shopify"
                               ? 'border-primary bg-primary/5'
                               : 'border-border hover:border-primary/50'
                           }`}
                         >
-                          <div className="font-medium">Shopify</div>
+                          Shopify
                         </button>
                         <button
                           type="button"
                           onClick={() => setStoreType("woocommerce")}
-                          className={`p-4 rounded-lg border-2 transition-all text-center ${
+                          className={`px-4 py-3 rounded-lg border-2 transition-all text-center font-medium text-sm ${
                             storeType === "woocommerce"
                               ? 'border-primary bg-primary/5'
                               : 'border-border hover:border-primary/50'
                           }`}
                         >
-                          <div className="font-medium">WooCommerce</div>
+                          WooCommerce
                         </button>
                       </div>
                     </div>
@@ -197,26 +197,24 @@ const ConnectTab = () => {
                         <button
                           type="button"
                           onClick={() => setAccessLevel("read")}
-                          className={`p-4 rounded-lg border-2 transition-all text-left ${
+                          className={`px-4 py-3 rounded-lg border-2 transition-all text-center font-medium text-sm ${
                             accessLevel === "read"
                               ? 'border-primary bg-primary/5'
                               : 'border-border hover:border-primary/50'
                           }`}
                         >
-                          <div className="font-medium">Read Only</div>
-                          <div className="text-xs text-muted-foreground mt-1">View data only</div>
+                          Read Only
                         </button>
                         <button
                           type="button"
                           onClick={() => setAccessLevel("readwrite")}
-                          className={`p-4 rounded-lg border-2 transition-all text-left ${
+                          className={`px-4 py-3 rounded-lg border-2 transition-all text-center font-medium text-sm ${
                             accessLevel === "readwrite"
                               ? 'border-primary bg-primary/5'
                               : 'border-border hover:border-primary/50'
                           }`}
                         >
-                          <div className="font-medium">Read & Write</div>
-                          <div className="text-xs text-muted-foreground mt-1">Modify data</div>
+                          Read & Write
                         </button>
                       </div>
                     </div>
