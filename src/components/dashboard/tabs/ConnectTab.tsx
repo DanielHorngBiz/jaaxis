@@ -16,77 +16,81 @@ const ConnectTab = () => {
         {/* Chat Widget */}
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                <MessageCircle className="w-6 h-6 text-blue-600" />
+            <div className="flex gap-4">
+              <div className="w-14 shrink-0">
+                <div className="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                  <MessageCircle className="w-6 h-6 text-blue-600 shrink-0" />
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-lg">Chat Widget</h3>
-                <p className="text-sm text-muted-foreground">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-lg mb-1">Chat Widget</h3>
+                <p className="text-sm text-muted-foreground mb-4">
                   Embed a collapsible chat widget on your website.
                 </p>
+                <Button>Get Code</Button>
               </div>
             </div>
-            <Button>Get Code</Button>
           </CardContent>
         </Card>
 
         {/* Chat iframe */}
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center">
-                <Frame className="w-6 h-6 text-yellow-600" />
+            <div className="flex gap-4">
+              <div className="w-14 shrink-0">
+                <div className="w-14 h-14 rounded-xl bg-yellow-500/10 flex items-center justify-center">
+                  <Frame className="w-6 h-6 text-yellow-600 shrink-0" />
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-lg">Chat iframe</h3>
-                <p className="text-sm text-muted-foreground">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-lg mb-1">Chat iframe</h3>
+                <p className="text-sm text-muted-foreground mb-4">
                   Embed a chat window via iframe for flexible placement.
                 </p>
+                <Button variant="outline">Get Code</Button>
               </div>
             </div>
-            <Button variant="outline">Get Code</Button>
           </CardContent>
         </Card>
 
         {/* Connect Meta Platforms */}
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-start gap-4 mb-4">
-              <div className="flex gap-2 shrink-0">
-                <div className="w-12 h-12 rounded-xl bg-blue-600/10 flex items-center justify-center shrink-0">
-                  <Facebook className="w-6 h-6 text-blue-600 shrink-0" />
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center shrink-0">
-                  <Instagram className="w-6 h-6 text-pink-600 shrink-0" />
+            <div className="flex gap-4">
+              <div className="w-14 shrink-0">
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-600/10 to-pink-500/10 flex items-center justify-center gap-1">
+                  <Facebook className="w-5 h-5 text-blue-600 shrink-0" />
+                  <Instagram className="w-5 h-5 text-pink-600 shrink-0" />
                 </div>
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-lg mb-1">Connect Meta Platforms</h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground mb-4">
                   Connect to Messenger and Instagram.
                 </p>
+                <Button variant="outline">Connect</Button>
               </div>
             </div>
-            <Button variant="outline">Connect</Button>
           </CardContent>
         </Card>
 
         {/* Store */}
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-                <Store className="w-6 h-6 text-green-600" />
+            <div className="flex gap-4">
+              <div className="w-14 shrink-0">
+                <div className="w-14 h-14 rounded-xl bg-green-500/10 flex items-center justify-center">
+                  <Store className="w-6 h-6 text-green-600 shrink-0" />
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-lg">Store</h3>
-                <p className="text-sm text-muted-foreground">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-lg mb-1">Store</h3>
+                <p className="text-sm text-muted-foreground mb-4">
                   Connect your bot to a Store.
                 </p>
+                <Button variant="outline">Connect</Button>
               </div>
             </div>
-            <Button variant="outline">Connect</Button>
           </CardContent>
         </Card>
       </div>
