@@ -84,28 +84,30 @@ const ConnectTab = () => {
                 <Button variant="outline" className="w-full" onClick={() => setStep(1)}>Connect</Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[540px] p-0 gap-0">
-                {/* Header with step indicator */}
-                <DialogHeader className="px-8 pt-8 pb-6 border-b">
-                  <div className="flex items-center justify-between mb-4">
-                    <DialogTitle className="text-2xl">Connect Your Store</DialogTitle>
-                    <div className="flex items-center gap-2">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
-                        step === 1 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-secondary text-muted-foreground'
-                      }`}>
-                        1
-                      </div>
-                      <div className="w-8 h-px bg-border" />
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
-                        step === 2 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-secondary text-muted-foreground'
-                      }`}>
-                        2
-                      </div>
+                {/* Step indicator at top */}
+                <div className="px-8 pt-6 pb-4">
+                  <div className="flex items-center justify-center gap-2">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
+                      step === 1 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-secondary text-muted-foreground'
+                    }`}>
+                      1
+                    </div>
+                    <div className="w-12 h-px bg-border" />
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
+                      step === 2 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-secondary text-muted-foreground'
+                    }`}>
+                      2
                     </div>
                   </div>
+                </div>
+
+                {/* Header */}
+                <DialogHeader className="px-8 pb-6 border-b">
+                  <DialogTitle className="text-2xl mb-2">Connect Your Store</DialogTitle>
                   <p className="text-sm text-muted-foreground">
                     {step === 1 ? 'Select your platform and enter credentials' : 'Configure access permissions'}
                   </p>
