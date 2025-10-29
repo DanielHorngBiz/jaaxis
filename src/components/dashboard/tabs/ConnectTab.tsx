@@ -5,9 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MessageCircle, Frame, Instagram, Facebook, Store } from "lucide-react";
 import { useState } from "react";
+import { Toggle } from "@/components/ui/toggle";
 
 const ConnectTab = () => {
   const [storeType, setStoreType] = useState<"shopify" | "woocommerce">("shopify");
+  const [step, setStep] = useState(1);
+  const [accessLevel, setAccessLevel] = useState<"read" | "readwrite">("read");
   
   return (
     <div className="p-8 max-w-4xl mx-auto space-y-8">
@@ -78,80 +81,137 @@ const ConnectTab = () => {
             </p>
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" className="w-full">Connect</Button>
+                <Button variant="outline" className="w-full" onClick={() => setStep(1)}>Connect</Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                   <DialogTitle className="text-2xl">Connect Your Store</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-6 pt-4">
-                  {/* Platform Selection */}
-                  <div className="flex gap-3">
-                    <Button
-                      type="button"
-                      variant={storeType === "shopify" ? "default" : "outline"}
-                      className="flex-1"
-                      onClick={() => setStoreType("shopify")}
-                    >
-                      Shopify
-                    </Button>
-                    <Button
-                      type="button"
-                      variant={storeType === "woocommerce" ? "default" : "outline"}
-                      className="flex-1"
-                      onClick={() => setStoreType("woocommerce")}
-                    >
-                      WooCommerce
-                    </Button>
-                  </div>
-
-                  {/* Form Fields */}
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="storeUrl">Store URL</Label>
-                      <Input
-                        id="storeUrl"
-                        type="url"
-                        placeholder="https://example.com"
-                      />
+                
+                {step === 1 ? (
+                  <div className="space-y-6 pt-4">
+                    {/* Platform Selection */}
+                    <div className="flex gap-3">
+                      <Button
+                        type="button"
+                        variant={storeType === "shopify" ? "default" : "outline"}
+                        className="flex-1"
+                        onClick={() => setStoreType("shopify")}
+                      >
+                        Shopify
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={storeType === "woocommerce" ? "default" : "outline"}
+                        className="flex-1"
+                        onClick={() => setStoreType("woocommerce")}
+                      >
+                        WooCommerce
+                      </Button>
                     </div>
 
-                    {storeType === "shopify" ? (
+                    {/* Form Fields */}
+                    <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="accessToken">Access Token</Label>
+                        <Label htmlFor="storeUrl">Store URL</Label>
                         <Input
-                          id="accessToken"
-                          type="password"
-                          placeholder="Enter your Shopify access token"
+                          id="storeUrl"
+                          type="url"
+                          placeholder="https://example.com"
                         />
                       </div>
-                    ) : (
-                      <>
-                        <div className="space-y-2">
-                          <Label htmlFor="consumerKey">Consumer Key</Label>
-                          <Input
-                            id="consumerKey"
-                            type="text"
-                            placeholder="Enter your WooCommerce consumer key"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="consumerSecret">Consumer Secret</Label>
-                          <Input
-                            id="consumerSecret"
-                            type="password"
-                            placeholder="Enter your WooCommerce consumer secret"
-                          />
-                        </div>
-                      </>
-                    )}
-                  </div>
 
-                  {/* Connect Button */}
-                  <Button className="w-full" size="lg">
-                    Connect {storeType === "shopify" ? "Shopify" : "WooCommerce"}
-                  </Button>
-                </div>
+                      {storeType === "shopify" ? (
+                        <div className="space-y-2">
+                          <Label htmlFor="accessToken">Access Token</Label>
+                          <Input
+                            id="accessToken"
+                            type="password"
+                            placeholder="Enter your Shopify access token"
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <div className="space-y-2">
+                            <Label htmlFor="consumerKey">Consumer Key</Label>
+                            <Input
+                              id="consumerKey"
+                              type="text"
+                              placeholder="Enter your WooCommerce consumer key"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="consumerSecret">Consumer Secret</Label>
+                            <Input
+                              id="consumerSecret"
+                              type="password"
+                              placeholder="Enter your WooCommerce consumer secret"
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Next Button */}
+                    <Button className="w-full" size="lg" onClick={() => setStep(2)}>
+                      Next
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-6 pt-4">
+                    {/* Access Level Selection */}
+                    <div className="space-y-3">
+                      <Label>Access Level</Label>
+                      <div className="flex gap-3">
+                        <Button
+                          type="button"
+                          variant={accessLevel === "read" ? "default" : "outline"}
+                          className="flex-1"
+                          onClick={() => setAccessLevel("read")}
+                        >
+                          Read Only
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={accessLevel === "readwrite" ? "default" : "outline"}
+                          className="flex-1"
+                          onClick={() => setAccessLevel("readwrite")}
+                        >
+                          Read & Write
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Order Status Field - Show only for Read & Write */}
+                    {accessLevel === "readwrite" && (
+                      <div className="space-y-2">
+                        <Label htmlFor="orderStatus">Order Status AI Can Write</Label>
+                        <Input
+                          id="orderStatus"
+                          type="text"
+                          placeholder="e.g., processing, completed, cancelled"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Comma-separated list of order statuses the AI can modify
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-3">
+                      <Button 
+                        variant="outline" 
+                        className="flex-1" 
+                        onClick={() => setStep(1)}
+                      >
+                        Back
+                      </Button>
+                      <Button className="flex-1" size="lg">
+                        Connect {storeType === "shopify" ? "Shopify" : "WooCommerce"}
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </DialogContent>
             </Dialog>
           </CardContent>
