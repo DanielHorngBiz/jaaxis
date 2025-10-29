@@ -120,26 +120,24 @@ const ConnectTab = () => {
                         <button
                           type="button"
                           onClick={() => setStoreType("shopify")}
-                          className={`p-4 rounded-lg border-2 transition-all text-left ${
+                          className={`p-4 rounded-lg border-2 transition-all text-center ${
                             storeType === "shopify"
                               ? 'border-primary bg-primary/5'
                               : 'border-border hover:border-primary/50'
                           }`}
                         >
                           <div className="font-medium">Shopify</div>
-                          <div className="text-xs text-muted-foreground mt-1">E-commerce platform</div>
                         </button>
                         <button
                           type="button"
                           onClick={() => setStoreType("woocommerce")}
-                          className={`p-4 rounded-lg border-2 transition-all text-left ${
+                          className={`p-4 rounded-lg border-2 transition-all text-center ${
                             storeType === "woocommerce"
                               ? 'border-primary bg-primary/5'
                               : 'border-border hover:border-primary/50'
                           }`}
                         >
                           <div className="font-medium">WooCommerce</div>
-                          <div className="text-xs text-muted-foreground mt-1">WordPress plugin</div>
                         </button>
                       </div>
                     </div>
