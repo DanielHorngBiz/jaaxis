@@ -35,7 +35,7 @@ const ConnectTab = () => {
             </div>
             <h3 className="font-semibold text-lg mb-2">Chat iframe</h3>
             <p className="text-sm text-muted-foreground mb-6 flex-1">
-              Embed a chat window via iframe for flexible placement.
+              Embed via iframe for flexible placement.
             </p>
             <Button variant="outline" className="w-full">Get Code</Button>
           </CardContent>
@@ -44,9 +44,13 @@ const ConnectTab = () => {
         {/* Connect Meta Platforms */}
         <Card>
           <CardContent className="p-6 flex flex-col">
-            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-600/10 to-pink-500/10 flex items-center justify-center gap-1.5 mb-4">
-              <Facebook className="w-6 h-6 text-blue-600" />
-              <Instagram className="w-6 h-6 text-pink-600" />
+            <div className="flex gap-2 mb-4">
+              <div className="w-14 h-14 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                <Facebook className="w-7 h-7 text-blue-600" />
+              </div>
+              <div className="w-14 h-14 rounded-xl bg-pink-500/10 flex items-center justify-center">
+                <Instagram className="w-7 h-7 text-pink-600" />
+              </div>
             </div>
             <h3 className="font-semibold text-lg mb-2">Connect Meta Platforms</h3>
             <p className="text-sm text-muted-foreground mb-6 flex-1">
