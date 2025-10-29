@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Frame, Instagram, Facebook } from "lucide-react";
+import { MessageCircle, Frame, Instagram, Facebook, Store } from "lucide-react";
 
 const ConnectTab = () => {
   return (
@@ -50,25 +50,41 @@ const ConnectTab = () => {
         </Card>
 
         {/* Connect Meta Platforms */}
-        <Card className="md:col-span-2">
+        <Card>
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-blue-600/10 flex items-center justify-center">
-                  <Facebook className="w-6 h-6 text-blue-600" />
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center">
-                  <Instagram className="w-6 h-6 text-pink-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg">Connect Meta Platforms</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Connect your bot to Facebook Messenger and Instagram for instant replies.
-                  </p>
-                </div>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                <Facebook className="w-6 h-6 text-blue-600" />
               </div>
-              <Button variant="outline">Connect</Button>
+              <div className="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center">
+                <Instagram className="w-6 h-6 text-pink-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">Connect Meta Platforms</h3>
+                <p className="text-sm text-muted-foreground">
+                  Connect your bot to Facebook Messenger and Instagram for instant replies.
+                </p>
+              </div>
             </div>
+            <Button variant="outline">Connect</Button>
+          </CardContent>
+        </Card>
+
+        {/* Store */}
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
+                <Store className="w-6 h-6 text-green-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">Store</h3>
+                <p className="text-sm text-muted-foreground">
+                  Connect your bot to a Store.
+                </p>
+              </div>
+            </div>
+            <Button variant="outline">Connect</Button>
           </CardContent>
         </Card>
       </div>
