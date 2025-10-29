@@ -15,87 +15,58 @@ const ConnectTab = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Chat Widget */}
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4 mb-4">
-              <div className="flex gap-2 shrink-0">
-                <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
-                  <MessageCircle className="w-6 h-6 text-blue-600 shrink-0" />
-                </div>
-                <div className="w-12 h-12 shrink-0" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg mb-1">Chat Widget</h3>
-                <p className="text-sm text-muted-foreground">
-                  Embed a collapsible chat widget on your website.
-                </p>
-              </div>
+          <CardContent className="p-6 flex flex-col">
+            <div className="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
+              <MessageCircle className="w-7 h-7 text-blue-600" />
             </div>
-            <Button>Get Code</Button>
+            <h3 className="font-semibold text-lg mb-2">Chat Widget</h3>
+            <p className="text-sm text-muted-foreground mb-6 flex-1">
+              Embed a collapsible chat widget on your website.
+            </p>
+            <Button className="w-full">Get Code</Button>
           </CardContent>
         </Card>
 
         {/* Chat iframe */}
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4 mb-4">
-              <div className="flex gap-2 shrink-0">
-                <div className="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center shrink-0">
-                  <Frame className="w-6 h-6 text-yellow-600 shrink-0" />
-                </div>
-                <div className="w-12 h-12 shrink-0" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg mb-1">Chat iframe</h3>
-                <p className="text-sm text-muted-foreground">
-                  Embed a chat window via iframe for flexible placement.
-                </p>
-              </div>
+          <CardContent className="p-6 flex flex-col">
+            <div className="w-14 h-14 rounded-xl bg-yellow-500/10 flex items-center justify-center mb-4">
+              <Frame className="w-7 h-7 text-yellow-600" />
             </div>
-            <Button variant="outline">Get Code</Button>
+            <h3 className="font-semibold text-lg mb-2">Chat iframe</h3>
+            <p className="text-sm text-muted-foreground mb-6 flex-1">
+              Embed a chat window via iframe for flexible placement.
+            </p>
+            <Button variant="outline" className="w-full">Get Code</Button>
           </CardContent>
         </Card>
 
         {/* Connect Meta Platforms */}
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4 mb-4">
-              <div className="flex gap-2 shrink-0">
-                <div className="w-12 h-12 rounded-xl bg-blue-600/10 flex items-center justify-center shrink-0">
-                  <Facebook className="w-6 h-6 text-blue-600 shrink-0" />
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center shrink-0">
-                  <Instagram className="w-6 h-6 text-pink-600 shrink-0" />
-                </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg mb-1">Connect Meta Platforms</h3>
-                <p className="text-sm text-muted-foreground">
-                  Connect to Messenger and Instagram.
-                </p>
-              </div>
+          <CardContent className="p-6 flex flex-col">
+            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-600/10 to-pink-500/10 flex items-center justify-center gap-1.5 mb-4">
+              <Facebook className="w-6 h-6 text-blue-600" />
+              <Instagram className="w-6 h-6 text-pink-600" />
             </div>
-            <Button variant="outline">Connect</Button>
+            <h3 className="font-semibold text-lg mb-2">Connect Meta Platforms</h3>
+            <p className="text-sm text-muted-foreground mb-6 flex-1">
+              Connect to Messenger and Instagram.
+            </p>
+            <Button variant="outline" className="w-full">Connect</Button>
           </CardContent>
         </Card>
 
         {/* Store */}
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4 mb-4">
-              <div className="flex gap-2 shrink-0">
-                <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center shrink-0">
-                  <Store className="w-6 h-6 text-green-600 shrink-0" />
-                </div>
-                <div className="w-12 h-12 shrink-0" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg mb-1">Store</h3>
-                <p className="text-sm text-muted-foreground">
-                  Connect your bot to a Store.
-                </p>
-              </div>
+          <CardContent className="p-6 flex flex-col">
+            <div className="w-14 h-14 rounded-xl bg-green-500/10 flex items-center justify-center mb-4">
+              <Store className="w-7 h-7 text-green-600" />
             </div>
-            <Button variant="outline">Connect</Button>
+            <h3 className="font-semibold text-lg mb-2">Store</h3>
+            <p className="text-sm text-muted-foreground mb-6 flex-1">
+              Connect your bot to a Store.
+            </p>
+            <Button variant="outline" className="w-full">Connect</Button>
           </CardContent>
         </Card>
       </div>
