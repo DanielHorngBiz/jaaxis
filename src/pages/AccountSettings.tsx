@@ -30,7 +30,7 @@ const AccountSettings = () => {
         activeTab={activeTab}
         onTabChange={handleTabChange}
       >
-        <ContentContainer className="pt-12">
+        <ContentContainer>
           {activeTab === "account" && <AccountTab />}
           {activeTab === "notifications" && <NotificationsTab />}
           {activeTab === "billing" && <BillingTab />}
