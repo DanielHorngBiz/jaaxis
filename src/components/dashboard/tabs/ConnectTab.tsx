@@ -1,8 +1,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { MessageCircle, Frame, Instagram, Facebook, Store } from "lucide-react";
+import { useState } from "react";
 
 const ConnectTab = () => {
+  const [storeType, setStoreType] = useState<"shopify" | "woocommerce">("shopify");
+  
   return (
     <div className="p-8 max-w-4xl mx-auto space-y-8">
       <div>
@@ -70,7 +76,84 @@ const ConnectTab = () => {
             <p className="text-sm text-muted-foreground mb-6 flex-1">
               Connect your bot to a Store.
             </p>
-            <Button variant="outline" className="w-full">Connect</Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full">Connect</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl">Connect Your Store</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-6 pt-4">
+                  {/* Platform Selection */}
+                  <div className="flex gap-3">
+                    <Button
+                      type="button"
+                      variant={storeType === "shopify" ? "default" : "outline"}
+                      className="flex-1"
+                      onClick={() => setStoreType("shopify")}
+                    >
+                      Shopify
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={storeType === "woocommerce" ? "default" : "outline"}
+                      className="flex-1"
+                      onClick={() => setStoreType("woocommerce")}
+                    >
+                      WooCommerce
+                    </Button>
+                  </div>
+
+                  {/* Form Fields */}
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="storeUrl">Store URL</Label>
+                      <Input
+                        id="storeUrl"
+                        type="url"
+                        placeholder="https://example.com"
+                      />
+                    </div>
+
+                    {storeType === "shopify" ? (
+                      <div className="space-y-2">
+                        <Label htmlFor="accessToken">Access Token</Label>
+                        <Input
+                          id="accessToken"
+                          type="password"
+                          placeholder="Enter your Shopify access token"
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <div className="space-y-2">
+                          <Label htmlFor="consumerKey">Consumer Key</Label>
+                          <Input
+                            id="consumerKey"
+                            type="text"
+                            placeholder="Enter your WooCommerce consumer key"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="consumerSecret">Consumer Secret</Label>
+                          <Input
+                            id="consumerSecret"
+                            type="password"
+                            placeholder="Enter your WooCommerce consumer secret"
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Connect Button */}
+                  <Button className="w-full" size="lg">
+                    Connect {storeType === "shopify" ? "Shopify" : "WooCommerce"}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </CardContent>
         </Card>
       </div>
