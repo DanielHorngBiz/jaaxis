@@ -6,7 +6,6 @@ import BillingTab from "@/components/account/BillingTab";
 import NotificationsTab from "@/components/account/NotificationsTab";
 import { TabbedPageLayout } from "@/components/layout/TabbedPageLayout";
 import { ContentContainer } from "@/components/layout/ContentContainer";
-import { LAYOUT_CONSTANTS } from "@/lib/layout-constants";
 
 const tabs = [
   { id: "account", label: "Account", icon: User },
@@ -31,7 +30,7 @@ const AccountSettings = () => {
         activeTab={activeTab}
         onTabChange={handleTabChange}
       >
-        <ContentContainer maxWidth="dashboard" className={LAYOUT_CONSTANTS.padding.page}>
+        <ContentContainer className="pt-12">
           {activeTab === "account" && <AccountTab />}
           {activeTab === "notifications" && <NotificationsTab />}
           {activeTab === "billing" && <BillingTab />}
