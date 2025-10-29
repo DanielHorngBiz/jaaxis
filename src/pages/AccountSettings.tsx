@@ -10,7 +10,7 @@ import { ContentContainer } from "@/components/layout/ContentContainer";
 const tabs = [
   { id: "account", label: "Account", icon: User },
   { id: "notifications", label: "Notifications", icon: Bell },
-  { id: "billing", label: "Pricing", icon: CreditCard },
+  { id: "billing", label: "Plans & Billing", icon: CreditCard },
 ];
 
 const AccountSettings = () => {
