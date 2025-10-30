@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Upload, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -44,8 +43,6 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
   const [knowledge, setKnowledge] = useState("");
   const [persona, setPersona] = useState("");
   const [rules, setRules] = useState("");
-  const [chatPosition, setChatPosition] = useState<"left" | "right">("right");
-  const [mobileDisplay, setMobileDisplay] = useState<"show" | "hide">("show");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -86,8 +83,6 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
     setKnowledge("");
     setPersona("");
     setRules("");
-    setChatPosition("right");
-    setMobileDisplay("show");
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -269,42 +264,6 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
                     </div>
                   </div>
                 </div>
-
-                <div className="space-y-3">
-                  <Label>Chat Position</Label>
-                  <RadioGroup 
-                    value={chatPosition} 
-                    onValueChange={(value) => setChatPosition(value as "left" | "right")}
-                    className="flex gap-4"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="left" id="pos-left" />
-                      <Label htmlFor="pos-left" className="cursor-pointer font-normal">Left</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="right" id="pos-right" />
-                      <Label htmlFor="pos-right" className="cursor-pointer font-normal">Right</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                <div className="space-y-3">
-                  <Label>Mobile Display</Label>
-                  <RadioGroup 
-                    value={mobileDisplay}
-                    onValueChange={(value) => setMobileDisplay(value as "show" | "hide")}
-                    className="flex gap-4"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="show" id="mobile-show" />
-                      <Label htmlFor="mobile-show" className="cursor-pointer font-normal">Show</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="hide" id="mobile-hide" />
-                      <Label htmlFor="mobile-hide" className="cursor-pointer font-normal">Hide</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
               </div>
             </div>
           )}
@@ -397,9 +356,7 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
                     </div>
                     <div>
                       <h3 className="text-lg font-bold">{chatbotName || "Untitled Bot"}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {chatPosition.charAt(0).toUpperCase() + chatPosition.slice(1)} • {mobileDisplay === "show" ? "Visible" : "Hidden"} on mobile
-                      </p>
+                      <p className="text-sm text-muted-foreground">Ready to deploy</p>
                     </div>
                   </div>
 
