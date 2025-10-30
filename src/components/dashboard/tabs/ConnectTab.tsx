@@ -105,6 +105,11 @@ const ConnectTab = () => {
                   </div>
                 </div>
 
+                {/* Heading */}
+                <div className="px-8 pt-6 pb-2">
+                  <h2 className="text-xl font-semibold">Connect Your Store</h2>
+                </div>
+                
                 {step === 1 ? (
                   <div className="px-8 py-6 space-y-6">
                     {/* Platform Selection */}
