@@ -26,31 +26,25 @@ const ConnectTab = () => {
   const { toast } = useToast();
 
   const fetchStatuses = async (statusType: 'payment' | 'fulfillment' | 'order') => {
-    if (!storeUrl) {
-      toast({
-        title: "Missing Information",
-        description: "Please enter your store URL first",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Only validate credentials for WooCommerce (which actually fetches from API)
+    if (storeType === "woocommerce") {
+      if (!storeUrl) {
+        toast({
+          title: "Missing Information",
+          description: "Please enter your store URL first",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    if (storeType === "shopify" && !accessToken) {
-      toast({
-        title: "Missing Information",
-        description: "Please enter your access token first",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (storeType === "woocommerce" && (!consumerKey || !consumerSecret)) {
-      toast({
-        title: "Missing Information",
-        description: "Please enter your consumer key and secret first",
-        variant: "destructive",
-      });
-      return;
+      if (!consumerKey || !consumerSecret) {
+        toast({
+          title: "Missing Information",
+          description: "Please enter your consumer key and secret first",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     setLoadingStatuses(true);
