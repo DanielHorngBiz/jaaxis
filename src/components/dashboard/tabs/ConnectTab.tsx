@@ -6,11 +6,92 @@ import { Label } from "@/components/ui/label";
 import { MessageCircle, Frame, Instagram, Facebook, Store } from "lucide-react";
 import { useState } from "react";
 import { Toggle } from "@/components/ui/toggle";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const ConnectTab = () => {
   const [storeType, setStoreType] = useState<"shopify" | "woocommerce">("shopify");
   const [step, setStep] = useState(1);
   const [accessLevel, setAccessLevel] = useState<"read" | "readwrite">("read");
+  
+  // Form state
+  const [storeUrl, setStoreUrl] = useState("");
+  const [accessToken, setAccessToken] = useState("");
+  const [consumerKey, setConsumerKey] = useState("");
+  const [consumerSecret, setConsumerSecret] = useState("");
+  const [paymentStatus, setPaymentStatus] = useState("");
+  const [fulfillmentStatus, setFulfillmentStatus] = useState("");
+  const [orderStatus, setOrderStatus] = useState("");
+  const [loadingStatuses, setLoadingStatuses] = useState(false);
+  const { toast } = useToast();
+
+  const fetchStatuses = async () => {
+    if (!storeUrl) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter your store URL first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (storeType === "shopify" && !accessToken) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter your access token first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (storeType === "woocommerce" && (!consumerKey || !consumerSecret)) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter your consumer key and secret first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoadingStatuses(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('fetch-store-statuses', {
+        body: {
+          storeType,
+          storeUrl,
+          accessToken,
+          consumerKey,
+          consumerSecret,
+        },
+      });
+
+      if (error) throw error;
+
+      if (storeType === "shopify") {
+        setPaymentStatus(data.paymentStatuses);
+        setFulfillmentStatus(data.fulfillmentStatuses);
+        toast({
+          title: "Success",
+          description: "Statuses loaded successfully",
+        });
+      } else {
+        setOrderStatus(data.orderStatuses);
+        toast({
+          title: "Success",
+          description: "Statuses loaded successfully",
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching statuses:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch statuses. Please check your credentials.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingStatuses(false);
+    }
+  };
   
   return (
     <div className="space-y-8">
@@ -168,6 +249,8 @@ const ConnectTab = () => {
                           type="url"
                           placeholder="https://example.com"
                           className="h-11"
+                          value={storeUrl}
+                          onChange={(e) => setStoreUrl(e.target.value)}
                         />
                       </div>
 
@@ -179,6 +262,8 @@ const ConnectTab = () => {
                             type="password"
                             placeholder="Enter your Shopify access token"
                             className="h-11"
+                            value={accessToken}
+                            onChange={(e) => setAccessToken(e.target.value)}
                           />
                         </div>
                       ) : (
@@ -190,6 +275,8 @@ const ConnectTab = () => {
                               type="text"
                               placeholder="Enter your WooCommerce consumer key"
                               className="h-11"
+                              value={consumerKey}
+                              onChange={(e) => setConsumerKey(e.target.value)}
                             />
                           </div>
                           <div className="space-y-2">
@@ -199,6 +286,8 @@ const ConnectTab = () => {
                               type="password"
                               placeholder="Enter your WooCommerce consumer secret"
                               className="h-11"
+                              value={consumerSecret}
+                              onChange={(e) => setConsumerSecret(e.target.value)}
                             />
                           </div>
                         </>
@@ -246,14 +335,27 @@ const ConnectTab = () => {
                       storeType === "shopify" ? (
                         <div className="space-y-4">
                           <div className="space-y-2">
-                            <Label htmlFor="paymentStatus" className="text-sm font-medium">
-                              Payment Status AI Can Write
-                            </Label>
+                            <div className="flex items-center justify-between">
+                              <Label htmlFor="paymentStatus" className="text-sm font-medium">
+                                Payment Status AI Can Write
+                              </Label>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={fetchStatuses}
+                                disabled={loadingStatuses}
+                              >
+                                {loadingStatuses ? "Loading..." : "Get all statuses"}
+                              </Button>
+                            </div>
                             <Input
                               id="paymentStatus"
                               type="text"
                               placeholder="pending, authorized, paid"
                               className="h-11"
+                              value={paymentStatus}
+                              onChange={(e) => setPaymentStatus(e.target.value)}
                             />
                           </div>
                           <div className="space-y-2">
@@ -265,19 +367,34 @@ const ConnectTab = () => {
                               type="text"
                               placeholder="unfulfilled, partial, fulfilled"
                               className="h-11"
+                              value={fulfillmentStatus}
+                              onChange={(e) => setFulfillmentStatus(e.target.value)}
                             />
                           </div>
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          <Label htmlFor="orderStatus" className="text-sm font-medium">
-                            Order Status AI Can Write
-                          </Label>
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor="orderStatus" className="text-sm font-medium">
+                              Order Status AI Can Write
+                            </Label>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={fetchStatuses}
+                              disabled={loadingStatuses}
+                            >
+                              {loadingStatuses ? "Loading..." : "Get all statuses"}
+                            </Button>
+                          </div>
                           <Input
                             id="orderStatus"
                             type="text"
                             placeholder="processing, completed, cancelled"
                             className="h-11"
+                            value={orderStatus}
+                            onChange={(e) => setOrderStatus(e.target.value)}
                           />
                         </div>
                       )
