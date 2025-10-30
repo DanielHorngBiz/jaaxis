@@ -253,7 +253,7 @@ const ConnectTab = () => {
                       className="h-11" 
                       onClick={() => step === 1 ? setStep(2) : null}
                     >
-                      {step === 1 ? 'Next' : `Connect ${storeType === "shopify" ? "Shopify" : "WooCommerce"}`}
+                      Connect
                     </Button>
                   </div>
                 </div>
