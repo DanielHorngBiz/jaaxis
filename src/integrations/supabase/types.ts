@@ -14,7 +14,181 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chatbots: {
+        Row: {
+          avatar_url: string | null
+          blocklist: string | null
+          chat_position: string
+          created_at: string
+          forwarding_rules: string | null
+          id: string
+          mobile_display: string
+          name: string
+          persona: string | null
+          primary_color: string
+          slug: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          blocklist?: string | null
+          chat_position?: string
+          created_at?: string
+          forwarding_rules?: string | null
+          id?: string
+          mobile_display?: string
+          name: string
+          persona?: string | null
+          primary_color?: string
+          slug: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          blocklist?: string | null
+          chat_position?: string
+          created_at?: string
+          forwarding_rules?: string | null
+          id?: string
+          mobile_display?: string
+          name?: string
+          persona?: string | null
+          primary_color?: string
+          slug?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      knowledge_sources: {
+        Row: {
+          answer: string | null
+          chatbot_id: string
+          content: string | null
+          created_at: string
+          file_name: string | null
+          file_url: string | null
+          id: string
+          question: string | null
+          status: string
+          type: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          answer?: string | null
+          chatbot_id: string
+          content?: string | null
+          created_at?: string
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          question?: string | null
+          status?: string
+          type: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          answer?: string | null
+          chatbot_id?: string
+          content?: string | null
+          created_at?: string
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          question?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "knowledge_sources_chatbot_id_fkey"
+            columns: ["chatbot_id"]
+            isOneToOne: false
+            referencedRelation: "chatbots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          city: string | null
+          created_at: string
+          first_name: string
+          id: string
+          last_name: string
+          postal_code: string | null
+          state: string | null
+          street: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          city?: string | null
+          created_at?: string
+          first_name: string
+          id?: string
+          last_name: string
+          postal_code?: string | null
+          state?: string | null
+          street?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          city?: string | null
+          created_at?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          postal_code?: string | null
+          state?: string | null
+          street?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      team_members: {
+        Row: {
+          chatbot_id: string
+          created_at: string
+          email: string
+          id: string
+          role: string
+        }
+        Insert: {
+          chatbot_id: string
+          created_at?: string
+          email: string
+          id?: string
+          role: string
+        }
+        Update: {
+          chatbot_id?: string
+          created_at?: string
+          email?: string
+          id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_chatbot_id_fkey"
+            columns: ["chatbot_id"]
+            isOneToOne: false
+            referencedRelation: "chatbots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
