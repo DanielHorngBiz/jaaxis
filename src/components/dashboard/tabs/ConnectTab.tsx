@@ -241,7 +241,7 @@ const ConnectTab = () => {
                 )}
 
                 {/* Footer Actions */}
-                <div className="px-8 py-6 border-t bg-muted/30">
+                <div className="px-8 py-4 border-t bg-muted/30">
                   <div className="flex gap-3 justify-end">
                     {step === 2 && (
                       <Button 
