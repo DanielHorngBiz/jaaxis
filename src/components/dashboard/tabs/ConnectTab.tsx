@@ -13,7 +13,7 @@ const ConnectTab = () => {
   const [accessLevel, setAccessLevel] = useState<"read" | "readwrite">("read");
   
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-8">
+    <div className="space-y-8">
       <div>
         <h3 className="text-lg font-semibold mb-2">Integration Options</h3>
         <p className="text-sm text-muted-foreground mb-6">

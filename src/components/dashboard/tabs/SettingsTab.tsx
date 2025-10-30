@@ -63,7 +63,7 @@ const SettingsTab = () => {
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-8">
+    <div className="space-y-8">
       {/* General Section */}
       <div className="pb-8 border-b">
         <h3 className="text-lg font-semibold mb-2">General</h3>
