@@ -107,25 +107,34 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[540px] p-0 gap-0">
+      <DialogContent className="sm:max-w-[700px] p-0 gap-0">
         {/* Step indicator at top */}
         <div className="px-8 pt-6 pb-4">
           <div className="flex items-center justify-center gap-2">
             {steps.map((step, index) => (
               <>
-                <div
-                  key={step.number}
-                  className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors",
+                <div key={step.number} className="flex flex-col items-center gap-1.5">
+                  <div
+                    className={cn(
+                      "w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors",
+                      currentStep === step.number
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-muted-foreground"
+                    )}
+                  >
+                    {step.number}
+                  </div>
+                  <span className={cn(
+                    "text-xs font-medium transition-colors",
                     currentStep === step.number
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-secondary text-muted-foreground"
-                  )}
-                >
-                  {step.number}
+                      ? "text-foreground"
+                      : "text-muted-foreground"
+                  )}>
+                    {step.label}
+                  </span>
                 </div>
                 {index < steps.length - 1 && (
-                  <div className="w-12 h-px bg-border" />
+                  <div className="w-8 h-px bg-border mb-5" />
                 )}
               </>
             ))}
