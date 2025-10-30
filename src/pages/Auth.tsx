@@ -4,17 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { ArrowLeft } from "lucide-react";
 import logo from "@/assets/jaxxis-logo.png";
-
-// Mock account credentials
-const MOCK_ACCOUNT = {
-  email: "daniel@jaaxis.com",
-  password: "daniel",
-  firstName: "Daniel",
-  lastName: "Hung",
-};
 
 // Validation schemas
 const loginSchema = z.object({
@@ -41,10 +34,13 @@ const Auth = () => {
 
   // Check if user is already logged in
   useEffect(() => {
-    const currentUser = sessionStorage.getItem("currentUser");
-    if (currentUser) {
-      navigate("/dashboard");
-    }
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        navigate("/dashboard");
+      }
+    };
+    checkUser();
   }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -55,49 +51,37 @@ const Auth = () => {
       // Validate input
       loginSchema.parse({ email, password });
 
-      // Check against mock account
-      if (email === MOCK_ACCOUNT.email && password === MOCK_ACCOUNT.password) {
-        sessionStorage.setItem("currentUser", JSON.stringify({
-          email: MOCK_ACCOUNT.email,
-          firstName: MOCK_ACCOUNT.firstName,
-          lastName: MOCK_ACCOUNT.lastName,
-        }));
-        toast({
-          title: "Welcome back!",
-          description: `Logged in as ${MOCK_ACCOUNT.firstName} ${MOCK_ACCOUNT.lastName}`,
-        });
-        navigate("/dashboard");
-        return;
-      }
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      // Check session-stored accounts
-      const accounts = JSON.parse(sessionStorage.getItem("accounts") || "[]");
-      const account = accounts.find((acc: any) => acc.email === email && acc.password === password);
+      if (error) throw error;
 
-      if (account) {
-        sessionStorage.setItem("currentUser", JSON.stringify({
-          email: account.email,
-          firstName: account.firstName,
-          lastName: account.lastName,
-        }));
-        toast({
-          title: "Welcome back!",
-          description: `Logged in as ${account.firstName} ${account.lastName}`,
-        });
-        navigate("/dashboard");
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Login failed",
-          description: "Invalid email or password",
-        });
-      }
-    } catch (error) {
+      // Fetch profile to get name
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('first_name, last_name')
+        .eq('user_id', data.user.id)
+        .single();
+
+      toast({
+        title: "Welcome back!",
+        description: profile ? `Logged in as ${profile.first_name} ${profile.last_name}` : "Logged in successfully",
+      });
+      navigate("/dashboard");
+    } catch (error: any) {
       if (error instanceof z.ZodError) {
         toast({
           variant: "destructive",
           title: "Validation error",
           description: error.errors[0].message,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Login failed",
+          description: error.message || "Invalid email or password",
         });
       }
     } finally {
@@ -113,43 +97,36 @@ const Auth = () => {
       // Validate input
       signupSchema.parse({ firstName, lastName, email, password });
 
-      // Check if email already exists
-      const accounts = JSON.parse(sessionStorage.getItem("accounts") || "[]");
-      const emailExists = accounts.some((acc: any) => acc.email === email) || email === MOCK_ACCOUNT.email;
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+          },
+        },
+      });
 
-      if (emailExists) {
-        toast({
-          variant: "destructive",
-          title: "Sign up failed",
-          description: "An account with this email already exists",
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      // Create new account
-      const newAccount = { firstName, lastName, email, password };
-      accounts.push(newAccount);
-      sessionStorage.setItem("accounts", JSON.stringify(accounts));
-
-      // Auto login
-      sessionStorage.setItem("currentUser", JSON.stringify({
-        email: newAccount.email,
-        firstName: newAccount.firstName,
-        lastName: newAccount.lastName,
-      }));
+      if (error) throw error;
 
       toast({
         title: "Account created!",
         description: `Welcome, ${firstName} ${lastName}!`,
       });
       navigate("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof z.ZodError) {
         toast({
           variant: "destructive",
           title: "Validation error",
           description: error.errors[0].message,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Sign up failed",
+          description: error.message || "An error occurred during sign up",
         });
       }
     } finally {

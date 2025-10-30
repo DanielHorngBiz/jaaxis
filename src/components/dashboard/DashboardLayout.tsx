@@ -6,6 +6,8 @@ import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import {
   Popover,
   PopoverContent,
@@ -21,45 +23,57 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, profile } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(() => {
     const saved = localStorage.getItem('sidebarCollapsed');
     return saved === 'true';
   });
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-
-  const [botConfig, setBotConfig] = useState(() => {
-    const saved = localStorage.getItem("botConfig");
-    return saved ? JSON.parse(saved) : { botName: "Jaaxis", brandLogo: defaultAvatar };
-  });
-
-  const mockBots = [
-    {
-      id: "jaaxis",
-      name: botConfig.botName,
-      avatar: botConfig.brandLogo,
-    },
-  ];
+  const [bots, setBots] = useState<any[]>([]);
 
   useEffect(() => {
     localStorage.setItem('sidebarCollapsed', String(isCollapsed));
   }, [isCollapsed]);
 
   useEffect(() => {
-    const handleConfigUpdate = (event: CustomEvent) => {
-      setBotConfig(event.detail);
-    };
+    if (user) {
+      fetchBots();
+    }
+  }, [user]);
 
-    window.addEventListener("botConfigUpdated", handleConfigUpdate as EventListener);
-    return () => window.removeEventListener("botConfigUpdated", handleConfigUpdate as EventListener);
-  }, []);
+  const fetchBots = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('chatbots')
+      .select('id, name, slug, avatar_url')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("currentUser");
+    if (error) {
+      console.error('Error fetching bots:', error);
+    } else {
+      setBots(data || []);
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     toast({
       title: "Logged out",
       description: "You have been successfully logged out",
     });
     navigate("/");
+  };
+
+  const getInitials = () => {
+    if (!profile) return "U";
+    return `${profile.first_name.charAt(0)}${profile.last_name.charAt(0)}`.toUpperCase();
+  };
+
+  const getFullName = () => {
+    if (!profile) return "User";
+    return `${profile.first_name} ${profile.last_name}`;
   };
 
   return (
@@ -101,17 +115,17 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           {!isCollapsed && (
             <p className="px-3 mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">Your Bots</p>
           )}
-          {mockBots.map((bot) => (
-            <Link key={bot.id} to={`/dashboard/bot/${bot.id}`}>
+          {bots.map((bot) => (
+            <Link key={bot.id} to={`/dashboard/bot/${bot.slug}`}>
               <div
                 className={`flex items-center ${isCollapsed ? 'justify-center p-2' : 'gap-3 p-3'} rounded-lg transition-all hover:bg-secondary/80 ${
-                  location.pathname.includes(bot.id) ? "bg-secondary shadow-sm" : ""
+                  location.pathname.includes(bot.slug) ? "bg-secondary shadow-sm" : ""
                 }`}
                 title={isCollapsed ? bot.name : undefined}
               >
                 <div className={`${isCollapsed ? 'w-9 h-9' : 'w-9 h-9'} rounded-full overflow-hidden shadow-sm flex-shrink-0`}>
                   <img
-                    src={bot.avatar}
+                    src={bot.avatar_url || defaultAvatar}
                     alt={bot.name}
                     className="w-full h-full object-cover"
                     onError={(e) => {
@@ -132,17 +146,17 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               {isCollapsed ? (
                 <button className="w-full flex justify-center hover:bg-secondary/50 p-2 rounded-lg transition-colors">
                   <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-semibold text-primary">DH</span>
+                    <span className="text-sm font-semibold text-primary">{getInitials()}</span>
                   </div>
                 </button>
               ) : (
                 <button className="w-full flex items-center gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors">
                   <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-semibold text-primary">DH</span>
+                    <span className="text-sm font-semibold text-primary">{getInitials()}</span>
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <p className="text-sm font-medium truncate">Daniel Hung</p>
-                    <p className="text-xs text-muted-foreground truncate">daniel@jaaxis.com</p>
+                    <p className="text-sm font-medium truncate">{getFullName()}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                   </div>
                 </button>
               )}
@@ -151,11 +165,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <div className="p-3 border-b border-border">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-base font-semibold text-primary">DH</span>
+                    <span className="text-base font-semibold text-primary">{getInitials()}</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">Daniel Hung</p>
-                    <p className="text-xs text-muted-foreground truncate">daniel@jaaxis.com</p>
+                    <p className="text-sm font-medium truncate">{getFullName()}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                   </div>
                 </div>
               </div>
