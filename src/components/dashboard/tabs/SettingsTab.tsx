@@ -9,6 +9,7 @@ import { Pencil, Upload, Trash2, Plus, MoreHorizontal } from "lucide-react";
 import { useBotConfig } from "@/contexts/BotConfigContext";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 const colors = [
   "#FF9800",
@@ -22,6 +23,7 @@ const colors = [
 const SettingsTab = () => {
   const { config, updateConfig } = useBotConfig();
   const { toast } = useToast();
+  const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [botName, setBotName] = useState(config.botName);
   const [brandLogo, setBrandLogo] = useState<string>(config.brandLogo || defaultAvatar);
@@ -256,40 +258,12 @@ const SettingsTab = () => {
               </TableHeader>
               <TableBody>
                 <TableRow>
-                  <TableCell className="font-medium">metal666grin@gmail.com</TableCell>
-                  <TableCell>Owner</TableCell>
+                  <TableCell className="font-medium">{user?.email}</TableCell>
+                  <TableCell>Owner (You)</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon">
+                    <Button variant="ghost" size="icon" disabled>
                       <MoreHorizontal className="w-4 h-4" />
                     </Button>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">contact@flexpresets.com</TableCell>
-                  <TableCell>support</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <Pencil className="w-4 h-4 text-primary" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <Trash2 className="w-4 h-4 text-destructive" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">metal66grin@gmail.com</TableCell>
-                  <TableCell>admin</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <Pencil className="w-4 h-4 text-primary" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <Trash2 className="w-4 h-4 text-destructive" />
-                      </Button>
-                    </div>
                   </TableCell>
                 </TableRow>
               </TableBody>
