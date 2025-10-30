@@ -48,7 +48,7 @@ const BotDetailContent = () => {
           navigate(`/dashboard/bot/${botId}/${tabId}`);
         }}
       >
-        <ContentContainer className="p-8 pt-12 max-w-4xl mx-auto">
+        <ContentContainer className="px-8 py-12 max-w-4xl mx-auto">
           {renderTabContent()}
         </ContentContainer>
       </TabbedPageLayout>
