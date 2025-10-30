@@ -37,23 +37,25 @@ const BillingTab = () => {
   return (
     <div className="space-y-8">
       {/* Plans & Usage Section */}
-      <h3 className="text-lg font-semibold">Plans & Usage</h3>
-      
-      {/* Replies Usage */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-lg">Replies Usage</h3>
-              <div className="text-right">
-                <p className="text-2xl font-bold">{remainingReplies.toLocaleString()}</p>
-                <p className="text-sm text-muted-foreground">of {totalReplies.toLocaleString()} remaining</p>
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Plans & Usage</h3>
+        
+        {/* Replies Usage */}
+        <Card>
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-lg">Replies Usage</h3>
+                <div className="text-right">
+                  <p className="text-2xl font-bold">{remainingReplies.toLocaleString()}</p>
+                  <p className="text-sm text-muted-foreground">of {totalReplies.toLocaleString()} remaining</p>
+                </div>
               </div>
+              <Progress value={remainingPercentage} className="h-2" />
             </div>
-            <Progress value={remainingPercentage} className="h-2" />
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Pricing Plans */}
       <div className="grid grid-cols-3 gap-4">
