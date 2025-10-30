@@ -18,7 +18,7 @@ const TrainingTab = () => {
         <div className="space-y-4">
           <Textarea
             className="min-h-[140px] resize-none"
-            defaultValue="You are a friendly and helpful assistant. Only when the customer is using Chinese, respond in Traditional Chinese (zh-hant), and use a Taiwan friendly tone; never use Simplified Chinese (zh-cn). Otherwise, please respond in the same language they're using."
+            placeholder="Type here..."
           />
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
