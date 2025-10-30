@@ -11,6 +11,8 @@ import { Upload, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 
 interface CreateChatbotDialogProps {
   open: boolean;
@@ -43,11 +45,13 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
   const [knowledge, setKnowledge] = useState("");
   const [persona, setPersona] = useState("");
   const [rules, setRules] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep === 1 && !chatbotName.trim()) {
       toast({
         title: "Chatbot Name Required",
@@ -59,12 +63,61 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
     } else {
+      await handleCreateBot();
+    }
+  };
+
+  const handleCreateBot = async () => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to create a chatbot",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsCreating(true);
+
+    try {
+      // Generate a slug from the chatbot name
+      const slug = chatbotName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+
+      const { data, error } = await supabase
+        .from('chatbots')
+        .insert({
+          user_id: user.id,
+          name: chatbotName,
+          slug,
+          avatar_url: chatbotImage,
+          primary_color: selectedColor,
+          persona: persona || null,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
       toast({
         title: "Chatbot Created",
         description: "Your chatbot has been created successfully",
       });
+
       onOpenChange(false);
       resetForm();
+      navigate(`/dashboard/bot/${slug}`);
+    } catch (error: any) {
+      console.error('Error creating chatbot:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create chatbot",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -364,8 +417,9 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
             <Button 
               className="h-11" 
               onClick={handleNext}
+              disabled={isCreating}
             >
-              {currentStep === 5 ? "Create Bot" : "Next"}
+              {currentStep === 5 ? (isCreating ? "Creating..." : "Create Bot") : "Next"}
             </Button>
           </div>
         </div>
