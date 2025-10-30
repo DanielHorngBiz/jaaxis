@@ -107,7 +107,9 @@ const ConnectTab = () => {
 
                 {/* Heading */}
                 <div className="px-8 pt-6 pb-2">
-                  <h2 className="text-xl font-semibold">Connect Your Store</h2>
+                  <h2 className="text-xl font-semibold">
+                    {step === 1 ? 'Connect Your Store' : 'Select Access Level'}
+                  </h2>
                 </div>
                 
                 {step === 1 ? (
