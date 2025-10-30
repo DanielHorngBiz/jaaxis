@@ -3,15 +3,61 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Trash2 } from "lucide-react";
+import { Trash2, Edit2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { ChangePasswordDialog } from "./ChangePasswordDialog";
-import { ChangeEmailDialog } from "./ChangeEmailDialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const AccountTab = () => {
   const { user, profile } = useAuth();
+  const { toast } = useToast();
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
-  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
+  const [newEmail, setNewEmail] = useState(user?.email || "");
+
+  const handleEmailEdit = async () => {
+    if (!isEditingEmail) {
+      setIsEditingEmail(true);
+      setNewEmail(user?.email || "");
+      return;
+    }
+
+    if (!newEmail || !newEmail.includes("@")) {
+      toast({
+        title: "Invalid email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newEmail === user?.email) {
+      setIsEditingEmail(false);
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        email: newEmail,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Email update initiated",
+        description: "Please check your new email to confirm the change.",
+      });
+      
+      setIsEditingEmail(false);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update email.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const getInitials = () => {
     if (profile?.first_name && profile?.last_name) {
@@ -55,14 +101,20 @@ const AccountTab = () => {
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <div className="flex gap-2">
-              <Input id="email" value={user?.email || ""} disabled className="bg-muted" />
+              <Input 
+                id="email" 
+                value={isEditingEmail ? newEmail : user?.email || ""} 
+                disabled={!isEditingEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                className={!isEditingEmail ? "bg-muted" : ""}
+              />
               <Button 
-                size="sm" 
-                variant="outline" 
+                size="icon" 
+                variant="ghost" 
                 className="flex-shrink-0"
-                onClick={() => setEmailDialogOpen(true)}
+                onClick={handleEmailEdit}
               >
-                Edit
+                <Edit2 className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -71,12 +123,12 @@ const AccountTab = () => {
             <div className="flex gap-2">
               <Input id="password" type="password" value="········" disabled className="bg-muted" />
               <Button 
-                size="sm" 
-                variant="outline" 
+                size="icon" 
+                variant="ghost" 
                 className="flex-shrink-0"
                 onClick={() => setPasswordDialogOpen(true)}
               >
-                Edit
+                <Edit2 className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -118,11 +170,6 @@ const AccountTab = () => {
       <ChangePasswordDialog 
         open={passwordDialogOpen} 
         onOpenChange={setPasswordDialogOpen} 
-      />
-      <ChangeEmailDialog 
-        open={emailDialogOpen} 
-        onOpenChange={setEmailDialogOpen}
-        currentEmail={user?.email || ""}
       />
     </div>
   );
