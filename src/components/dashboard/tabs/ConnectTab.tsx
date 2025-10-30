@@ -171,10 +171,10 @@ const ConnectTab = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 -mt-1 -mr-1 [&_svg]:size-8"
+                  className="h-10 w-10 -mt-1 -mr-1"
                   onClick={openSettingsDialog}
                 >
-                  <Settings />
+                  <Settings className="w-5 h-5" />
                 </Button>
               )}
             </div>
