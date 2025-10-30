@@ -239,21 +239,21 @@ const ConnectTab = () => {
 
                 {/* Footer Actions */}
                 <div className="px-8 py-6 border-t bg-muted/30">
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 justify-end">
                     {step === 2 && (
                       <Button 
                         variant="outline" 
-                        className="flex-1 h-11" 
+                        className="h-11" 
                         onClick={() => setStep(1)}
                       >
                         Back
                       </Button>
                     )}
                     <Button 
-                      className="flex-1 h-11" 
+                      className="h-11" 
                       onClick={() => step === 1 ? setStep(2) : null}
                     >
-                      {step === 1 ? 'Continue' : `Connect ${storeType === "shopify" ? "Shopify" : "WooCommerce"}`}
+                      {step === 1 ? 'Next' : `Connect ${storeType === "shopify" ? "Shopify" : "WooCommerce"}`}
                     </Button>
                   </div>
                 </div>
