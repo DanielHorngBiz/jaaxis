@@ -87,20 +87,38 @@ const ConnectTab = () => {
                 {/* Step indicator at top */}
                 <div className="px-8 pt-6 pb-4">
                   <div className="flex items-center justify-center gap-2">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
-                      step === 1 
-                        ? 'bg-primary text-primary-foreground' 
-                        : 'bg-secondary text-muted-foreground'
-                    }`}>
-                      1
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
+                        step === 1 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'bg-secondary text-muted-foreground'
+                      }`}>
+                        1
+                      </div>
+                      <span className={`text-xs font-medium transition-colors ${
+                        step === 1
+                          ? 'text-foreground'
+                          : 'text-muted-foreground'
+                      }`}>
+                        Connect
+                      </span>
                     </div>
-                    <div className="w-12 h-px bg-border" />
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
-                      step === 2 
-                        ? 'bg-primary text-primary-foreground' 
-                        : 'bg-secondary text-muted-foreground'
-                    }`}>
-                      2
+                    <div className="w-8 h-px bg-border mb-5" />
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
+                        step === 2 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'bg-secondary text-muted-foreground'
+                      }`}>
+                        2
+                      </div>
+                      <span className={`text-xs font-medium transition-colors ${
+                        step === 2
+                          ? 'text-foreground'
+                          : 'text-muted-foreground'
+                      }`}>
+                        Access
+                      </span>
                     </div>
                   </div>
                 </div>
