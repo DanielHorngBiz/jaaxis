@@ -22,7 +22,9 @@ const ConnectTab = () => {
   const [paymentStatus, setPaymentStatus] = useState("");
   const [fulfillmentStatus, setFulfillmentStatus] = useState("");
   const [orderStatus, setOrderStatus] = useState("");
-  const [loadingStatuses, setLoadingStatuses] = useState(false);
+  const [loadingPayment, setLoadingPayment] = useState(false);
+  const [loadingFulfillment, setLoadingFulfillment] = useState(false);
+  const [loadingOrder, setLoadingOrder] = useState(false);
   const { toast } = useToast();
 
   const fetchStatuses = async (statusType: 'payment' | 'fulfillment' | 'order') => {
@@ -47,7 +49,10 @@ const ConnectTab = () => {
       }
     }
 
-    setLoadingStatuses(true);
+    // Set loading state for specific button
+    if (statusType === 'payment') setLoadingPayment(true);
+    else if (statusType === 'fulfillment') setLoadingFulfillment(true);
+    else setLoadingOrder(true);
     try {
       const { data, error } = await supabase.functions.invoke('fetch-store-statuses', {
         body: {
@@ -86,7 +91,9 @@ const ConnectTab = () => {
         variant: "destructive",
       });
     } finally {
-      setLoadingStatuses(false);
+      if (statusType === 'payment') setLoadingPayment(false);
+      else if (statusType === 'fulfillment') setLoadingFulfillment(false);
+      else setLoadingOrder(false);
     }
   };
   
@@ -340,10 +347,11 @@ const ConnectTab = () => {
                                 type="button"
                                 variant="outline"
                                 size="sm"
+                                className="h-7 text-xs px-2"
                                 onClick={() => fetchStatuses('payment')}
-                                disabled={loadingStatuses}
+                                disabled={loadingPayment}
                               >
-                                {loadingStatuses ? "Loading..." : "Get all statuses"}
+                                {loadingPayment ? "Loading..." : "Get all statuses"}
                               </Button>
                             </div>
                             <Input
@@ -364,10 +372,11 @@ const ConnectTab = () => {
                                 type="button"
                                 variant="outline"
                                 size="sm"
+                                className="h-7 text-xs px-2"
                                 onClick={() => fetchStatuses('fulfillment')}
-                                disabled={loadingStatuses}
+                                disabled={loadingFulfillment}
                               >
-                                {loadingStatuses ? "Loading..." : "Get all statuses"}
+                                {loadingFulfillment ? "Loading..." : "Get all statuses"}
                               </Button>
                             </div>
                             <Input
@@ -390,10 +399,11 @@ const ConnectTab = () => {
                               type="button"
                               variant="outline"
                               size="sm"
+                              className="h-7 text-xs px-2"
                               onClick={() => fetchStatuses('order')}
-                              disabled={loadingStatuses}
+                              disabled={loadingOrder}
                             >
-                              {loadingStatuses ? "Loading..." : "Get all statuses"}
+                              {loadingOrder ? "Loading..." : "Get all statuses"}
                             </Button>
                           </div>
                           <Input
