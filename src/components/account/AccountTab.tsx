@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const AccountTab = () => {
-  const { user, profile } = useAuth();
+  const { user, profile, refetchProfile } = useAuth();
   const { toast } = useToast();
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
@@ -110,8 +110,8 @@ const AccountTab = () => {
         description: "Profile picture updated successfully.",
       });
 
-      // Refresh the page to show new avatar
-      window.location.reload();
+      // Refetch profile to update UI
+      await refetchProfile();
     } catch (error: any) {
       toast({
         title: "Error",
@@ -149,8 +149,8 @@ const AccountTab = () => {
         description: "Profile picture removed successfully.",
       });
 
-      // Refresh the page
-      window.location.reload();
+      // Refetch profile to update UI
+      await refetchProfile();
     } catch (error: any) {
       toast({
         title: "Error",

@@ -57,5 +57,11 @@ export function useAuth() {
     }
   };
 
-  return { user, profile, loading };
+  const refetchProfile = async () => {
+    if (user) {
+      await fetchProfile(user.id);
+    }
+  };
+
+  return { user, profile, loading, refetchProfile };
 }

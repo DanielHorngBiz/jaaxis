@@ -145,15 +145,27 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <PopoverTrigger asChild>
               {isCollapsed ? (
                 <button className="w-full flex justify-center hover:bg-secondary/50 p-2 rounded-lg transition-colors">
-                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-semibold text-primary">{getInitials()}</span>
-                  </div>
+                  {profile?.avatar_url ? (
+                    <div className="w-9 h-9 rounded-full overflow-hidden shadow-sm flex-shrink-0">
+                      <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <span className="text-sm font-semibold text-primary">{getInitials()}</span>
+                    </div>
+                  )}
                 </button>
               ) : (
                 <button className="w-full flex items-center gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors">
-                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-semibold text-primary">{getInitials()}</span>
-                  </div>
+                  {profile?.avatar_url ? (
+                    <div className="w-9 h-9 rounded-full overflow-hidden shadow-sm flex-shrink-0">
+                      <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <span className="text-sm font-semibold text-primary">{getInitials()}</span>
+                    </div>
+                  )}
                   <div className="flex-1 min-w-0 text-left">
                     <p className="text-sm font-medium truncate">{getFullName()}</p>
                     <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
@@ -164,9 +176,15 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <PopoverContent className="w-64 p-0" align="end" side="top">
               <div className="p-3 border-b border-border">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-base font-semibold text-primary">{getInitials()}</span>
-                  </div>
+                  {profile?.avatar_url ? (
+                    <div className="w-12 h-12 rounded-full overflow-hidden shadow-sm flex-shrink-0">
+                      <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <span className="text-base font-semibold text-primary">{getInitials()}</span>
+                    </div>
+                  )}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{getFullName()}</p>
                     <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
