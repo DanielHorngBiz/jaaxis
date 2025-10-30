@@ -84,9 +84,6 @@ const Dashboard = () => {
         ) : (
           <div className="text-center py-16 animate-fade-in">
             <div className="max-w-md mx-auto">
-              <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                <Plus className="w-12 h-12 text-primary" />
-              </div>
               <h2 className="text-2xl font-bold mb-2">No chatbots yet</h2>
               <p className="text-muted-foreground mb-8">
                 Get started by creating your first chatbot
