@@ -121,7 +121,7 @@ const ConnectTab = () => {
                         <button
                           type="button"
                           onClick={() => setStoreType("shopify")}
-                          className={`px-4 py-3 rounded-lg border-2 transition-all text-center font-medium text-sm ${
+                          className={`h-11 px-4 rounded-lg border-2 transition-all text-center font-medium text-sm ${
                             storeType === "shopify"
                               ? 'border-primary bg-primary/5'
                               : 'border-border hover:border-primary/50'
@@ -132,7 +132,7 @@ const ConnectTab = () => {
                         <button
                           type="button"
                           onClick={() => setStoreType("woocommerce")}
-                          className={`px-4 py-3 rounded-lg border-2 transition-all text-center font-medium text-sm ${
+                          className={`h-11 px-4 rounded-lg border-2 transition-all text-center font-medium text-sm ${
                             storeType === "woocommerce"
                               ? 'border-primary bg-primary/5'
                               : 'border-border hover:border-primary/50'
@@ -198,7 +198,7 @@ const ConnectTab = () => {
                         <button
                           type="button"
                           onClick={() => setAccessLevel("read")}
-                          className={`px-4 py-3 rounded-lg border-2 transition-all text-center font-medium text-sm ${
+                          className={`h-11 px-4 rounded-lg border-2 transition-all text-center font-medium text-sm ${
                             accessLevel === "read"
                               ? 'border-primary bg-primary/5'
                               : 'border-border hover:border-primary/50'
@@ -209,7 +209,7 @@ const ConnectTab = () => {
                         <button
                           type="button"
                           onClick={() => setAccessLevel("readwrite")}
-                          className={`px-4 py-3 rounded-lg border-2 transition-all text-center font-medium text-sm ${
+                          className={`h-11 px-4 rounded-lg border-2 transition-all text-center font-medium text-sm ${
                             accessLevel === "readwrite"
                               ? 'border-primary bg-primary/5'
                               : 'border-border hover:border-primary/50'
