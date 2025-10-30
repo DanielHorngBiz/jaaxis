@@ -91,8 +91,11 @@ const Pricing = () => {
               className="w-full mb-6"
               variant={plan.highlighted ? "default" : "outline"}
               size="lg"
+              asChild
             >
-              {plan.name === "Basic" ? "7-Day Free Trial" : "Get Started"}
+              <a href="/auth">
+                {plan.name === "Basic" ? "7-Day Free Trial" : "Get Started"}
+              </a>
             </Button>
 
               <div className="space-y-3">
