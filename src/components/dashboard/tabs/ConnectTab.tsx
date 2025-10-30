@@ -25,7 +25,7 @@ const ConnectTab = () => {
   const [loadingStatuses, setLoadingStatuses] = useState(false);
   const { toast } = useToast();
 
-  const fetchStatuses = async () => {
+  const fetchStatuses = async (statusType: 'payment' | 'fulfillment' | 'order') => {
     if (!storeUrl) {
       toast({
         title: "Missing Information",
@@ -68,8 +68,11 @@ const ConnectTab = () => {
       if (error) throw error;
 
       if (storeType === "shopify") {
-        setPaymentStatus(data.paymentStatuses);
-        setFulfillmentStatus(data.fulfillmentStatuses);
+        if (statusType === 'payment') {
+          setPaymentStatus(data.paymentStatuses);
+        } else if (statusType === 'fulfillment') {
+          setFulfillmentStatus(data.fulfillmentStatuses);
+        }
         toast({
           title: "Success",
           description: "Statuses loaded successfully",
@@ -343,7 +346,7 @@ const ConnectTab = () => {
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                onClick={fetchStatuses}
+                                onClick={() => fetchStatuses('payment')}
                                 disabled={loadingStatuses}
                               >
                                 {loadingStatuses ? "Loading..." : "Get all statuses"}
@@ -359,9 +362,20 @@ const ConnectTab = () => {
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="fulfillmentStatus" className="text-sm font-medium">
-                              Fulfillment Status AI Can Write
-                            </Label>
+                            <div className="flex items-center justify-between">
+                              <Label htmlFor="fulfillmentStatus" className="text-sm font-medium">
+                                Fulfillment Status AI Can Write
+                              </Label>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => fetchStatuses('fulfillment')}
+                                disabled={loadingStatuses}
+                              >
+                                {loadingStatuses ? "Loading..." : "Get all statuses"}
+                              </Button>
+                            </div>
                             <Input
                               id="fulfillmentStatus"
                               type="text"
@@ -382,7 +396,7 @@ const ConnectTab = () => {
                               type="button"
                               variant="outline"
                               size="sm"
-                              onClick={fetchStatuses}
+                              onClick={() => fetchStatuses('order')}
                               disabled={loadingStatuses}
                             >
                               {loadingStatuses ? "Loading..." : "Get all statuses"}

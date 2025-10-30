@@ -16,12 +16,9 @@ serve(async (req) => {
     console.log('Fetching statuses for:', { storeType, storeUrl });
 
     if (storeType === 'shopify') {
-      // Fetch Shopify payment and fulfillment statuses
-      const cleanUrl = storeUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
-      
-      // Shopify uses predefined status values
-      const paymentStatuses = ['pending', 'authorized', 'paid', 'partially_paid', 'refunded', 'voided'];
-      const fulfillmentStatuses = ['unfulfilled', 'partial', 'fulfilled', 'restocked'];
+      // Shopify predefined status values
+      const paymentStatuses = ['pending', 'authorized', 'partially_paid', 'paid', 'partially_refunded', 'refunded', 'voided', 'unpaid'];
+      const fulfillmentStatuses = ['fulfilled', 'partial', 'unfulfilled', 'restocked', 'on_hold', 'scheduled'];
 
       return new Response(
         JSON.stringify({
