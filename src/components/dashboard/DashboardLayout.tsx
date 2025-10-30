@@ -90,15 +90,15 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           {isCollapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
         </Button>
 
-        {!isCollapsed && (
-          <div className="p-6">
-            <Link to="/dashboard" className="flex items-center gap-2 group justify-center">
+        <div className="p-6 h-20 flex items-center justify-center">
+          {!isCollapsed && (
+            <Link to="/dashboard" className="flex items-center gap-2 group">
               <img src={logoImage} alt="Jaaxis" className="h-8 transition-transform group-hover:scale-105" />
             </Link>
-          </div>
-        )}
+          )}
+        </div>
 
-        <div className={`px-4 ${isCollapsed ? 'mt-16' : 'mb-6'}`}>
+        <div className="px-4 mb-6">
           <Button 
             className={`${isCollapsed ? 'w-9 h-9 p-0' : 'w-full'} gap-2 shadow-sm`} 
             size={isCollapsed ? "icon" : "sm"}
