@@ -28,27 +28,6 @@ const ConnectTab = () => {
   const { toast } = useToast();
 
   const fetchStatuses = async (statusType: 'payment' | 'fulfillment' | 'order') => {
-    // Only validate credentials for WooCommerce (which actually fetches from API)
-    if (storeType === "woocommerce") {
-      if (!storeUrl) {
-        toast({
-          title: "Missing Information",
-          description: "Please enter your store URL first",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (!consumerKey || !consumerSecret) {
-        toast({
-          title: "Missing Information",
-          description: "Please enter your consumer key and secret first",
-          variant: "destructive",
-        });
-        return;
-      }
-    }
-
     // Set loading state for specific button
     if (statusType === 'payment') setLoadingPayment(true);
     else if (statusType === 'fulfillment') setLoadingFulfillment(true);

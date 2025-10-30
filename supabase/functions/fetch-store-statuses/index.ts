@@ -28,25 +28,11 @@ serve(async (req) => {
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     } else if (storeType === 'woocommerce') {
-      // Fetch WooCommerce order statuses
-      const cleanUrl = storeUrl.replace(/\/$/, '');
-      const apiUrl = `${cleanUrl}/wp-json/wc/v3/reports/orders/totals`;
-
-      const response = await fetch(apiUrl, {
-        headers: {
-          'Authorization': 'Basic ' + btoa(`${consumerKey}:${consumerSecret}`),
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`WooCommerce API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const statuses = data.map((item: any) => item.slug).join(', ');
+      // WooCommerce predefined order statuses
+      const orderStatuses = ['pending', 'processing', 'on-hold', 'completed', 'cancelled', 'refunded', 'failed'];
 
       return new Response(
-        JSON.stringify({ orderStatuses: statuses }),
+        JSON.stringify({ orderStatuses: orderStatuses.join(', ') }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
