@@ -80,15 +80,11 @@ export const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialo
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Change Password</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">Change Password</DialogTitle>
         </DialogHeader>
         <div className="space-y-6 py-4">
-          <p className="text-muted-foreground">
-            Password must be at least 8 characters long.
-          </p>
-
           <div className="space-y-2">
-            <Label htmlFor="old-password" className="text-lg">Old Password</Label>
+            <Label htmlFor="old-password">Old Password</Label>
             <div className="relative">
               <Input
                 id="old-password"
@@ -111,7 +107,7 @@ export const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialo
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="new-password" className="text-lg">New Password</Label>
+            <Label htmlFor="new-password">New Password</Label>
             <div className="relative">
               <Input
                 id="new-password"
@@ -134,7 +130,7 @@ export const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialo
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="retype-password" className="text-lg">Re-type Password</Label>
+            <Label htmlFor="retype-password">Re-type Password</Label>
             <div className="relative">
               <Input
                 id="retype-password"
