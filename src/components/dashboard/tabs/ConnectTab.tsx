@@ -241,19 +241,46 @@ const ConnectTab = () => {
                       </div>
                     </div>
 
-                    {/* Order Status Field - Show only for Read & Write */}
+                    {/* Status Fields - Show only for Read & Write */}
                     {accessLevel === "readwrite" && (
-                      <div className="space-y-2">
-                        <Label htmlFor="orderStatus" className="text-sm font-medium">
-                          Order Status AI Can Write
-                        </Label>
-                        <Input
-                          id="orderStatus"
-                          type="text"
-                          placeholder="processing, completed, cancelled"
-                          className="h-11"
-                        />
-                      </div>
+                      storeType === "shopify" ? (
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="paymentStatus" className="text-sm font-medium">
+                              Payment Status AI Can Write
+                            </Label>
+                            <Input
+                              id="paymentStatus"
+                              type="text"
+                              placeholder="pending, authorized, paid"
+                              className="h-11"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="fulfillmentStatus" className="text-sm font-medium">
+                              Fulfillment Status AI Can Write
+                            </Label>
+                            <Input
+                              id="fulfillmentStatus"
+                              type="text"
+                              placeholder="unfulfilled, partial, fulfilled"
+                              className="h-11"
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <Label htmlFor="orderStatus" className="text-sm font-medium">
+                            Order Status AI Can Write
+                          </Label>
+                          <Input
+                            id="orderStatus"
+                            type="text"
+                            placeholder="processing, completed, cancelled"
+                            className="h-11"
+                          />
+                        </div>
+                      )
                     )}
                   </div>
                 )}
