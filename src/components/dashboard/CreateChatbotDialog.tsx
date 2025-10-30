@@ -107,78 +107,54 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0">
-        {/* Step Indicators */}
-        <div className="px-8 pt-8 pb-6 border-b bg-background">
-          <div className="flex items-center justify-between">
+      <DialogContent className="sm:max-w-[540px] p-0 gap-0">
+        {/* Step indicator at top */}
+        <div className="px-8 pt-6 pb-4">
+          <div className="flex items-center justify-center gap-2">
             {steps.map((step, index) => (
-              <div key={step.number} className="flex items-center flex-1">
-                <div className="flex flex-col items-center gap-2 flex-1">
-                  <div
-                    className={cn(
-                      "w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all",
-                      currentStep === step.number
-                        ? "bg-foreground text-background scale-110"
-                        : currentStep > step.number
-                        ? "bg-primary/20 text-primary"
-                        : "bg-muted text-muted-foreground"
-                    )}
-                  >
-                    {step.number}
-                  </div>
-                  <span
-                    className={cn(
-                      "text-xs font-medium transition-colors",
-                      currentStep === step.number
-                        ? "text-foreground"
-                        : "text-muted-foreground"
-                    )}
-                  >
-                    {step.label}
-                  </span>
+              <>
+                <div
+                  key={step.number}
+                  className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors",
+                    currentStep === step.number
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-muted-foreground"
+                  )}
+                >
+                  {step.number}
                 </div>
                 {index < steps.length - 1 && (
-                  <div
-                    className={cn(
-                      "h-px flex-1 mx-2 transition-colors",
-                      currentStep > step.number ? "bg-primary/30" : "bg-border"
-                    )}
-                  />
+                  <div className="w-12 h-px bg-border" />
                 )}
-              </div>
+              </>
             ))}
           </div>
         </div>
 
         {/* Step Content */}
-        <div className="flex-1 overflow-y-auto px-8 py-8" style={{ maxHeight: "calc(90vh - 200px)" }}>
-          {currentStep === 1 && (
-            <div className="space-y-8 max-w-2xl mx-auto">
-              <div>
-                <h2 className="text-xl font-bold mb-1">Step 1: Basics</h2>
-                <p className="text-sm text-muted-foreground">Set up your chatbot's basic information</p>
+        {currentStep === 1 && (
+          <div className="px-8 py-6 space-y-6">
+            <h2 className="text-xl font-semibold">Basics</h2>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="chatbot-name" className="text-sm font-medium">
+                  Chatbot Name <span className="text-muted-foreground text-xs">(required)</span>
+                </Label>
+                <Input
+                  id="chatbot-name"
+                  placeholder="e.g., Customer Support Bot"
+                  value={chatbotName}
+                  onChange={(e) => setChatbotName(e.target.value)}
+                  className="h-11"
+                />
               </div>
 
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="chatbot-name">
-                    Chatbot Name <span className="text-muted-foreground text-xs">(required)</span>
-                  </Label>
-                  <Input
-                    id="chatbot-name"
-                    placeholder="e.g., Customer Support Bot"
-                    value={chatbotName}
-                    onChange={(e) => setChatbotName(e.target.value)}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Give your bot a clear, descriptive name.
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>
-                    Chatbot Image <span className="text-muted-foreground text-xs">(optional)</span>
-                  </Label>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  Chatbot Image <span className="text-muted-foreground text-xs">(optional)</span>
+                </Label>
                   <div className="flex items-center gap-4">
                     <div
                       className="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold text-white relative overflow-hidden shadow-sm"
@@ -216,13 +192,10 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
                       )}
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Don't worry if you don't have a logo yet — we'll use the first letter of the name.
-                  </p>
                 </div>
 
-                <div className="space-y-3">
-                  <Label>Color</Label>
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Color</Label>
                   <div className="flex items-center gap-4 flex-wrap">
                     <div className="flex gap-2">
                       {colorOptions.map((color) => (
@@ -255,7 +228,7 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
                         placeholder="#FF9800"
                         value={selectedColor}
                         onChange={(e) => handleColorSelect(e.target.value)}
-                        className="w-28"
+                        className="w-28 h-11"
                       />
                       <div
                         className="w-8 h-8 rounded-full border-2 border-border"
@@ -266,83 +239,61 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
                 </div>
               </div>
             </div>
-          )}
+        )}
 
-          {currentStep === 2 && (
-            <div className="space-y-8 max-w-2xl mx-auto">
-              <div>
-                <h2 className="text-xl font-bold mb-1">Step 2: Knowledge</h2>
-                <p className="text-sm text-muted-foreground">Add information your chatbot should know about</p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="knowledge">Knowledge Base</Label>
-                <Textarea
-                  id="knowledge"
-                  placeholder="Provide background information, FAQs, or documentation that will help your chatbot respond accurately..."
-                  value={knowledge}
-                  onChange={(e) => setKnowledge(e.target.value)}
-                  className="min-h-[300px] resize-none"
-                />
-                <p className="text-xs text-muted-foreground">
-                  The more context you provide, the better your chatbot will perform.
-                </p>
-              </div>
+        {currentStep === 2 && (
+          <div className="px-8 py-6 space-y-6">
+            <h2 className="text-xl font-semibold">Knowledge</h2>
+            <div className="space-y-2">
+              <Label htmlFor="knowledge" className="text-sm font-medium">Knowledge Base</Label>
+              <Textarea
+                id="knowledge"
+                placeholder="Provide background information, FAQs, or documentation that will help your chatbot respond accurately..."
+                value={knowledge}
+                onChange={(e) => setKnowledge(e.target.value)}
+                className="min-h-[200px] resize-none"
+              />
             </div>
-          )}
+          </div>
+        )}
 
-          {currentStep === 3 && (
-            <div className="space-y-8 max-w-2xl mx-auto">
-              <div>
-                <h2 className="text-xl font-bold mb-1">Step 3: Persona</h2>
-                <p className="text-sm text-muted-foreground">Define how your chatbot should behave and communicate</p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="persona">Chatbot Personality</Label>
-                <Textarea
-                  id="persona"
-                  placeholder="Describe your chatbot's tone and style. Should it be formal, friendly, professional, or casual?..."
-                  value={persona}
-                  onChange={(e) => setPersona(e.target.value)}
-                  className="min-h-[300px] resize-none"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Example: "Be friendly and helpful, use simple language, and always stay professional."
-                </p>
-              </div>
+        {currentStep === 3 && (
+          <div className="px-8 py-6 space-y-6">
+            <h2 className="text-xl font-semibold">Persona</h2>
+            <div className="space-y-2">
+              <Label htmlFor="persona" className="text-sm font-medium">Chatbot Personality</Label>
+              <Textarea
+                id="persona"
+                placeholder="Describe your chatbot's tone and style. Should it be formal, friendly, professional, or casual?..."
+                value={persona}
+                onChange={(e) => setPersona(e.target.value)}
+                className="min-h-[200px] resize-none"
+              />
             </div>
-          )}
+          </div>
+        )}
 
-          {currentStep === 4 && (
-            <div className="space-y-8 max-w-2xl mx-auto">
-              <div>
-                <h2 className="text-xl font-bold mb-1">Step 4: Rules</h2>
-                <p className="text-sm text-muted-foreground">Set boundaries and guidelines for conversations</p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="rules">Conversation Rules</Label>
-                <Textarea
-                  id="rules"
-                  placeholder="Define rules and guidelines. What topics should it avoid? What format should responses follow?..."
-                  value={rules}
-                  onChange={(e) => setRules(e.target.value)}
-                  className="min-h-[300px] resize-none"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Example: "Never discuss politics or religion. Keep responses under 100 words."
-                </p>
-              </div>
+        {currentStep === 4 && (
+          <div className="px-8 py-6 space-y-6">
+            <h2 className="text-xl font-semibold">Rules</h2>
+            <div className="space-y-2">
+              <Label htmlFor="rules" className="text-sm font-medium">Conversation Rules</Label>
+              <Textarea
+                id="rules"
+                placeholder="Define rules and guidelines. What topics should it avoid? What format should responses follow?..."
+                value={rules}
+                onChange={(e) => setRules(e.target.value)}
+                className="min-h-[200px] resize-none"
+              />
             </div>
-          )}
+          </div>
+        )}
 
-          {currentStep === 5 && (
-            <div className="space-y-8 max-w-2xl mx-auto">
-              <div>
-                <h2 className="text-xl font-bold mb-1">Step 5: Preview</h2>
-                <p className="text-sm text-muted-foreground">Review your chatbot configuration</p>
-              </div>
+        {currentStep === 5 && (
+          <div className="px-8 py-6 space-y-6">
+            <h2 className="text-xl font-semibold">Preview</h2>
 
-              <div className="space-y-6">
-                <div className="border rounded-lg p-6 bg-secondary/10">
+            <div className="border rounded-lg p-6 bg-secondary/10">
                   <div className="flex items-center gap-4 mb-6">
                     <div
                       className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white overflow-hidden shadow-sm"
@@ -386,26 +337,28 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
                     )}
                   </div>
                 </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Navigation Footer */}
-        <div className="flex items-center justify-between px-8 py-4 border-t bg-background">
-          <Button
-            variant="ghost"
-            onClick={handleBack}
-            disabled={currentStep === 1}
-          >
-            Back
-          </Button>
-          <div className="text-xs text-muted-foreground">
-            Step {currentStep} of {steps.length}
           </div>
-          <Button onClick={handleNext} className="min-w-[100px]">
-            {currentStep === 5 ? "Create Bot" : "Next"}
-          </Button>
+        )}
+
+        {/* Footer Actions */}
+        <div className="px-8 py-4 border-t bg-muted/30">
+          <div className="flex gap-3 justify-end">
+            {currentStep > 1 && (
+              <Button 
+                variant="outline" 
+                className="h-11" 
+                onClick={handleBack}
+              >
+                Back
+              </Button>
+            )}
+            <Button 
+              className="h-11" 
+              onClick={handleNext}
+            >
+              {currentStep === 5 ? "Create Bot" : "Next"}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
