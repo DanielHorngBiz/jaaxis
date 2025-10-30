@@ -174,7 +174,7 @@ const ConnectTab = () => {
                   className="h-10 w-10 -mt-1 -mr-1"
                   onClick={openSettingsDialog}
                 >
-                  <Settings className="w-6 h-6" />
+                  <Settings className="w-8 h-8" />
                 </Button>
               )}
             </div>
