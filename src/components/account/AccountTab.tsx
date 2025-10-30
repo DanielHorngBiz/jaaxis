@@ -39,7 +39,12 @@ const AccountTab = () => {
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" defaultValue="metal666grin@gmail.com" disabled className="bg-muted" />
+            <div className="flex gap-2">
+              <Input id="email" defaultValue="metal666grin@gmail.com" disabled className="bg-muted" />
+              <Button size="icon" variant="ghost" className="flex-shrink-0">
+                <Edit2 className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
