@@ -11,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { CreateChatbotDialog } from "./CreateChatbotDialog";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -24,6 +25,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     const saved = localStorage.getItem('sidebarCollapsed');
     return saved === 'true';
   });
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   const [botConfig, setBotConfig] = useState(() => {
     const saved = localStorage.getItem("botConfig");
@@ -86,11 +88,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <Button 
             className={`${isCollapsed ? 'w-9 h-9 p-0' : 'w-full'} gap-2 shadow-sm`} 
             size={isCollapsed ? "icon" : "sm"}
+            onClick={() => setCreateDialogOpen(true)}
           >
             <Plus className="w-4 h-4" />
             {!isCollapsed && "Create Chatbot"}
           </Button>
         </div>
+
+        <CreateChatbotDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
 
         <div className="flex-1 px-4 space-y-1 overflow-y-auto">
           {!isCollapsed && (
