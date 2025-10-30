@@ -8,7 +8,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { ArrowLeft } from "lucide-react";
 import logo from "@/assets/jaxxis-logo.png";
-import { SeedMockData } from "@/components/SeedMockData";
 
 // Validation schemas
 const loginSchema = z.object({
@@ -145,11 +144,6 @@ const Auth = () => {
         <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
         <span className="text-sm font-medium">Back to home</span>
       </Link>
-
-      {/* Seed Mock Data Button */}
-      <div className="absolute top-6 right-6">
-        <SeedMockData />
-      </div>
 
       <div className="w-full max-w-md animate-scale-in">
         <div className="bg-card border border-border rounded-2xl shadow-lg p-8 relative overflow-hidden">
