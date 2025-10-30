@@ -163,28 +163,31 @@ const ConnectTab = () => {
         {/* Store */}
         <Card className="relative">
           <CardContent className="p-6 flex flex-col">
-            {isStoreConnected && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 h-8 w-8"
-                onClick={openSettingsDialog}
-              >
-                <Settings className="w-4 h-4" />
-              </Button>
-            )}
-            <div className="w-14 h-14 rounded-xl bg-green-500/10 flex items-center justify-center mb-4">
-              <Store className="w-7 h-7 text-green-600" />
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-14 h-14 rounded-xl bg-green-500/10 flex items-center justify-center">
+                <Store className="w-7 h-7 text-green-600" />
+              </div>
+              {isStoreConnected && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 -mt-1 -mr-1"
+                  onClick={openSettingsDialog}
+                >
+                  <Settings className="w-4 h-4" />
+                </Button>
+              )}
             </div>
             <h3 className="font-semibold text-lg mb-2">Store</h3>
             <p className="text-sm text-muted-foreground mb-6 flex-1">
               Connect your bot to a Store.
             </p>
-            {!isStoreConnected ? (
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              {!isStoreConnected && (
                 <DialogTrigger asChild>
                   <Button variant="outline" className="w-full" onClick={() => setStep(1)}>Connect</Button>
                 </DialogTrigger>
+              )}
               <DialogContent className="sm:max-w-[540px] p-0 gap-0">
                 {/* Step indicator at top */}
                 <div className="px-8 pt-6 pb-4">
@@ -459,7 +462,7 @@ const ConnectTab = () => {
                 </div>
               </DialogContent>
             </Dialog>
-            ) : (
+            {isStoreConnected && (
               <Button variant="outline" className="w-full" onClick={handleDisconnect}>
                 Disconnect
               </Button>
