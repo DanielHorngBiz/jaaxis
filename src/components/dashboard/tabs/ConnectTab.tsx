@@ -171,10 +171,10 @@ const ConnectTab = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 -mt-1 -mr-1"
+                  className="h-9 w-9 -mt-1 -mr-1"
                   onClick={openSettingsDialog}
                 >
-                  <Settings className="w-4 h-4" />
+                  <Settings className="w-5 h-5" />
                 </Button>
               )}
             </div>
@@ -463,7 +463,7 @@ const ConnectTab = () => {
               </DialogContent>
             </Dialog>
             {isStoreConnected && (
-              <Button variant="outline" className="w-full" onClick={handleDisconnect}>
+              <Button variant="secondary" className="w-full" onClick={handleDisconnect}>
                 Disconnect
               </Button>
             )}
