@@ -253,7 +253,7 @@ const ConnectTab = () => {
                       className="h-11" 
                       onClick={() => step === 1 ? setStep(2) : null}
                     >
-                      Connect
+                      {step === 1 ? 'Next' : 'Connect'}
                     </Button>
                   </div>
                 </div>
