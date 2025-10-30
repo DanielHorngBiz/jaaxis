@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MessageCircle, Frame, Instagram, Facebook, Store } from "lucide-react";
+import { MessageCircle, Frame, Instagram, Facebook, Store, Settings } from "lucide-react";
 import { useState } from "react";
 import { Toggle } from "@/components/ui/toggle";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,8 @@ const ConnectTab = () => {
   const [storeType, setStoreType] = useState<"shopify" | "woocommerce">("shopify");
   const [step, setStep] = useState(1);
   const [accessLevel, setAccessLevel] = useState<"read" | "readwrite">("read");
+  const [isStoreConnected, setIsStoreConnected] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   // Form state
   const [storeUrl, setStoreUrl] = useState("");
@@ -75,6 +77,31 @@ const ConnectTab = () => {
       else setLoadingOrder(false);
     }
   };
+
+  const handleConnect = () => {
+    console.log("Connecting to store:", { storeType, accessLevel, paymentStatus, fulfillmentStatus, orderStatus });
+    setIsStoreConnected(true);
+    setIsDialogOpen(false);
+    setStep(1);
+  };
+
+  const handleDisconnect = () => {
+    setIsStoreConnected(false);
+    setStoreType("shopify");
+    setAccessLevel("read");
+    setPaymentStatus("");
+    setFulfillmentStatus("");
+    setOrderStatus("");
+    setStoreUrl("");
+    setAccessToken("");
+    setConsumerKey("");
+    setConsumerSecret("");
+  };
+
+  const openSettingsDialog = () => {
+    setStep(2);
+    setIsDialogOpen(true);
+  };
   
   return (
     <div className="space-y-8">
@@ -134,8 +161,18 @@ const ConnectTab = () => {
         </Card>
 
         {/* Store */}
-        <Card>
+        <Card className="relative">
           <CardContent className="p-6 flex flex-col">
+            {isStoreConnected && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 h-8 w-8"
+                onClick={openSettingsDialog}
+              >
+                <Settings className="w-4 h-4" />
+              </Button>
+            )}
             <div className="w-14 h-14 rounded-xl bg-green-500/10 flex items-center justify-center mb-4">
               <Store className="w-7 h-7 text-green-600" />
             </div>
@@ -143,10 +180,11 @@ const ConnectTab = () => {
             <p className="text-sm text-muted-foreground mb-6 flex-1">
               Connect your bot to a Store.
             </p>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="w-full" onClick={() => setStep(1)}>Connect</Button>
-              </DialogTrigger>
+            {!isStoreConnected ? (
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full" onClick={() => setStep(1)}>Connect</Button>
+                </DialogTrigger>
               <DialogContent className="sm:max-w-[540px] p-0 gap-0">
                 {/* Step indicator at top */}
                 <div className="px-8 pt-6 pb-4">
@@ -413,7 +451,7 @@ const ConnectTab = () => {
                     )}
                     <Button 
                       className="h-11" 
-                      onClick={() => step === 1 ? setStep(2) : null}
+                      onClick={() => step === 1 ? setStep(2) : handleConnect()}
                     >
                       {step === 1 ? 'Next' : 'Connect'}
                     </Button>
@@ -421,6 +459,11 @@ const ConnectTab = () => {
                 </div>
               </DialogContent>
             </Dialog>
+            ) : (
+              <Button variant="outline" className="w-full" onClick={handleDisconnect}>
+                Disconnect
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>
