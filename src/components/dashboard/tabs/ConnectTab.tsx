@@ -105,15 +105,13 @@ const ConnectTab = () => {
                   </div>
                 </div>
 
-                {/* Heading */}
-                <div className="px-8 pt-6 pb-2">
-                  <h2 className="text-xl font-semibold">
-                    {step === 1 ? 'Connect Your Store' : 'Select Access Level'}
-                  </h2>
-                </div>
-                
                 {step === 1 ? (
                   <div className="px-8 py-6 space-y-6">
+                    {/* Heading */}
+                    <h2 className="text-xl font-semibold">
+                      {step === 1 ? 'Connect Your Store' : 'Select Access Level'}
+                    </h2>
+                    
                     {/* Platform Selection */}
                     <div className="space-y-3">
                       <Label className="text-sm font-medium">Platform</Label>
@@ -191,6 +189,11 @@ const ConnectTab = () => {
                   </div>
                 ) : (
                   <div className="px-8 py-6 space-y-6">
+                    {/* Heading */}
+                    <h2 className="text-xl font-semibold">
+                      {step === 1 ? 'Connect Your Store' : 'Select Access Level'}
+                    </h2>
+                    
                     {/* Access Level Selection */}
                     <div className="space-y-3">
                       <Label className="text-sm font-medium">Access Level</Label>
