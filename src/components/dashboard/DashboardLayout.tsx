@@ -112,9 +112,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <CreateChatbotDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
 
         <div className="flex-1 px-4 space-y-1 overflow-y-auto">
-          {!isCollapsed && (
-            <p className="px-3 mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">Your Bots</p>
-          )}
           {bots.map((bot) => (
             <Link key={bot.id} to={`/dashboard/bot/${bot.slug}`}>
               <div
