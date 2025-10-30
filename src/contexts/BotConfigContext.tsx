@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 
 interface BotConfig {
   botName: string;
@@ -15,8 +14,8 @@ interface BotConfigContextType {
 }
 
 const defaultConfig: BotConfig = {
-  botName: "Jaaxis",
-  brandLogo: defaultAvatar,
+  botName: "",
+  brandLogo: "",
   primaryColor: "#3888FF",
   chatPosition: "right",
   mobileDisplay: "show",
@@ -30,9 +29,6 @@ export const BotConfigProvider = ({ children }: { children: ReactNode }) => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (!parsed.brandLogo || typeof parsed.brandLogo !== "string" || parsed.brandLogo.startsWith("/src/")) {
-          parsed.brandLogo = defaultAvatar;
-        }
         return { ...defaultConfig, ...parsed };
       } catch {
         // ignore parsing error and fall back
