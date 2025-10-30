@@ -36,6 +36,9 @@ const BillingTab = () => {
 
   return (
     <div className="space-y-8">
+      {/* Plans & Usage Section */}
+      <h3 className="text-lg font-semibold">Plans & Usage</h3>
+      
       {/* Replies Usage */}
       <Card>
         <CardContent className="p-6">
