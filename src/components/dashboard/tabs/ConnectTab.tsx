@@ -105,14 +105,6 @@ const ConnectTab = () => {
                   </div>
                 </div>
 
-                {/* Header */}
-                <DialogHeader className="px-8 pb-6 border-b">
-                  <DialogTitle className="text-2xl mb-2">Connect Your Store</DialogTitle>
-                  <p className="text-sm text-muted-foreground">
-                    {step === 1 ? 'Select your platform and enter credentials' : 'Configure access permissions'}
-                  </p>
-                </DialogHeader>
-                
                 {step === 1 ? (
                   <div className="px-8 py-6 space-y-6">
                     {/* Platform Selection */}
