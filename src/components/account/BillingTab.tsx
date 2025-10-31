@@ -38,7 +38,7 @@ const BillingTab = () => {
     <div className="space-y-8">
       {/* Plans & Usage Section */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Plans & Usage</h3>
+        <h3 className="text-lg font-semibold">Plans & Billing</h3>
         
         {/* Replies Usage */}
         <Card>
