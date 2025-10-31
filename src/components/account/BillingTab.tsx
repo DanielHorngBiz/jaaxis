@@ -72,15 +72,17 @@ const BillingTab = () => {
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold">{plan.name}</h3>
                 </div>
+                <div className="min-h-[20px] mb-2">
+                  {plan.renewsAt && (
+                    <p className="text-xs text-muted-foreground">
+                      (Renews at {plan.renewsAt})
+                    </p>
+                  )}
+                </div>
                 <div>
                   <span className="text-3xl font-bold">${plan.price}</span>
                   <span className="text-muted-foreground">/month</span>
                 </div>
-                {plan.renewsAt && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    (Renews at {plan.renewsAt})
-                  </p>
-                )}
               </div>
 
               <Button 
