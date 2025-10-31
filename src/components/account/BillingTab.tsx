@@ -79,7 +79,10 @@ const BillingTab = () => {
                     </p>
                   )}
                 </div>
-                <p className="text-3xl font-bold">${plan.price}/month</p>
+                <div>
+                  <span className="text-3xl font-bold">${plan.price}</span>
+                  <span className="text-muted-foreground">/month</span>
+                </div>
               </div>
 
               <Button 
