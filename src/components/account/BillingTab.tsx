@@ -5,7 +5,7 @@ import { Check, MessageCircle, Plus } from "lucide-react";
 
 const PLANS = [
   {
-    name: "Starter",
+    name: "Basic",
     price: 19,
     features: ["300 Replies / Month", "1 Bot", "Unlimited Knowledge", "Unlimited Team Members"],
     action: "Downgrade",
@@ -21,7 +21,7 @@ const PLANS = [
     current: true,
   },
   {
-    name: "Scale",
+    name: "Enterprise",
     price: 149,
     features: ["15,000 Replies / Month", "5 Bots", "Unlimited Knowledge", "Unlimited Team Members"],
     action: "Upgrade",
@@ -61,12 +61,12 @@ const BillingTab = () => {
       <div className="grid grid-cols-3 gap-4">
         {PLANS.map((plan) => (
           <Card key={plan.name} className={`relative ${plan.current ? "border-primary" : ""}`}>
-            <CardContent className="p-6 space-y-4">
-              {plan.current && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
-                  Current Plan
-                </div>
-              )}
+            {plan.current && (
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
+                Current Plan
+              </div>
+            )}
+            <CardContent className="p-6 pt-8 space-y-4">
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold">{plan.name}</h3>
