@@ -41,7 +41,7 @@ const AddRepliesDialog = () => {
           </div>
 
           <Button className="w-full" size="lg">
-            Add {replies[0].toLocaleString()} Replies for ${totalCost.toFixed(2)}
+            Add {replies[0].toLocaleString()} Replies for ${Math.round(totalCost)}
           </Button>
         </div>
       </DialogContent>
