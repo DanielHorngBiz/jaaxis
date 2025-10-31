@@ -60,8 +60,13 @@ const BillingTab = () => {
       {/* Pricing Plans */}
       <div className="grid grid-cols-3 gap-4">
         {PLANS.map((plan) => (
-          <Card key={plan.name} className={plan.current ? "border-primary" : ""}>
+          <Card key={plan.name} className={`relative ${plan.current ? "border-primary" : ""}`}>
             <CardContent className="p-6 space-y-4">
+              {plan.current && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
+                  Current Plan
+                </div>
+              )}
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold">{plan.name}</h3>
