@@ -16,7 +16,7 @@ const PLANS = [
     price: 49,
     renewsAt: "Jan 20, 2025",
     features: ["1000 Replies / Month", "3 Bots", "Unlimited Knowledge", "Unlimited Team Members"],
-    action: "Cancel",
+    action: "Manage",
     variant: "default" as const,
     current: true,
   },
@@ -110,57 +110,6 @@ const BillingTab = () => {
         </CardContent>
       </Card>
 
-      {/* Payment Methods */}
-      <div className="space-y-4">
-        <h3 className="font-semibold text-lg">Payment Methods</h3>
-        <div className="grid grid-cols-3 gap-4">
-          {/* Black Card */}
-          <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg p-6 text-white aspect-[1.586/1]">
-            <div className="space-y-8">
-              <p className="text-lg tracking-wider">XXXX XXXX XXXX 0329</p>
-              <div className="flex items-end justify-between">
-                <div className="space-y-1">
-                  <p className="text-[10px] opacity-70">Card Holder Name</p>
-                  <p className="text-xs font-medium">HILLERY NEVELIN</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] opacity-70">Expired Date</p>
-                  <p className="text-xs font-medium">10/28</p>
-                </div>
-                <div className="flex gap-1">
-                  <div className="w-6 h-6 rounded-full bg-red-500 opacity-80" />
-                  <div className="w-6 h-6 rounded-full bg-orange-500 opacity-80 -ml-3" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Blue Card */}
-          <div className="relative bg-gradient-to-br from-blue-600 to-blue-500 rounded-lg p-6 text-white aspect-[1.586/1]">
-            <div className="space-y-8">
-              <p className="text-lg tracking-wider">XXXX XXXX XXXX 0329</p>
-              <div className="flex items-end justify-between">
-                <div className="space-y-1">
-                  <p className="text-[10px] opacity-70">Card Holder Name</p>
-                  <p className="text-xs font-medium">HILLERY NEVELIN</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] opacity-70">Expired Date</p>
-                  <p className="text-xs font-medium">10/28</p>
-                </div>
-                <div className="text-xl font-bold">VISA</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Add Card */}
-          <button className="border-2 border-dashed rounded-lg aspect-[1.586/1] flex items-center justify-center hover:bg-secondary/50 transition-colors">
-            <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
-              <Plus className="w-6 h-6 text-primary-foreground" />
-            </div>
-          </button>
-        </div>
-      </div>
     </div>
   );
 };
