@@ -15,7 +15,7 @@ const AddRepliesDialog = () => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Extra Replies</DialogTitle>
+          <DialogTitle>Add Additional Replies</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-6 py-4">
