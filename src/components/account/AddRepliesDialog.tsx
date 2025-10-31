@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 
@@ -16,9 +16,6 @@ const AddRepliesDialog = () => {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Add Extra Replies</DialogTitle>
-          <DialogDescription>
-            Select how many extra replies you'd like to add to your account.
-          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-6 py-4">
