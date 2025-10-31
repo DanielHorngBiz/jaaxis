@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Check, MessageCircle, Plus } from "lucide-react";
+import { Check } from "lucide-react";
+import AddRepliesDialog from "./AddRepliesDialog";
 
 const PLANS = [
   {
@@ -110,7 +111,7 @@ const BillingTab = () => {
               <h3 className="font-semibold text-lg">Extra Replies</h3>
               <p className="text-sm text-muted-foreground">$10 Per 100 Replies</p>
             </div>
-            <Button variant="outline">Add Now</Button>
+            <AddRepliesDialog />
           </div>
         </CardContent>
       </Card>
