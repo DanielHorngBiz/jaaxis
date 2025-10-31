@@ -40,17 +40,6 @@ const AddRepliesDialog = () => {
             </div>
           </div>
 
-          <div className="rounded-lg border bg-secondary/30 p-4 space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span>Price per 100 replies:</span>
-              <span className="font-medium">${pricePerHundred}</span>
-            </div>
-            <div className="flex items-center justify-between pt-2 border-t">
-              <span className="font-semibold">Total cost:</span>
-              <span className="text-2xl font-bold">${totalCost.toFixed(2)}</span>
-            </div>
-          </div>
-
           <Button className="w-full" size="lg">
             Add {replies[0].toLocaleString()} Replies for ${totalCost.toFixed(2)}
           </Button>
