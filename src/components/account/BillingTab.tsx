@@ -111,7 +111,7 @@ const BillingTab = () => {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-lg">Extra Replies</h3>
+              <h3 className="font-semibold text-lg">Additional Replies</h3>
               <p className="text-sm text-muted-foreground">$10 Per 100 Replies</p>
             </div>
             <AddRepliesDialog />
