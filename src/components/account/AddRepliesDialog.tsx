@@ -29,14 +29,14 @@ const AddRepliesDialog = () => {
               value={replies}
               onValueChange={setReplies}
               min={100}
-              max={10000}
+              max={2000}
               step={100}
               className="w-full"
             />
             
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>100</span>
-              <span>10,000</span>
+              <span>2,000</span>
             </div>
           </div>
 
