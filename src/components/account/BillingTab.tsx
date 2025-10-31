@@ -16,7 +16,7 @@ const PLANS = [
     name: "Pro",
     price: 49,
     renewsAt: "Jan 20, 2025",
-    features: ["1000 Replies / Month", "3 Bots", "Unlimited Knowledge", "Unlimited Team Members"],
+    features: ["3000 Replies / Month", "3 Bots", "Unlimited Knowledge", "Unlimited Team Members"],
     action: "Manage",
     variant: "default" as const,
     current: true,
