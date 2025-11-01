@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, Trash2, Globe, FileText, CheckCircle2, Clock } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 interface QAPair {
   id: string;
@@ -16,11 +16,38 @@ interface QAPair {
 const TrainingTab = () => {
   const [persona, setPersona] = useState("");
   const [qaPairs, setQaPairs] = useState<QAPair[]>([{ id: '1', question: '', answer: '' }]);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const personaTemplates = {
     friendly: "You are a friendly and approachable assistant. Use a warm, conversational tone. Be empathetic and personable in your responses. Use casual language while maintaining professionalism.",
     professional: "You are a professional business assistant. Maintain a formal and courteous tone. Provide clear, concise responses. Focus on efficiency and accuracy in all communications.",
     witty: "You are a clever and witty assistant with a good sense of humor. Use playful language and occasional humor to engage users. Keep responses entertaining while remaining helpful and informative."
+  };
+
+  const handleFileUpload = (files: FileList | null) => {
+    if (!files) return;
+    const newFiles = Array.from(files).filter(file => {
+      const validTypes = ['.txt', '.pdf', '.csv', '.docx'];
+      const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+      return validTypes.includes(fileExtension) && file.size <= 200 * 1024 * 1024;
+    });
+    setUploadedFiles(prev => [...prev, ...newFiles]);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleFileUpload(e.dataTransfer.files);
+  };
+
+  const removeFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -150,24 +177,63 @@ const TrainingTab = () => {
               </div>
             </TabsContent>
             <TabsContent value="files" className="mt-6 space-y-6">
-              <div className="border-2 border-dashed border-border rounded-lg p-12 text-center hover:border-primary/50 transition-colors cursor-pointer">
-                <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-xl flex items-center justify-center">
+              <div 
+                className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <div className="w-16 h-16 mx-auto mb-3 bg-blue-100 rounded-xl flex items-center justify-center">
                   <Upload className="h-8 w-8 text-blue-500" />
                 </div>
                 <h4 className="text-lg font-semibold text-blue-500 mb-2">Drag And Drop</h4>
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-sm text-muted-foreground mb-3">
                   TXT, PDF, CSV, DOCX (max: 200MB each)
                 </p>
-                <Button variant="outline">
+                <Button variant="outline" type="button" onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}>
                   Browse files
                 </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  multiple
+                  accept=".txt,.pdf,.csv,.docx"
+                  onChange={(e) => handleFileUpload(e.target.files)}
+                />
               </div>
               
               <div className="border-t pt-6">
-                <h4 className="text-sm font-medium mb-4">Uploaded Files (0)</h4>
-                <div className="text-center py-8 text-muted-foreground text-sm">
-                  No files uploaded yet
-                </div>
+                <h4 className="text-sm font-medium mb-4">Uploaded Files ({uploadedFiles.length})</h4>
+                {uploadedFiles.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground text-sm">
+                    No files uploaded yet
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {uploadedFiles.map((file, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm">{file.name}</span>
+                          <span className="text-xs text-muted-foreground">
+                            ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                          </span>
+                        </div>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => removeFile(index)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end">
