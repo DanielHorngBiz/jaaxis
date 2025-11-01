@@ -1,15 +1,16 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Upload, Trash2, Plus, MoreHorizontal } from "lucide-react";
+import { Pencil, Upload, Trash2, Plus, MoreHorizontal } from "lucide-react";
 import { useBotConfig } from "@/contexts/BotConfigContext";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { KnowledgeSection } from "@/components/dashboard/KnowledgeSection";
+import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 const colors = [
   "#FF9800",
   "#9C27B0",
@@ -223,15 +224,6 @@ const SettingsTab = () => {
             <Button onClick={handleSaveAppearance}>Save</Button>
           </div>
         </div>
-      </div>
-
-      {/* Knowledge Section */}
-      <div className="pb-8 border-b">
-        <h3 className="text-lg font-semibold mb-2">Knowledge</h3>
-        <p className="text-sm text-muted-foreground mb-6">
-          Tell the bot everything it needs to know about your products & services
-        </p>
-        <KnowledgeSection />
       </div>
 
       {/* Blocklist Section */}
