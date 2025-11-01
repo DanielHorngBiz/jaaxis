@@ -5,8 +5,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, Trash2, Globe, FileText, CheckCircle2, Clock } from "lucide-react";
+import { useState } from "react";
 
 const TrainingTab = () => {
+  const [persona, setPersona] = useState("");
+
+  const personaTemplates = {
+    friendly: "You are a friendly and approachable assistant. Use a warm, conversational tone. Be empathetic and personable in your responses. Use casual language while maintaining professionalism.",
+    professional: "You are a professional business assistant. Maintain a formal and courteous tone. Provide clear, concise responses. Focus on efficiency and accuracy in all communications.",
+    witty: "You are a clever and witty assistant with a good sense of humor. Use playful language and occasional humor to engage users. Keep responses entertaining while remaining helpful and informative."
+  };
+
   return (
     <div className="space-y-8">
       {/* Persona Section */}
@@ -19,12 +28,14 @@ const TrainingTab = () => {
           <Textarea
             className="min-h-[140px] resize-none"
             placeholder="Type here..."
+            value={persona}
+            onChange={(e) => setPersona(e.target.value)}
           />
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">Friendly</Button>
-              <Button variant="outline" size="sm">Professional</Button>
-              <Button variant="outline" size="sm">Witty</Button>
+              <Button variant="outline" size="sm" onClick={() => setPersona(personaTemplates.friendly)}>Friendly</Button>
+              <Button variant="outline" size="sm" onClick={() => setPersona(personaTemplates.professional)}>Professional</Button>
+              <Button variant="outline" size="sm" onClick={() => setPersona(personaTemplates.witty)}>Witty</Button>
             </div>
             <Button>Save</Button>
           </div>
