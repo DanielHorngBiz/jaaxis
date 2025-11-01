@@ -131,32 +131,23 @@ const TrainingTab = () => {
                 </div>
               </div>
             </TabsContent>
-            <TabsContent value="website" className="mt-6 space-y-6">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="website-url">Website URL</Label>
-                  <div className="flex gap-2">
-                    <Input 
-                      id="website-url"
-                      placeholder="https://example.com"
-                      type="url"
-                    />
-                    <Button className="shrink-0">
-                      <Globe className="mr-2 h-4 w-4" />
-                      Import
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    The bot will crawl and learn from the content on this website
-                  </p>
-                </div>
+            <TabsContent value="website" className="mt-6 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="website-url">Website URL</Label>
+                <Input 
+                  id="website-url"
+                  placeholder="https://site1.com, https://site2.com"
+                  type="text"
+                />
+                <p className="text-xs text-muted-foreground">
+                  You can enter multiple URLs separated by commas.
+                </p>
               </div>
-              
-              <div className="border-t pt-6">
-                <h4 className="text-sm font-medium mb-4">Imported Websites (0)</h4>
-                <div className="text-center py-8 text-muted-foreground text-sm">
-                  No websites imported yet
-                </div>
+              <div className="flex justify-end">
+                <Button>
+                  <Globe className="mr-2 h-4 w-4" />
+                  Scrape & Ingest
+                </Button>
               </div>
             </TabsContent>
             <TabsContent value="files" className="mt-6 space-y-6">
