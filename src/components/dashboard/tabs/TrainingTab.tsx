@@ -26,37 +26,9 @@ const TrainingTab = () => {
     answer: ''
   }]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [trainedItems, setTrainedItems] = useState<TrainedItem[]>([{
-    id: '1',
-    name: 'plain_text_knowledge(3).txt',
-    type: 'text',
-    lastUpdated: '2 days ago'
-  }, {
-    id: '2',
-    name: 'flexpresets.com.txt',
-    type: 'website',
-    lastUpdated: '1 week ago'
-  }, {
-    id: '3',
-    name: 'plain_text_knowledge(2).txt',
-    type: 'text',
-    lastUpdated: '2 weeks ago'
-  }, {
-    id: '4',
-    name: 'plain_qna_knowledge.txt',
-    type: 'qa',
-    lastUpdated: '2 weeks ago'
-  }, {
-    id: '5',
-    name: 'plain_text_knowledge(1).txt',
-    type: 'text',
-    lastUpdated: '2 weeks ago'
-  }, {
-    id: '6',
-    name: 'plain_text_knowledge.txt',
-    type: 'text',
-    lastUpdated: '3 weeks ago'
-  }]);
+  const [trainedItems, setTrainedItems] = useState<TrainedItem[]>([]);
+  const [textInput, setTextInput] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
@@ -144,9 +116,69 @@ const TrainingTab = () => {
         return 'Q: What are your business hours?\nA: We are open Monday to Friday, 9 AM to 5 PM EST.\n\nQ: How can I contact support?\nA: You can reach our support team at support@example.com or call us at 1-800-SUPPORT.';
       case 'website':
         return 'Content scraped from website:\n\nWelcome to our platform! We provide innovative solutions for businesses of all sizes. Our services include customer support automation, AI-powered chatbots, and seamless integrations with your existing tools.';
+      case 'file':
+        return 'This is sample content extracted from the uploaded file. In a real implementation, this would contain the actual parsed content from the document.';
       default:
         return 'Sample content for this trained item.';
     }
+  };
+
+  const handleSaveText = () => {
+    if (!textInput.trim()) return;
+    
+    const newItem: TrainedItem = {
+      id: Date.now().toString(),
+      name: `text_knowledge_${Date.now()}.txt`,
+      type: 'text',
+      lastUpdated: 'Just now'
+    };
+    setTrainedItems(prev => [newItem, ...prev]);
+    setTextInput("");
+  };
+
+  const handleSaveQA = () => {
+    const validPairs = qaPairs.filter(pair => pair.question.trim() && pair.answer.trim());
+    if (validPairs.length === 0) return;
+
+    const newItem: TrainedItem = {
+      id: Date.now().toString(),
+      name: `qa_knowledge_${Date.now()}.txt`,
+      type: 'qa',
+      lastUpdated: 'Just now'
+    };
+    setTrainedItems(prev => [newItem, ...prev]);
+    setQaPairs([{ id: '1', question: '', answer: '' }]);
+  };
+
+  const handleScrapeWebsite = () => {
+    if (!websiteUrl.trim()) return;
+
+    const urls = websiteUrl.split(',').map(url => url.trim()).filter(url => url);
+    urls.forEach(url => {
+      const newItem: TrainedItem = {
+        id: Date.now().toString() + Math.random(),
+        name: `${url.replace(/^https?:\/\//, '').replace(/\//g, '_')}.txt`,
+        type: 'website',
+        lastUpdated: 'Just now'
+      };
+      setTrainedItems(prev => [newItem, ...prev]);
+    });
+    setWebsiteUrl("");
+  };
+
+  const handleSaveFiles = () => {
+    if (uploadedFiles.length === 0) return;
+
+    uploadedFiles.forEach(file => {
+      const newItem: TrainedItem = {
+        id: Date.now().toString() + Math.random(),
+        name: file.name,
+        type: 'file',
+        lastUpdated: 'Just now'
+      };
+      setTrainedItems(prev => [newItem, ...prev]);
+    });
+    setUploadedFiles([]);
   };
   return <div className="space-y-8">
       {/* Persona Section */}
@@ -184,9 +216,14 @@ const TrainingTab = () => {
               <TabsTrigger value="trained">Trained</TabsTrigger>
             </TabsList>
             <TabsContent value="text" className="mt-6 space-y-4">
-              <Textarea placeholder="Type here..." className="min-h-[200px] resize-none" />
+              <Textarea 
+                placeholder="Type here..." 
+                className="min-h-[200px] resize-none" 
+                value={textInput}
+                onChange={(e) => setTextInput(e.target.value)}
+              />
               <div className="flex justify-end">
-                <Button>Save</Button>
+                <Button onClick={handleSaveText}>Save</Button>
               </div>
             </TabsContent>
             <TabsContent value="qa" className="mt-6 space-y-4">
@@ -224,20 +261,26 @@ const TrainingTab = () => {
                   </Button>
                 </div>
                 <div className="flex justify-end">
-                  <Button>Save</Button>
+                  <Button onClick={handleSaveQA}>Save</Button>
                 </div>
               </div>
             </TabsContent>
             <TabsContent value="website" className="mt-6 space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="website-url">Website URL</Label>
-                <Input id="website-url" placeholder="https://site1.com, https://site2.com" type="text" />
+                <Input 
+                  id="website-url" 
+                  placeholder="https://site1.com, https://site2.com" 
+                  type="text"
+                  value={websiteUrl}
+                  onChange={(e) => setWebsiteUrl(e.target.value)}
+                />
                 <p className="text-xs text-muted-foreground">
                   You can enter multiple URLs separated by commas.
                 </p>
               </div>
               <div className="flex justify-end">
-                <Button>
+                <Button onClick={handleScrapeWebsite}>
                   Scrape & Ingest
                 </Button>
               </div>
@@ -281,7 +324,7 @@ const TrainingTab = () => {
               </div>
 
               <div className="flex justify-end">
-                <Button>Save</Button>
+                <Button onClick={handleSaveFiles}>Save</Button>
               </div>
             </TabsContent>
             <TabsContent value="trained" className="mt-6 space-y-4">
@@ -342,7 +385,7 @@ const TrainingTab = () => {
                         </div>
                         
                         {expandedItems.includes(item.id) && <div className="px-4 pb-4 bg-muted/20 border-t space-y-3 pt-3">
-                            <Textarea id={`content-${item.id}`} className="min-h-[150px] resize-none" defaultValue="This is sample knowledge content that was previously trained. You can edit this text to update the knowledge base for this chatbot. The content here will be used to train the AI model to better respond to user queries." />
+                            <Textarea id={`content-${item.id}`} className="min-h-[150px] resize-none" defaultValue={getSampleContent(item.type)} />
                             <div className="flex justify-end">
                               <Button size="sm">Save</Button>
                             </div>
