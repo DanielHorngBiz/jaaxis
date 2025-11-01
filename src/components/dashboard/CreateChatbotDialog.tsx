@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Upload, Trash2, FileText } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Upload, Trash2, FileText, Paperclip, Send } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -558,50 +559,61 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
           <div className="px-8 py-6 space-y-6">
             <h2 className="text-xl font-semibold">Preview</h2>
 
-            <div className="border rounded-lg p-6 bg-secondary/10">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div
-                      className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white overflow-hidden shadow-sm"
-                      style={{ backgroundColor: selectedColor }}
-                    >
-                      {chatbotImage ? (
-                        <img src={chatbotImage} alt="Chatbot" className="w-full h-full object-cover" />
-                      ) : (
-                        getInitial()
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold">{chatbotName || "Untitled Bot"}</h3>
-                      <p className="text-sm text-muted-foreground">Ready to deploy</p>
-                    </div>
+            <div className="flex items-center justify-center">
+              <Card className="w-full max-w-md shadow-xl border-border overflow-hidden rounded-2xl">
+                {/* Chat Header */}
+                <div 
+                  className="text-white p-5 flex items-center gap-4" 
+                  style={{ backgroundColor: selectedColor }}
+                >
+                  <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm overflow-hidden">
+                    {chatbotImage ? (
+                      <img 
+                        src={chatbotImage} 
+                        alt={chatbotName} 
+                        className="w-full h-full object-cover" 
+                      />
+                    ) : (
+                      <span className="text-2xl font-bold" style={{ color: selectedColor }}>
+                        {getInitial()}
+                      </span>
+                    )}
                   </div>
-
-                  <div className="space-y-4 pt-4 border-t">
-                    {knowledge && (
-                      <div>
-                        <p className="text-sm font-semibold mb-1">Knowledge</p>
-                        <p className="text-sm text-muted-foreground line-clamp-3">{knowledge}</p>
-                      </div>
-                    )}
-                    {persona && (
-                      <div>
-                        <p className="text-sm font-semibold mb-1">Persona</p>
-                        <p className="text-sm text-muted-foreground line-clamp-3">{persona}</p>
-                      </div>
-                    )}
-                    {forwardingRules && (
-                      <div>
-                        <p className="text-sm font-semibold mb-1">Forwarding Rules</p>
-                        <p className="text-sm text-muted-foreground line-clamp-3">{forwardingRules}</p>
-                      </div>
-                    )}
-                    {!knowledge && !persona && !forwardingRules && (
-                      <p className="text-sm text-muted-foreground italic">
-                        No additional configuration added yet
-                      </p>
-                    )}
+                  <div>
+                    <h3 className="font-semibold text-base">{chatbotName || "Untitled Bot"}</h3>
                   </div>
                 </div>
+
+                {/* Chat Content */}
+                <div className="bg-white h-[400px] p-6">
+                  <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                    Start a conversation to preview your bot
+                  </div>
+                </div>
+
+                {/* Chat Input */}
+                <div className="bg-white border-t p-4 flex items-center gap-3">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="text-muted-foreground hover:text-foreground shrink-0"
+                  >
+                    <Paperclip className="w-5 h-5" />
+                  </Button>
+                  <Input
+                    placeholder="Write a message"
+                    className="flex-1 border-none shadow-none focus-visible:ring-0 px-0"
+                  />
+                  <Button 
+                    size="icon" 
+                    className="shrink-0 shadow-sm text-white"
+                    style={{ backgroundColor: selectedColor }}
+                  >
+                    <Send className="w-4 h-4" />
+                  </Button>
+                </div>
+              </Card>
+            </div>
           </div>
         )}
 
