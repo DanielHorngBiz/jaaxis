@@ -438,15 +438,14 @@ const TrainingTab = () => {
                         </div>
                         
                         {expandedItems.includes(item.id) && (
-                          <div className="px-4 pb-4 bg-muted/20 border-t space-y-3">
-                            <Label htmlFor={`content-${item.id}`} className="text-xs">Edit Content</Label>
+                          <div className="px-4 pb-4 bg-muted/20 border-t space-y-3 pt-3">
                             <Textarea
                               id={`content-${item.id}`}
                               className="min-h-[150px] resize-none"
-                              defaultValue={getSampleContent(item.type)}
+                              defaultValue="This is sample knowledge content that was previously trained. You can edit this text to update the knowledge base for this chatbot. The content here will be used to train the AI model to better respond to user queries."
                             />
                             <div className="flex justify-end">
-                              <Button size="sm">Save Changes</Button>
+                              <Button size="sm">Save</Button>
                             </div>
                           </div>
                         )}
