@@ -7,8 +7,15 @@ import { Label } from "@/components/ui/label";
 import { Upload, Trash2, Globe, FileText, CheckCircle2, Clock } from "lucide-react";
 import { useState } from "react";
 
+interface QAPair {
+  id: string;
+  question: string;
+  answer: string;
+}
+
 const TrainingTab = () => {
   const [persona, setPersona] = useState("");
+  const [qaPairs, setQaPairs] = useState<QAPair[]>([{ id: '1', question: '', answer: '' }]);
 
   const personaTemplates = {
     friendly: "You are a friendly and approachable assistant. Use a warm, conversational tone. Be empathetic and personable in your responses. Use casual language while maintaining professionalism.",
@@ -68,26 +75,43 @@ const TrainingTab = () => {
             </TabsContent>
             <TabsContent value="qa" className="mt-6 space-y-4">
               <div className="space-y-4">
-                <div className="grid gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="question">Question</Label>
-                    <Textarea 
-                      id="question"
-                      placeholder="Type question..."
-                      className="min-h-[60px] resize-none"
-                    />
+                {qaPairs.map((pair, index) => (
+                  <div key={pair.id} className="grid gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor={`question-${pair.id}`}>Question</Label>
+                      <Input 
+                        id={`question-${pair.id}`}
+                        placeholder="Type question..."
+                        value={pair.question}
+                        onChange={(e) => {
+                          const newPairs = [...qaPairs];
+                          newPairs[index].question = e.target.value;
+                          setQaPairs(newPairs);
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`answer-${pair.id}`}>Answer</Label>
+                      <Textarea 
+                        id={`answer-${pair.id}`}
+                        placeholder="Type answer..."
+                        className="min-h-[100px] resize-none"
+                        value={pair.answer}
+                        onChange={(e) => {
+                          const newPairs = [...qaPairs];
+                          newPairs[index].answer = e.target.value;
+                          setQaPairs(newPairs);
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="answer">Answer</Label>
-                    <Textarea 
-                      id="answer"
-                      placeholder="Type answer..."
-                      className="min-h-[100px] resize-none"
-                    />
-                  </div>
-                </div>
+                ))}
                 <div className="flex justify-center">
-                  <Button size="icon" variant="outline">
+                  <Button 
+                    size="icon" 
+                    variant="outline"
+                    onClick={() => setQaPairs([...qaPairs, { id: Date.now().toString(), question: '', answer: '' }])}
+                  >
                     +
                   </Button>
                 </div>
