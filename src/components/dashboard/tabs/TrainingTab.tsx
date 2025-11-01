@@ -183,8 +183,8 @@ const TrainingTab = () => {
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
               >
-                <div className="w-16 h-16 mx-auto mb-3 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <Upload className="h-8 w-8 text-blue-500" />
+                <div className="w-12 h-12 mx-auto mb-3 bg-blue-100/50 rounded-xl flex items-center justify-center">
+                  <Upload className="h-6 w-6 text-blue-500" />
                 </div>
                 <h4 className="text-lg font-semibold text-blue-500 mb-2">Drag And Drop</h4>
                 <p className="text-sm text-muted-foreground mb-3">
