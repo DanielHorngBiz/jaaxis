@@ -48,7 +48,13 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [persona, setPersona] = useState("");
-  const [rules, setRules] = useState("");
+  const [forwardingRules, setForwardingRules] = useState("");
+
+  const personaTemplates = {
+    friendly: "You are a friendly and approachable assistant. Use a warm, conversational tone. Be empathetic and personable in your responses. Use casual language while maintaining professionalism.",
+    professional: "You are a professional business assistant. Maintain a formal and courteous tone. Provide clear, concise responses. Focus on efficiency and accuracy in all communications.",
+    witty: "You are a clever and witty assistant with a good sense of humor. Use playful language and occasional humor to engage users. Keep responses entertaining while remaining helpful and informative."
+  };
   const [isCreating, setIsCreating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -142,7 +148,7 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
     setWebsiteUrl("");
     setUploadedFiles([]);
     setPersona("");
-    setRules("");
+    setForwardingRules("");
   };
 
   const handleFileUpload = (files: FileList | null) => {
@@ -489,31 +495,60 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
 
         {currentStep === 3 && (
           <div className="px-8 py-6 space-y-6">
-            <h2 className="text-xl font-semibold">Persona</h2>
-            <div className="space-y-2">
-              <Label htmlFor="persona" className="text-sm font-medium">Chatbot Personality</Label>
+            <div>
+              <h2 className="text-xl font-semibold mb-2">Persona</h2>
+              <p className="text-sm text-muted-foreground">
+                Define your bot's personality and communication style
+              </p>
+            </div>
+            <div className="space-y-4">
               <Textarea
-                id="persona"
-                placeholder="Describe your chatbot's tone and style. Should it be formal, friendly, professional, or casual?..."
+                className="min-h-[140px] resize-none"
+                placeholder="Type here..."
                 value={persona}
                 onChange={(e) => setPersona(e.target.value)}
-                className="min-h-[200px] resize-none"
               />
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setPersona(personaTemplates.friendly)}
+                >
+                  Friendly
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setPersona(personaTemplates.professional)}
+                >
+                  Professional
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setPersona(personaTemplates.witty)}
+                >
+                  Witty
+                </Button>
+              </div>
             </div>
           </div>
         )}
 
         {currentStep === 4 && (
           <div className="px-8 py-6 space-y-6">
-            <h2 className="text-xl font-semibold">Rules</h2>
-            <div className="space-y-2">
-              <Label htmlFor="rules" className="text-sm font-medium">Conversation Rules</Label>
+            <div>
+              <h2 className="text-xl font-semibold">Forwarding Rules</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Tell the bot when to forward to a human
+              </p>
+            </div>
+            <div className="space-y-4">
               <Textarea
-                id="rules"
-                placeholder="Define rules and guidelines. What topics should it avoid? What format should responses follow?..."
-                value={rules}
-                onChange={(e) => setRules(e.target.value)}
-                className="min-h-[200px] resize-none"
+                placeholder="Type here..."
+                className="min-h-[120px] resize-none"
+                value={forwardingRules}
+                onChange={(e) => setForwardingRules(e.target.value)}
               />
             </div>
           </div>
@@ -554,13 +589,13 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
                         <p className="text-sm text-muted-foreground line-clamp-3">{persona}</p>
                       </div>
                     )}
-                    {rules && (
+                    {forwardingRules && (
                       <div>
-                        <p className="text-sm font-semibold mb-1">Rules</p>
-                        <p className="text-sm text-muted-foreground line-clamp-3">{rules}</p>
+                        <p className="text-sm font-semibold mb-1">Forwarding Rules</p>
+                        <p className="text-sm text-muted-foreground line-clamp-3">{forwardingRules}</p>
                       </div>
                     )}
-                    {!knowledge && !persona && !rules && (
+                    {!knowledge && !persona && !forwardingRules && (
                       <p className="text-sm text-muted-foreground italic">
                         No additional configuration added yet
                       </p>
