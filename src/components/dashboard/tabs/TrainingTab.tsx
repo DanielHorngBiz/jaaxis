@@ -86,10 +86,12 @@ const TrainingTab = () => {
                     />
                   </div>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-start">
                   <Button size="icon" variant="outline">
                     +
                   </Button>
+                </div>
+                <div className="flex justify-end">
                   <Button>Save</Button>
                 </div>
               </div>
