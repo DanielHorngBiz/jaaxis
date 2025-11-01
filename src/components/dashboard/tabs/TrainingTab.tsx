@@ -166,7 +166,7 @@ const TrainingTab = () => {
                             variant="ghost"
                             onClick={() => setQaPairs(qaPairs.filter((_, i) => i !== index))}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         )}
                       </div>
@@ -281,7 +281,7 @@ const TrainingTab = () => {
                           variant="ghost"
                           onClick={() => removeFile(index)}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
                     ))}
@@ -352,11 +352,11 @@ const TrainingTab = () => {
                               <ChevronDown className="h-4 w-4" />
                             </Button>
                             <Button 
-                              variant="destructive" 
+                              variant="ghost" 
                               size="icon"
                               onClick={() => handleDeleteItem(item.id)}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
                           </div>
                         </div>
