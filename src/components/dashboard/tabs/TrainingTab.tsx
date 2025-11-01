@@ -400,11 +400,11 @@ const TrainingTab = () => {
                                       if (e.key === 'Escape') cancelNameEdit();
                                     }}
                                   />
-                                  <Button size="icon" className="h-8 w-8" onClick={() => saveNameEdit(item.id)}>
-                                    <Check className="h-4 w-4" />
+                                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => saveNameEdit(item.id)}>
+                                    <Check className="h-4 w-4 text-green-500" />
                                   </Button>
-                                  <Button size="icon" variant="outline" className="h-8 w-8" onClick={cancelNameEdit}>
-                                    <X className="h-4 w-4" />
+                                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={cancelNameEdit}>
+                                    <X className="h-4 w-4 text-destructive" />
                                   </Button>
                                 </div>
                               ) : (
