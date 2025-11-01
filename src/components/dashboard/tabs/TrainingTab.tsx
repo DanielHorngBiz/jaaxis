@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Upload, Trash2, Globe, FileText, CheckCircle2, Clock, RefreshCw, ChevronDown, Pencil, Check, X } from "lucide-react";
 import { useState, useRef } from "react";
+import { useToast } from "@/hooks/use-toast";
 interface QAPair {
   id: string;
   question: string;
@@ -19,6 +20,7 @@ interface TrainedItem {
   lastUpdated: string;
 }
 const TrainingTab = () => {
+  const { toast } = useToast();
   const [persona, setPersona] = useState("");
   const [qaPairs, setQaPairs] = useState<QAPair[]>([{
     id: '1',
@@ -126,59 +128,80 @@ const TrainingTab = () => {
   const handleSaveText = () => {
     if (!textInput.trim()) return;
     
+    const timestamp = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     const newItem: TrainedItem = {
       id: Date.now().toString(),
-      name: `text_knowledge_${Date.now()}.txt`,
+      name: `Text Knowledge - ${timestamp}`,
       type: 'text',
       lastUpdated: 'Just now'
     };
     setTrainedItems(prev => [newItem, ...prev]);
     setTextInput("");
+    toast({
+      title: "Knowledge saved",
+      description: "Text content has been added to your knowledge base.",
+    });
   };
 
   const handleSaveQA = () => {
     const validPairs = qaPairs.filter(pair => pair.question.trim() && pair.answer.trim());
     if (validPairs.length === 0) return;
 
+    const timestamp = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     const newItem: TrainedItem = {
       id: Date.now().toString(),
-      name: `qa_knowledge_${Date.now()}.txt`,
+      name: `Q&A Knowledge - ${timestamp}`,
       type: 'qa',
       lastUpdated: 'Just now'
     };
     setTrainedItems(prev => [newItem, ...prev]);
     setQaPairs([{ id: '1', question: '', answer: '' }]);
+    toast({
+      title: "Knowledge saved",
+      description: `${validPairs.length} Q&A pair${validPairs.length > 1 ? 's' : ''} added to your knowledge base.`,
+    });
   };
 
   const handleScrapeWebsite = () => {
     if (!websiteUrl.trim()) return;
 
     const urls = websiteUrl.split(',').map(url => url.trim()).filter(url => url);
-    urls.forEach(url => {
+    urls.forEach((url, index) => {
+      const cleanUrl = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
       const newItem: TrainedItem = {
-        id: Date.now().toString() + Math.random(),
-        name: `${url.replace(/^https?:\/\//, '').replace(/\//g, '_')}.txt`,
+        id: (Date.now() + index).toString(),
+        name: cleanUrl,
         type: 'website',
         lastUpdated: 'Just now'
       };
       setTrainedItems(prev => [newItem, ...prev]);
     });
     setWebsiteUrl("");
+    toast({
+      title: "Website scraped",
+      description: `${urls.length} website${urls.length > 1 ? 's' : ''} added to your knowledge base.`,
+    });
   };
 
   const handleSaveFiles = () => {
     if (uploadedFiles.length === 0) return;
 
-    uploadedFiles.forEach(file => {
+    uploadedFiles.forEach((file, index) => {
+      const fileName = file.name.replace(/\.[^/.]+$/, ''); // Remove extension
       const newItem: TrainedItem = {
-        id: Date.now().toString() + Math.random(),
-        name: file.name,
+        id: (Date.now() + index).toString(),
+        name: fileName,
         type: 'file',
         lastUpdated: 'Just now'
       };
       setTrainedItems(prev => [newItem, ...prev]);
     });
+    const fileCount = uploadedFiles.length;
     setUploadedFiles([]);
+    toast({
+      title: "Files uploaded",
+      description: `${fileCount} file${fileCount > 1 ? 's' : ''} added to your knowledge base.`,
+    });
   };
   return <div className="space-y-8">
       {/* Persona Section */}
