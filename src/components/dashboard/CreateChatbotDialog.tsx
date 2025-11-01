@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import { Upload, Trash2, FileText, Paperclip, Send } from "lucide-react";
+import { Upload, Trash2, FileText, Paperclip, Send, RefreshCw, ChevronDown, Pencil, Check, X } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -38,6 +39,13 @@ const colorOptions = [
   "#009688",
 ];
 
+interface TrainedItem {
+  id: string;
+  name: string;
+  type: 'text' | 'qa' | 'website' | 'file';
+  lastUpdated: string;
+}
+
 export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [chatbotName, setChatbotName] = useState("");
@@ -48,6 +56,13 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
   const [qaPairs, setQaPairs] = useState<{id: string; question: string; answer: string;}[]>([{ id: '1', question: '', answer: '' }]);
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [trainedItems, setTrainedItems] = useState<TrainedItem[]>([]);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState<string | null>(null);
+  const [editNameValue, setEditNameValue] = useState("");
   const [persona, setPersona] = useState("");
   const [forwardingRules, setForwardingRules] = useState("");
 
@@ -148,8 +163,164 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
     setQaPairs([{ id: '1', question: '', answer: '' }]);
     setWebsiteUrl("");
     setUploadedFiles([]);
+    setTrainedItems([]);
+    setSelectedItems([]);
+    setSearchQuery("");
+    setExpandedItems([]);
     setPersona("");
     setForwardingRules("");
+  };
+
+  const getSampleContent = (type: string) => {
+    switch (type) {
+      case 'text':
+        return 'This is sample knowledge content that was previously trained. You can edit this text to update the knowledge base for this chatbot. The content here will be used to train the AI model to better respond to user queries.';
+      case 'qa':
+        return 'Q: What are your business hours?\nA: We are open Monday to Friday, 9 AM to 5 PM EST.\n\nQ: How can I contact support?\nA: You can reach our support team at support@example.com or call us at 1-800-SUPPORT.';
+      case 'website':
+        return 'Content scraped from website:\n\nWelcome to our platform! We provide innovative solutions for businesses of all sizes. Our services include customer support automation, AI-powered chatbots, and seamless integrations with your existing tools.';
+      case 'file':
+        return 'This is sample content extracted from the uploaded file. In a real implementation, this would contain the actual parsed content from the document.';
+      default:
+        return 'Sample content for this trained item.';
+    }
+  };
+
+  const handleSaveText = () => {
+    if (!knowledge.trim()) return;
+    
+    const timestamp = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const newItem: TrainedItem = {
+      id: Date.now().toString(),
+      name: `Text Knowledge - ${timestamp}`,
+      type: 'text',
+      lastUpdated: 'Just now'
+    };
+    setTrainedItems(prev => [newItem, ...prev]);
+    setKnowledge("");
+    toast({
+      title: "Knowledge saved",
+      description: "Text content has been added to your knowledge base.",
+    });
+  };
+
+  const handleSaveQA = () => {
+    const validPairs = qaPairs.filter(pair => pair.question.trim() && pair.answer.trim());
+    if (validPairs.length === 0) return;
+
+    const timestamp = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const newItem: TrainedItem = {
+      id: Date.now().toString(),
+      name: `Q&A Knowledge - ${timestamp}`,
+      type: 'qa',
+      lastUpdated: 'Just now'
+    };
+    setTrainedItems(prev => [newItem, ...prev]);
+    setQaPairs([{ id: '1', question: '', answer: '' }]);
+    toast({
+      title: "Knowledge saved",
+      description: `${validPairs.length} Q&A pair${validPairs.length > 1 ? 's' : ''} added to your knowledge base.`,
+    });
+  };
+
+  const handleScrapeWebsite = () => {
+    if (!websiteUrl.trim()) return;
+
+    const urls = websiteUrl.split(',').map(url => url.trim()).filter(url => url);
+    urls.forEach((url, index) => {
+      const cleanUrl = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+      const newItem: TrainedItem = {
+        id: (Date.now() + index).toString(),
+        name: cleanUrl,
+        type: 'website',
+        lastUpdated: 'Just now'
+      };
+      setTrainedItems(prev => [newItem, ...prev]);
+    });
+    setWebsiteUrl("");
+    toast({
+      title: "Website scraped",
+      description: `${urls.length} website${urls.length > 1 ? 's' : ''} added to your knowledge base.`,
+    });
+  };
+
+  const handleSaveFiles = () => {
+    if (uploadedFiles.length === 0) return;
+
+    uploadedFiles.forEach((file, index) => {
+      const fileName = file.name.replace(/\.[^/.]+$/, ''); // Remove extension
+      const newItem: TrainedItem = {
+        id: (Date.now() + index).toString(),
+        name: fileName,
+        type: 'file',
+        lastUpdated: 'Just now'
+      };
+      setTrainedItems(prev => [newItem, ...prev]);
+    });
+    const fileCount = uploadedFiles.length;
+    setUploadedFiles([]);
+    toast({
+      title: "Files uploaded",
+      description: `${fileCount} file${fileCount > 1 ? 's' : ''} added to your knowledge base.`,
+    });
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedItems(filteredTrainedItems.map(item => item.id));
+    } else {
+      setSelectedItems([]);
+    }
+  };
+
+  const handleSelectItem = (id: string, checked: boolean) => {
+    if (checked) {
+      setSelectedItems(prev => [...prev, id]);
+    } else {
+      setSelectedItems(prev => prev.filter(itemId => itemId !== id));
+    }
+  };
+
+  const handleDeleteSelected = () => {
+    setTrainedItems(prev => prev.filter(item => !selectedItems.includes(item.id)));
+    setSelectedItems([]);
+  };
+
+  const handleDeleteItem = (id: string) => {
+    setTrainedItems(prev => prev.filter(item => item.id !== id));
+    setSelectedItems(prev => prev.filter(itemId => itemId !== id));
+  };
+
+  const handleRefresh = () => {
+    console.log('Refreshing trained items...');
+  };
+
+  const filteredTrainedItems = trainedItems.filter(item => 
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const toggleExpand = (id: string) => {
+    setExpandedItems(prev => 
+      prev.includes(id) ? prev.filter(itemId => itemId !== id) : [...prev, id]
+    );
+  };
+
+  const startEditingName = (id: string, currentName: string) => {
+    setEditingName(id);
+    setEditNameValue(currentName);
+  };
+
+  const saveNameEdit = (id: string) => {
+    setTrainedItems(prev => 
+      prev.map(item => item.id === id ? { ...item, name: editNameValue } : item)
+    );
+    setEditingName(null);
+    setEditNameValue("");
+  };
+
+  const cancelNameEdit = () => {
+    setEditingName(null);
+    setEditNameValue("");
   };
 
   const handleFileUpload = (files: FileList | null) => {
@@ -346,11 +517,12 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
           <div className="px-8 py-6 space-y-6">
             <h2 className="text-xl font-semibold">Knowledge</h2>
             <Tabs defaultValue="text" className="w-full">
-              <TabsList className="grid grid-cols-4 w-full">
+              <TabsList className="grid grid-cols-5 w-full">
                 <TabsTrigger value="text">Text</TabsTrigger>
                 <TabsTrigger value="qa">Q&A</TabsTrigger>
                 <TabsTrigger value="website">Website</TabsTrigger>
                 <TabsTrigger value="files">Files</TabsTrigger>
+                <TabsTrigger value="trained">Trained</TabsTrigger>
               </TabsList>
               <TabsContent value="text" className="mt-6 space-y-4">
                 <Textarea
@@ -359,6 +531,9 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
                   value={knowledge}
                   onChange={(e) => setKnowledge(e.target.value)}
                 />
+                <div className="flex justify-end">
+                  <Button onClick={handleSaveText}>Save</Button>
+                </div>
               </TabsContent>
               <TabsContent value="qa" className="mt-6 space-y-4">
                 <div className="space-y-4">
@@ -413,6 +588,9 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
                       +
                     </Button>
                   </div>
+                  <div className="flex justify-end">
+                    <Button onClick={handleSaveQA}>Save</Button>
+                  </div>
                 </div>
               </TabsContent>
               <TabsContent value="website" className="mt-6 space-y-4">
@@ -428,6 +606,9 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
                   <p className="text-xs text-muted-foreground">
                     You can enter multiple URLs separated by commas.
                   </p>
+                </div>
+                <div className="flex justify-end">
+                  <Button onClick={handleScrapeWebsite}>Scrape & Ingest</Button>
                 </div>
               </TabsContent>
               <TabsContent value="files" className="mt-6 space-y-6">
@@ -488,6 +669,147 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
                       ))}
                     </div>
                   )}
+                </div>
+
+                <div className="flex justify-end">
+                  <Button onClick={handleSaveFiles}>Save</Button>
+                </div>
+              </TabsContent>
+              <TabsContent value="trained" className="mt-6 space-y-4">
+                <div className="space-y-4">
+                  <div className="flex gap-3 items-center">
+                    <Input
+                      placeholder="Search by name..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-80"
+                    />
+                    <Button variant="outline" onClick={handleRefresh}>
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                    <div className="flex-1" />
+                    <Button
+                      variant="destructive"
+                      onClick={handleDeleteSelected}
+                      disabled={selectedItems.length === 0}
+                      className="gap-1"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      ({selectedItems.length})
+                    </Button>
+                  </div>
+
+                  <div className="space-y-2">
+                    {filteredTrainedItems.length === 0 ? (
+                      <div className="text-center py-12 text-muted-foreground text-sm">
+                        No trained items found
+                      </div>
+                    ) : (
+                      filteredTrainedItems.map(item => (
+                        <div key={item.id} className="border rounded-lg overflow-hidden">
+                          <div
+                            className="p-4 hover:bg-muted/30 transition-colors"
+                            onMouseEnter={() => setHoveredRow(item.id)}
+                            onMouseLeave={() => setHoveredRow(null)}
+                          >
+                            <div className="flex items-center gap-3">
+                              <Checkbox
+                                checked={selectedItems.includes(item.id)}
+                                onCheckedChange={(checked) => handleSelectItem(item.id, checked as boolean)}
+                              />
+                              
+                              <div className="flex-1 min-w-0">
+                                {editingName === item.id ? (
+                                  <div className="flex items-center gap-2">
+                                    <Input
+                                      value={editNameValue}
+                                      onChange={(e) => setEditNameValue(e.target.value)}
+                                      className="h-8"
+                                      autoFocus
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') saveNameEdit(item.id);
+                                        if (e.key === 'Escape') cancelNameEdit();
+                                      }}
+                                    />
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      className="h-8 w-8"
+                                      onClick={() => saveNameEdit(item.id)}
+                                    >
+                                      <Check className="h-4 w-4 text-green-500" />
+                                    </Button>
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      className="h-8 w-8"
+                                      onClick={cancelNameEdit}
+                                    >
+                                      <X className="h-4 w-4 text-destructive" />
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm font-medium truncate">{item.name}</span>
+                                    {hoveredRow === item.id && (
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-6 w-6"
+                                        onClick={() => startEditingName(item.id, item.name)}
+                                      >
+                                        <Pencil className="h-3 w-3" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="text-xs text-muted-foreground">
+                                {item.lastUpdated}
+                              </div>
+
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() => toggleExpand(item.id)}
+                                >
+                                  <ChevronDown
+                                    className={`h-4 w-4 transition-transform ${
+                                      expandedItems.includes(item.id) ? 'rotate-180' : ''
+                                    }`}
+                                  />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() => handleDeleteItem(item.id)}
+                                >
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {expandedItems.includes(item.id) && (
+                            <div className="px-4 pb-4 bg-muted/20 border-t space-y-3 pt-3">
+                              <Textarea
+                                id={`content-${item.id}`}
+                                className="min-h-[150px] resize-none"
+                                defaultValue={getSampleContent(item.type)}
+                              />
+                              <div className="flex justify-end">
+                                <Button size="sm">Save</Button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>
