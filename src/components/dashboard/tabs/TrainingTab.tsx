@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Upload, Trash2, Globe, FileText, CheckCircle2, Clock, RefreshCw, ChevronDown } from "lucide-react";
+import { Upload, Trash2, Globe, FileText, CheckCircle2, Clock, RefreshCw, ChevronDown, Pencil } from "lucide-react";
 import { useState, useRef } from "react";
 
 interface QAPair {
@@ -36,6 +36,9 @@ const TrainingTab = () => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState<string | null>(null);
+  const [editNameValue, setEditNameValue] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const personaTemplates = {
@@ -108,6 +111,24 @@ const TrainingTab = () => {
     setExpandedItems(prev => 
       prev.includes(id) ? prev.filter(itemId => itemId !== id) : [...prev, id]
     );
+  };
+
+  const startEditingName = (id: string, currentName: string) => {
+    setEditingName(id);
+    setEditNameValue(currentName);
+  };
+
+  const saveNameEdit = (id: string) => {
+    setTrainedItems(prev => prev.map(item => 
+      item.id === id ? { ...item, name: editNameValue } : item
+    ));
+    setEditingName(null);
+    setEditNameValue("");
+  };
+
+  const cancelNameEdit = () => {
+    setEditingName(null);
+    setEditNameValue("");
   };
 
   const getSampleContent = (type: string) => {
@@ -357,13 +378,48 @@ const TrainingTab = () => {
                     ) : (
                       filteredTrainedItems.map((item) => (
                         <div key={item.id}>
-                          <div className="grid grid-cols-[40px_1fr_200px_100px] gap-4 p-3 items-center hover:bg-muted/30 transition-colors">
+                          <div 
+                            className="grid grid-cols-[40px_1fr_200px_100px] gap-4 p-3 items-center hover:bg-muted/30 transition-colors"
+                            onMouseEnter={() => setHoveredRow(item.id)}
+                            onMouseLeave={() => setHoveredRow(null)}
+                          >
                             <Checkbox
                               checked={selectedItems.includes(item.id)}
                               onCheckedChange={(checked) => handleSelectItem(item.id, checked as boolean)}
                             />
-                            <div className="text-sm text-foreground">
-                              {item.name}
+                            <div className="flex items-center gap-2">
+                              {editingName === item.id ? (
+                                <div className="flex items-center gap-2 flex-1">
+                                  <Input
+                                    value={editNameValue}
+                                    onChange={(e) => setEditNameValue(e.target.value)}
+                                    className="h-8"
+                                    autoFocus
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') saveNameEdit(item.id);
+                                      if (e.key === 'Escape') cancelNameEdit();
+                                    }}
+                                  />
+                                  <Button size="sm" onClick={() => saveNameEdit(item.id)}>Save</Button>
+                                  <Button size="sm" variant="outline" onClick={cancelNameEdit}>Cancel</Button>
+                                </div>
+                              ) : (
+                                <>
+                                  <div className="text-sm text-foreground">
+                                    {item.name}
+                                  </div>
+                                  {hoveredRow === item.id && (
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6"
+                                      onClick={() => startEditingName(item.id, item.name)}
+                                    >
+                                      <Pencil className="h-3 w-3" />
+                                    </Button>
+                                  )}
+                                </>
+                              )}
                             </div>
                             <div className="text-sm text-muted-foreground">
                               {item.lastUpdated}
