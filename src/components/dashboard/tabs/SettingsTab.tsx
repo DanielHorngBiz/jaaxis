@@ -99,7 +99,7 @@ const SettingsTab = () => {
         <div className="space-y-8">
           {/* Brand Logo */}
           <div>
-            <Label className="mb-4 block">Brand Logo</Label>
+            <Label className="mb-4 block">Logo</Label>
             <div className="flex items-center gap-4">
               {brandLogo && (
                 <div className="w-24 h-24 rounded-full overflow-hidden shadow-sm">
