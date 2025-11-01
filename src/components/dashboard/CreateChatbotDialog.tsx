@@ -641,39 +641,37 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
                   />
                 </div>
                 
-                <div className="border-t pt-6">
-                  <h4 className="text-sm font-medium mb-4">Uploaded Files ({uploadedFiles.length})</h4>
-                  {uploadedFiles.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground text-sm">
-                      No files uploaded yet
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {uploadedFiles.map((file, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm">{file.name}</span>
-                            <span className="text-xs text-muted-foreground">
-                              ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                            </span>
+                {uploadedFiles.length > 0 && (
+                  <>
+                    <div className="border-t pt-6">
+                      <h4 className="text-sm font-medium mb-4">Uploaded Files ({uploadedFiles.length})</h4>
+                      <div className="space-y-2">
+                        {uploadedFiles.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center gap-2">
+                              <FileText className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-sm">{file.name}</span>
+                              <span className="text-xs text-muted-foreground">
+                                ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                              </span>
+                            </div>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => removeFile(index)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
                           </div>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => removeFile(index)}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  )}
-                </div>
 
-                <div className="flex justify-end">
-                  <Button onClick={handleSaveFiles}>Save</Button>
-                </div>
+                    <div className="flex justify-end">
+                      <Button onClick={handleSaveFiles}>Save</Button>
+                    </div>
+                  </>
+                )}
               </TabsContent>
               <TabsContent value="trained" className="mt-6 space-y-4">
                 <div className="space-y-4">
