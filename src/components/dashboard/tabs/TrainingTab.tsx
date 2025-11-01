@@ -341,7 +341,7 @@ const TrainingTab = () => {
                     placeholder="Search by name..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex-1"
+                    className="w-80"
                   />
                   <Button variant="outline" onClick={handleRefresh}>
                     <RefreshCw className="h-4 w-4" />
@@ -351,8 +351,8 @@ const TrainingTab = () => {
                     onClick={handleDeleteSelected}
                     disabled={selectedItems.length === 0}
                   >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete ({selectedItems.length})
+                    <Trash2 className="h-4 w-4" />
+                    <span className="ml-2">({selectedItems.length})</span>
                   </Button>
                 </div>
 
