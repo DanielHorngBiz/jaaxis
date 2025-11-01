@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Upload, Trash2, Globe, FileText, CheckCircle2, Clock, RefreshCw, ChevronDown, Pencil } from "lucide-react";
+import { Upload, Trash2, Globe, FileText, CheckCircle2, Clock, RefreshCw, ChevronDown, Pencil, Check, X } from "lucide-react";
 import { useState, useRef } from "react";
 
 interface QAPair {
@@ -400,8 +400,12 @@ const TrainingTab = () => {
                                       if (e.key === 'Escape') cancelNameEdit();
                                     }}
                                   />
-                                  <Button size="sm" onClick={() => saveNameEdit(item.id)}>Save</Button>
-                                  <Button size="sm" variant="outline" onClick={cancelNameEdit}>Cancel</Button>
+                                  <Button size="icon" className="h-8 w-8" onClick={() => saveNameEdit(item.id)}>
+                                    <Check className="h-4 w-4" />
+                                  </Button>
+                                  <Button size="icon" variant="outline" className="h-8 w-8" onClick={cancelNameEdit}>
+                                    <X className="h-4 w-4" />
+                                  </Button>
                                 </div>
                               ) : (
                                 <>
