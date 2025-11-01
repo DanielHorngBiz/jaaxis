@@ -151,24 +151,16 @@ const TrainingTab = () => {
             </TabsContent>
             <TabsContent value="files" className="mt-6 space-y-6">
               <div className="border-2 border-dashed border-border rounded-lg p-12 text-center hover:border-primary/50 transition-colors cursor-pointer">
-                <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <h4 className="text-sm font-medium mb-2">Upload Files</h4>
-                <p className="text-xs text-muted-foreground mb-4">
-                  Drag and drop files here, or click to browse
-                </p>
-                <Button variant="outline" size="sm">
-                  Choose Files
-                </Button>
-                <p className="text-xs text-muted-foreground mt-4">
-                  Supported: PDF, DOC, DOCX, TXT (Max 10MB)
-                </p>
-              </div>
-              
-              <div className="border-t pt-6">
-                <h4 className="text-sm font-medium mb-4">Uploaded Files (0)</h4>
-                <div className="text-center py-8 text-muted-foreground text-sm">
-                  No files uploaded yet
+                <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <Upload className="h-8 w-8 text-blue-500" />
                 </div>
+                <h4 className="text-lg font-semibold text-blue-500 mb-2">Drag And Drop</h4>
+                <p className="text-sm text-muted-foreground mb-4">
+                  TXT, PDF, CSV, DOCX (max: 200MB each)
+                </p>
+                <Button variant="outline">
+                  Browse files
+                </Button>
               </div>
             </TabsContent>
             <TabsContent value="trained" className="mt-6 space-y-4">
