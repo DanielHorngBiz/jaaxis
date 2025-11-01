@@ -66,14 +66,15 @@ const TrainingTab = () => {
                 <Button>Save</Button>
               </div>
             </TabsContent>
-            <TabsContent value="qa" className="mt-6 space-y-6">
+            <TabsContent value="qa" className="mt-6 space-y-4">
               <div className="space-y-4">
                 <div className="grid gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="question">Question</Label>
-                    <Input 
+                    <Textarea 
                       id="question"
                       placeholder="What is your return policy?"
+                      className="min-h-[80px] resize-none"
                     />
                   </div>
                   <div className="space-y-2">
@@ -85,15 +86,11 @@ const TrainingTab = () => {
                     />
                   </div>
                 </div>
-                <div className="flex justify-end">
-                  <Button>Add Q&A Pair</Button>
-                </div>
-              </div>
-              
-              <div className="border-t pt-6">
-                <h4 className="text-sm font-medium mb-4">Saved Q&A Pairs (0)</h4>
-                <div className="text-center py-8 text-muted-foreground text-sm">
-                  No Q&A pairs added yet
+                <div className="flex justify-between items-center">
+                  <Button size="icon" variant="outline">
+                    +
+                  </Button>
+                  <Button>Save</Button>
                 </div>
               </div>
             </TabsContent>
