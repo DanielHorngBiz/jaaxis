@@ -162,6 +162,17 @@ const TrainingTab = () => {
                   Browse files
                 </Button>
               </div>
+              
+              <div className="border-t pt-6">
+                <h4 className="text-sm font-medium mb-4">Uploaded Files (0)</h4>
+                <div className="text-center py-8 text-muted-foreground text-sm">
+                  No files uploaded yet
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <Button>Save</Button>
+              </div>
             </TabsContent>
             <TabsContent value="trained" className="mt-6 space-y-4">
               <div className="grid gap-4">
