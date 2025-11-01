@@ -76,20 +76,20 @@ const TrainingTab = () => {
             <TabsContent value="qa" className="mt-6 space-y-4">
               <div className="space-y-4">
                 {qaPairs.map((pair, index) => (
-                  <div key={pair.id} className="grid gap-4 relative">
-                    {qaPairs.length > 1 && (
-                      <div className="flex justify-end">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => setQaPairs(qaPairs.filter((_, i) => i !== index))}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    )}
+                  <div key={pair.id} className="grid gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor={`question-${pair.id}`}>Question</Label>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor={`question-${pair.id}`}>Question</Label>
+                        {index > 0 && (
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => setQaPairs(qaPairs.filter((_, i) => i !== index))}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
                       <Input 
                         id={`question-${pair.id}`}
                         placeholder="Type question..."
