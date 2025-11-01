@@ -73,20 +73,20 @@ const TrainingTab = () => {
                     <Label htmlFor="question">Question</Label>
                     <Textarea 
                       id="question"
-                      placeholder="What is your return policy?"
-                      className="min-h-[80px] resize-none"
+                      placeholder="Type question..."
+                      className="min-h-[60px] resize-none"
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="answer">Answer</Label>
                     <Textarea 
                       id="answer"
-                      placeholder="Type here..."
+                      placeholder="Type answer..."
                       className="min-h-[100px] resize-none"
                     />
                   </div>
                 </div>
-                <div className="flex justify-start">
+                <div className="flex justify-center">
                   <Button size="icon" variant="outline">
                     +
                   </Button>
