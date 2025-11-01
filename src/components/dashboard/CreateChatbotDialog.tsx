@@ -557,7 +557,6 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
 
         {currentStep === 5 && (
           <div className="px-8 py-6 space-y-6">
-            <h2 className="text-xl font-semibold">Preview</h2>
 
             <div className="flex items-center justify-center">
               <Card className="w-full max-w-md shadow-xl border-border overflow-hidden rounded-2xl">
