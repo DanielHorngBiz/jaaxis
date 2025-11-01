@@ -215,7 +215,7 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
-                  Chatbot Image <span className="text-muted-foreground text-xs">(optional)</span>
+                  Logo <span className="text-muted-foreground text-xs">(optional)</span>
                 </Label>
                   <div className="flex items-center gap-4">
                     <div
