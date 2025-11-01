@@ -35,6 +35,7 @@ const TrainingTab = () => {
   ]);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const personaTemplates = {
@@ -102,6 +103,25 @@ const TrainingTab = () => {
   const filteredTrainedItems = trainedItems.filter(item =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const toggleExpand = (id: string) => {
+    setExpandedItems(prev => 
+      prev.includes(id) ? prev.filter(itemId => itemId !== id) : [...prev, id]
+    );
+  };
+
+  const getSampleContent = (type: string) => {
+    switch (type) {
+      case 'text':
+        return 'This is sample knowledge content that was previously trained. You can edit this text to update the knowledge base for this chatbot. The content here will be used to train the AI model to better respond to user queries.';
+      case 'qa':
+        return 'Q: What are your business hours?\nA: We are open Monday to Friday, 9 AM to 5 PM EST.\n\nQ: How can I contact support?\nA: You can reach our support team at support@example.com or call us at 1-800-SUPPORT.';
+      case 'website':
+        return 'Content scraped from website:\n\nWelcome to our platform! We provide innovative solutions for businesses of all sizes. Our services include customer support automation, AI-powered chatbots, and seamless integrations with your existing tools.';
+      default:
+        return 'Sample content for this trained item.';
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -336,29 +356,50 @@ const TrainingTab = () => {
                       </div>
                     ) : (
                       filteredTrainedItems.map((item) => (
-                        <div key={item.id} className="grid grid-cols-[40px_1fr_200px_100px] gap-4 p-3 items-center hover:bg-muted/30 transition-colors">
-                          <Checkbox
-                            checked={selectedItems.includes(item.id)}
-                            onCheckedChange={(checked) => handleSelectItem(item.id, checked as boolean)}
-                          />
-                          <div className="text-sm text-foreground">
-                            {item.name}
+                        <div key={item.id}>
+                          <div className="grid grid-cols-[40px_1fr_200px_100px] gap-4 p-3 items-center hover:bg-muted/30 transition-colors">
+                            <Checkbox
+                              checked={selectedItems.includes(item.id)}
+                              onCheckedChange={(checked) => handleSelectItem(item.id, checked as boolean)}
+                            />
+                            <div className="text-sm text-foreground">
+                              {item.name}
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {item.lastUpdated}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => toggleExpand(item.id)}
+                              >
+                                <ChevronDown className={`h-4 w-4 transition-transform ${expandedItems.includes(item.id) ? 'rotate-180' : ''}`} />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => handleDeleteItem(item.id)}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </div>
                           </div>
-                          <div className="text-sm text-muted-foreground">
-                            {item.lastUpdated}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Button variant="ghost" size="icon">
-                              <ChevronDown className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              onClick={() => handleDeleteItem(item.id)}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </div>
+                          {expandedItems.includes(item.id) && (
+                            <div className="px-3 pb-4 pt-2 bg-muted/20 border-t">
+                              <div className="space-y-3">
+                                <Label htmlFor={`content-${item.id}`}>Edit Content</Label>
+                                <Textarea
+                                  id={`content-${item.id}`}
+                                  className="min-h-[150px] resize-none"
+                                  defaultValue={getSampleContent(item.type)}
+                                />
+                                <div className="flex justify-end">
+                                  <Button size="sm">Save Changes</Button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))
                     )}
