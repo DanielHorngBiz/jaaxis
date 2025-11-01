@@ -344,8 +344,7 @@ const TrainingTab = () => {
                     className="flex-1"
                   />
                   <Button variant="outline" onClick={handleRefresh}>
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Refresh
+                    <RefreshCw className="h-4 w-4" />
                   </Button>
                   <Button 
                     variant="destructive" 
@@ -353,43 +352,32 @@ const TrainingTab = () => {
                     disabled={selectedItems.length === 0}
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Delete selected ({selectedItems.length})
+                    Delete ({selectedItems.length})
                   </Button>
                 </div>
 
-                <div className="border rounded-lg overflow-hidden">
-                  <div className="bg-muted/50 border-b">
-                    <div className="grid grid-cols-[40px_1fr_200px_100px] gap-4 p-3 font-medium text-sm">
-                      <Checkbox
-                        checked={filteredTrainedItems.length > 0 && selectedItems.length === filteredTrainedItems.length}
-                        onCheckedChange={handleSelectAll}
-                      />
-                      <div>Name</div>
-                      <div>Last Updated</div>
-                      <div>Action</div>
+                <div className="space-y-2">
+                  {filteredTrainedItems.length === 0 ? (
+                    <div className="text-center py-12 text-muted-foreground text-sm">
+                      No trained items found
                     </div>
-                  </div>
-                  
-                  <div className="divide-y">
-                    {filteredTrainedItems.length === 0 ? (
-                      <div className="text-center py-8 text-muted-foreground text-sm">
-                        No trained items found
-                      </div>
-                    ) : (
-                      filteredTrainedItems.map((item) => (
-                        <div key={item.id}>
-                          <div 
-                            className="grid grid-cols-[40px_1fr_200px_100px] gap-4 p-3 items-center hover:bg-muted/30 transition-colors"
-                            onMouseEnter={() => setHoveredRow(item.id)}
-                            onMouseLeave={() => setHoveredRow(null)}
-                          >
+                  ) : (
+                    filteredTrainedItems.map((item) => (
+                      <div key={item.id} className="border rounded-lg overflow-hidden">
+                        <div 
+                          className="p-4 hover:bg-muted/30 transition-colors"
+                          onMouseEnter={() => setHoveredRow(item.id)}
+                          onMouseLeave={() => setHoveredRow(null)}
+                        >
+                          <div className="flex items-center gap-3">
                             <Checkbox
                               checked={selectedItems.includes(item.id)}
                               onCheckedChange={(checked) => handleSelectItem(item.id, checked as boolean)}
                             />
-                            <div className="flex items-center gap-2">
+                            
+                            <div className="flex-1 min-w-0">
                               {editingName === item.id ? (
-                                <div className="flex items-center gap-2 flex-1">
+                                <div className="flex items-center gap-2">
                                   <Input
                                     value={editNameValue}
                                     onChange={(e) => setEditNameValue(e.target.value)}
@@ -408,10 +396,8 @@ const TrainingTab = () => {
                                   </Button>
                                 </div>
                               ) : (
-                                <>
-                                  <div className="text-sm text-foreground">
-                                    {item.name}
-                                  </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm font-medium truncate">{item.name}</span>
                                   {hoveredRow === item.id && (
                                     <Button
                                       variant="ghost"
@@ -422,16 +408,19 @@ const TrainingTab = () => {
                                       <Pencil className="h-3 w-3" />
                                     </Button>
                                   )}
-                                </>
+                                </div>
                               )}
                             </div>
-                            <div className="text-sm text-muted-foreground">
+
+                            <div className="text-xs text-muted-foreground">
                               {item.lastUpdated}
                             </div>
-                            <div className="flex items-center gap-2">
+
+                            <div className="flex items-center gap-1">
                               <Button 
                                 variant="ghost" 
                                 size="icon"
+                                className="h-8 w-8"
                                 onClick={() => toggleExpand(item.id)}
                               >
                                 <ChevronDown className={`h-4 w-4 transition-transform ${expandedItems.includes(item.id) ? 'rotate-180' : ''}`} />
@@ -439,31 +428,31 @@ const TrainingTab = () => {
                               <Button 
                                 variant="ghost" 
                                 size="icon"
+                                className="h-8 w-8"
                                 onClick={() => handleDeleteItem(item.id)}
                               >
                                 <Trash2 className="h-4 w-4 text-destructive" />
                               </Button>
                             </div>
                           </div>
-                          {expandedItems.includes(item.id) && (
-                            <div className="px-3 pb-4 pt-2 bg-muted/20 border-t">
-                              <div className="space-y-3">
-                                <Label htmlFor={`content-${item.id}`}>Edit Content</Label>
-                                <Textarea
-                                  id={`content-${item.id}`}
-                                  className="min-h-[150px] resize-none"
-                                  defaultValue={getSampleContent(item.type)}
-                                />
-                                <div className="flex justify-end">
-                                  <Button size="sm">Save Changes</Button>
-                                </div>
-                              </div>
-                            </div>
-                          )}
                         </div>
-                      ))
-                    )}
-                  </div>
+                        
+                        {expandedItems.includes(item.id) && (
+                          <div className="px-4 pb-4 bg-muted/20 border-t space-y-3">
+                            <Label htmlFor={`content-${item.id}`} className="text-xs">Edit Content</Label>
+                            <Textarea
+                              id={`content-${item.id}`}
+                              className="min-h-[150px] resize-none"
+                              defaultValue={getSampleContent(item.type)}
+                            />
+                            <div className="flex justify-end">
+                              <Button size="sm">Save Changes</Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </TabsContent>
