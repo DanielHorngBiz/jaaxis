@@ -336,7 +336,7 @@ const TrainingTab = () => {
             </TabsContent>
             <TabsContent value="trained" className="mt-6 space-y-4">
               <div className="space-y-4">
-                <div className="flex gap-3">
+                <div className="flex gap-3 items-center">
                   <Input
                     placeholder="Search by name..."
                     value={searchQuery}
@@ -346,13 +346,15 @@ const TrainingTab = () => {
                   <Button variant="outline" onClick={handleRefresh}>
                     <RefreshCw className="h-4 w-4" />
                   </Button>
+                  <div className="flex-1" />
                   <Button 
                     variant="destructive" 
                     onClick={handleDeleteSelected}
                     disabled={selectedItems.length === 0}
+                    className="gap-1"
                   >
                     <Trash2 className="h-4 w-4" />
-                    <span className="ml-2">({selectedItems.length})</span>
+                    ({selectedItems.length})
                   </Button>
                 </div>
 
