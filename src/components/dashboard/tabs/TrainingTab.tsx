@@ -4,7 +4,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, Trash2, Globe, FileText, CheckCircle2, Clock } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Upload, Trash2, Globe, FileText, CheckCircle2, Clock, RefreshCw, ChevronDown } from "lucide-react";
 import { useState, useRef } from "react";
 
 interface QAPair {
@@ -13,10 +14,27 @@ interface QAPair {
   answer: string;
 }
 
+interface TrainedItem {
+  id: string;
+  name: string;
+  type: 'text' | 'qa' | 'website' | 'file';
+  lastUpdated: string;
+}
+
 const TrainingTab = () => {
   const [persona, setPersona] = useState("");
   const [qaPairs, setQaPairs] = useState<QAPair[]>([{ id: '1', question: '', answer: '' }]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [trainedItems, setTrainedItems] = useState<TrainedItem[]>([
+    { id: '1', name: 'plain_text_knowledge(3).txt', type: 'text', lastUpdated: '2 days ago' },
+    { id: '2', name: 'flexpresets.com.txt', type: 'website', lastUpdated: '1 week ago' },
+    { id: '3', name: 'plain_text_knowledge(2).txt', type: 'text', lastUpdated: '2 weeks ago' },
+    { id: '4', name: 'plain_qna_knowledge.txt', type: 'qa', lastUpdated: '2 weeks ago' },
+    { id: '5', name: 'plain_text_knowledge(1).txt', type: 'text', lastUpdated: '2 weeks ago' },
+    { id: '6', name: 'plain_text_knowledge.txt', type: 'text', lastUpdated: '3 weeks ago' },
+  ]);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const personaTemplates = {
@@ -49,6 +67,41 @@ const TrainingTab = () => {
   const removeFile = (index: number) => {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index));
   };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedItems(filteredTrainedItems.map(item => item.id));
+    } else {
+      setSelectedItems([]);
+    }
+  };
+
+  const handleSelectItem = (id: string, checked: boolean) => {
+    if (checked) {
+      setSelectedItems(prev => [...prev, id]);
+    } else {
+      setSelectedItems(prev => prev.filter(itemId => itemId !== id));
+    }
+  };
+
+  const handleDeleteSelected = () => {
+    setTrainedItems(prev => prev.filter(item => !selectedItems.includes(item.id)));
+    setSelectedItems([]);
+  };
+
+  const handleDeleteItem = (id: string) => {
+    setTrainedItems(prev => prev.filter(item => item.id !== id));
+    setSelectedItems(prev => prev.filter(itemId => itemId !== id));
+  };
+
+  const handleRefresh = () => {
+    // Refresh logic here
+    console.log('Refreshing trained items...');
+  };
+
+  const filteredTrainedItems = trainedItems.filter(item =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="space-y-8">
@@ -241,66 +294,76 @@ const TrainingTab = () => {
               </div>
             </TabsContent>
             <TabsContent value="trained" className="mt-6 space-y-4">
-              <div className="grid gap-4">
-                <Card>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-muted-foreground" />
-                        <CardTitle className="text-sm font-medium">Text Knowledge</CardTitle>
-                      </div>
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <div className="space-y-4">
+                <div className="flex gap-3">
+                  <Input
+                    placeholder="Search by name..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button variant="outline" onClick={handleRefresh}>
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Refresh
+                  </Button>
+                  <Button 
+                    variant="destructive" 
+                    onClick={handleDeleteSelected}
+                    disabled={selectedItems.length === 0}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete selected ({selectedItems.length})
+                  </Button>
+                </div>
+
+                <div className="border rounded-lg overflow-hidden">
+                  <div className="bg-muted/50 border-b">
+                    <div className="grid grid-cols-[40px_1fr_200px_100px] gap-4 p-3 font-medium text-sm">
+                      <Checkbox
+                        checked={filteredTrainedItems.length > 0 && selectedItems.length === filteredTrainedItems.length}
+                        onCheckedChange={handleSelectAll}
+                      />
+                      <div>Name</div>
+                      <div>Last Updated</div>
+                      <div>Action</div>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-xs text-muted-foreground">0 entries</p>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-muted-foreground" />
-                        <CardTitle className="text-sm font-medium">Q&A Pairs</CardTitle>
+                  </div>
+                  
+                  <div className="divide-y">
+                    {filteredTrainedItems.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground text-sm">
+                        No trained items found
                       </div>
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-xs text-muted-foreground">0 pairs</p>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Globe className="h-4 w-4 text-muted-foreground" />
-                        <CardTitle className="text-sm font-medium">Website Content</CardTitle>
-                      </div>
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-xs text-muted-foreground">0 websites</p>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Upload className="h-4 w-4 text-muted-foreground" />
-                        <CardTitle className="text-sm font-medium">Uploaded Files</CardTitle>
-                      </div>
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-xs text-muted-foreground">0 files</p>
-                  </CardContent>
-                </Card>
+                    ) : (
+                      filteredTrainedItems.map((item) => (
+                        <div key={item.id} className="grid grid-cols-[40px_1fr_200px_100px] gap-4 p-3 items-center hover:bg-muted/30 transition-colors">
+                          <Checkbox
+                            checked={selectedItems.includes(item.id)}
+                            onCheckedChange={(checked) => handleSelectItem(item.id, checked as boolean)}
+                          />
+                          <a href="#" className="text-primary hover:underline text-sm">
+                            {item.name}
+                          </a>
+                          <div className="text-sm text-muted-foreground">
+                            {item.lastUpdated}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="icon">
+                              <ChevronDown className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="destructive" 
+                              size="icon"
+                              onClick={() => handleDeleteItem(item.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
               </div>
             </TabsContent>
           </Tabs>
