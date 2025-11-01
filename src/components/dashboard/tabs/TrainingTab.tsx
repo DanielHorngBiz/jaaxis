@@ -341,9 +341,9 @@ const TrainingTab = () => {
                             checked={selectedItems.includes(item.id)}
                             onCheckedChange={(checked) => handleSelectItem(item.id, checked as boolean)}
                           />
-                          <a href="#" className="text-primary hover:underline text-sm">
+                          <div className="text-sm text-foreground">
                             {item.name}
-                          </a>
+                          </div>
                           <div className="text-sm text-muted-foreground">
                             {item.lastUpdated}
                           </div>
