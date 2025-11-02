@@ -57,14 +57,49 @@ const mockMessages: Message[] = [
 
 export const ChatDashboardContent = () => {
   const [selectedPlatform, setSelectedPlatform] = useState<string>("all");
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(mockMessages[0]);
+  const [messages, setMessages] = useState<Message[]>(mockMessages);
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(messages[0]);
 
-  const filteredMessages = mockMessages.filter((msg) => {
+  const filteredMessages = messages.filter((msg) => {
     if (selectedPlatform === "all") return !msg.archived;
-    if (selectedPlatform === "starred") return msg.starred;
+    if (selectedPlatform === "starred") return msg.starred && !msg.archived;
     if (selectedPlatform === "archived") return msg.archived;
-    return msg.platform === selectedPlatform;
+    return msg.platform === selectedPlatform && !msg.archived;
   });
+
+  const toggleStar = () => {
+    if (!selectedMessage || selectedMessage.archived) return;
+    
+    setMessages(prev => prev.map(msg => 
+      msg.id === selectedMessage.id 
+        ? { ...msg, starred: !msg.starred }
+        : msg
+    ));
+    setSelectedMessage(prev => prev ? { ...prev, starred: !prev.starred } : null);
+  };
+
+  const togglePause = () => {
+    if (!selectedMessage || selectedMessage.archived) return;
+    // Pause functionality can be implemented here
+  };
+
+  const toggleArchive = () => {
+    if (!selectedMessage) return;
+    
+    setMessages(prev => prev.map(msg => 
+      msg.id === selectedMessage.id 
+        ? { ...msg, archived: !msg.archived, starred: msg.archived ? msg.starred : false }
+        : msg
+    ));
+    
+    if (!selectedMessage.archived) {
+      // Archiving: unstar the message
+      setSelectedMessage(prev => prev ? { ...prev, archived: true, starred: false } : null);
+    } else {
+      // Unarchiving: restore the message
+      setSelectedMessage(prev => prev ? { ...prev, archived: false } : null);
+    }
+  };
 
   const getPlatformIcon = (platform: Message["platform"]) => {
     switch (platform) {
@@ -175,14 +210,29 @@ export const ChatDashboardContent = () => {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="ghost" size="icon">
-                    <Star className="h-5 w-5" />
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={toggleStar}
+                    disabled={selectedMessage?.archived}
+                    className={selectedMessage?.starred ? "text-yellow-500" : ""}
+                  >
+                    <Star className={cn("h-5 w-5", selectedMessage?.starred && "fill-current")} />
                   </Button>
-                  <Button variant="ghost" size="icon">
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={togglePause}
+                    disabled={selectedMessage?.archived}
+                  >
                     <Pause className="h-5 w-5" />
                   </Button>
-                  <Button variant="ghost" size="icon">
-                    <Archive className="h-5 w-5" />
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={toggleArchive}
+                  >
+                    <Archive className={cn("h-5 w-5", selectedMessage?.archived && "fill-current")} />
                   </Button>
                 </div>
               </div>
