@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { format, isToday, isYesterday, isSameDay } from "date-fns";
 import { Star, Pause, Play, Archive, Send, Paperclip, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -251,6 +252,13 @@ export const ChatDashboardContent = () => {
               {/* Messages Area */}
               <ScrollArea className="flex-1 p-6">
                 <div className="space-y-4">
+                  {/* Date separator */}
+                  <div className="flex items-center justify-center my-6">
+                    <div className="bg-secondary/80 px-3 py-1 rounded-full">
+                      <span className="text-xs text-muted-foreground">Friday, October 24, 2025</span>
+                    </div>
+                  </div>
+
                   <div className="flex flex-col items-start gap-2">
                     <div className="flex items-start gap-3">
                       <Avatar className="h-8 w-8">
@@ -260,14 +268,21 @@ export const ChatDashboardContent = () => {
                         <p className="text-sm">請問更使用Flexoresets是用RAW會比JPG格式還要來得嗎</p>
                       </div>
                     </div>
-                    <span className="text-xs text-muted-foreground ml-11">Fri 11:22 PM</span>
+                    <span className="text-xs text-muted-foreground ml-11">11:22 PM</span>
+                  </div>
+
+                  {/* Date separator */}
+                  <div className="flex items-center justify-center my-6">
+                    <div className="bg-secondary/80 px-3 py-1 rounded-full">
+                      <span className="text-xs text-muted-foreground">Saturday, October 25, 2025</span>
+                    </div>
                   </div>
 
                   <div className="flex flex-col items-end gap-2">
                     <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 max-w-md">
                       <p className="text-sm">是的喔，RAW本身能調整的部分就會比較多</p>
                     </div>
-                    <span className="text-xs text-muted-foreground mr-2">Sat 1:42 PM</span>
+                    <span className="text-xs text-muted-foreground mr-2">1:42 PM</span>
                   </div>
 
                   <div className="flex flex-col items-start gap-2">
