@@ -264,20 +264,10 @@ export const ChatDashboardContent = () => {
                   </div>
 
                   <div className="flex flex-col items-end gap-2">
-                    <div className="flex items-start gap-3">
-                      <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 max-w-md">
-                        <p className="text-sm">是的喔，RAW本身能調整的部分就會比較多</p>
-                      </div>
-                      <div className="relative">
-                        <div className={cn(
-                          "w-8 h-8 rounded-full flex items-center justify-center p-1",
-                          getPlatformBgColor(selectedMessage.platform)
-                        )}>
-                          {getPlatformIcon(selectedMessage.platform)}
-                        </div>
-                      </div>
+                    <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 max-w-md">
+                      <p className="text-sm">是的喔，RAW本身能調整的部分就會比較多</p>
                     </div>
-                    <span className="text-xs text-muted-foreground mr-11">Sat 1:42 PM</span>
+                    <span className="text-xs text-muted-foreground mr-2">Sat 1:42 PM</span>
                   </div>
 
                   <div className="flex flex-col items-start gap-2">
@@ -292,20 +282,10 @@ export const ChatDashboardContent = () => {
                   </div>
 
                   <div className="flex flex-col items-end gap-2">
-                    <div className="flex items-start gap-3">
-                      <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 max-w-md">
-                        <p className="text-sm">可以先調到高感的背景用</p>
-                      </div>
-                      <div className="relative">
-                        <div className={cn(
-                          "w-8 h-8 rounded-full flex items-center justify-center p-1",
-                          getPlatformBgColor(selectedMessage.platform)
-                        )}>
-                          {getPlatformIcon(selectedMessage.platform)}
-                        </div>
-                      </div>
+                    <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 max-w-md">
+                      <p className="text-sm">可以先調到高感的背景用</p>
                     </div>
-                    <span className="text-xs text-muted-foreground mr-11">Sent</span>
+                    <span className="text-xs text-muted-foreground mr-2">Sent</span>
                   </div>
                 </div>
               </ScrollArea>
