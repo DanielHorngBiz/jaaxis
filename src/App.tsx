@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import BotDetail from "./pages/BotDetail";
+import ChatDashboard from "./pages/ChatDashboard";
 import AccountSettings from "./pages/AccountSettings";
 import NotFound from "./pages/NotFound";
 
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/bot/:botId" element={<BotDetail />} />
           <Route path="/dashboard/bot/:botId/:tab" element={<BotDetail />} />
+          <Route path="/chat-dashboard" element={<ChatDashboard />} />
           <Route path="/account-settings" element={<AccountSettings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
