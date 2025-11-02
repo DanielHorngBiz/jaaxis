@@ -78,7 +78,8 @@ export const ChatDashboardContent = () => {
     if (selectedMessageRef.current) {
       selectedMessageRef.current.scrollIntoView({
         behavior: 'smooth',
-        block: 'nearest',
+        block: 'center',
+        inline: 'nearest'
       });
     }
   }, [selectedMessage]);
@@ -194,7 +195,7 @@ export const ChatDashboardContent = () => {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <div className="w-96 border-r bg-card flex flex-col">
-          <ScrollArea className="flex-1">
+          <ScrollArea className="flex-1 scroll-smooth">
             {filteredMessages.map((message) => (
               <div
                 key={message.id}
