@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
 import { Star, Pause, Play, Archive, Send, Paperclip, MessageSquare, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -72,6 +72,16 @@ export const ChatDashboardContent = () => {
   const [messages, setMessages] = useState<Message[]>(mockMessages);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(messages[0]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const selectedMessageRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (selectedMessageRef.current) {
+      selectedMessageRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  }, [selectedMessage]);
 
   const filteredMessages = messages.filter((msg) => {
     if (selectedPlatform === "all") return !msg.archived;
@@ -188,6 +198,7 @@ export const ChatDashboardContent = () => {
             {filteredMessages.map((message) => (
               <div
                 key={message.id}
+                ref={selectedMessage?.id === message.id ? selectedMessageRef : null}
                 onClick={() => setSelectedMessage(message)}
                 className={`flex items-start gap-3 p-4 cursor-pointer hover:bg-secondary/50 transition-colors border-l-4 ${
                   selectedMessage?.id === message.id
