@@ -200,7 +200,7 @@ export const ChatDashboardContent = () => {
                 key={message.id}
                 ref={selectedMessage?.id === message.id ? selectedMessageRef : null}
                 onClick={() => setSelectedMessage(message)}
-                className={`flex items-start gap-3 p-4 cursor-pointer hover:bg-secondary/50 transition-colors border-l-4 ${
+                className={`flex items-start gap-3 p-4 cursor-pointer hover:bg-secondary/50 transition-all duration-300 border-l-4 ${
                   selectedMessage?.id === message.id
                     ? "border-l-primary bg-secondary/30"
                     : "border-l-transparent"
