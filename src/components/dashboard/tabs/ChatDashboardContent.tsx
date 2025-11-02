@@ -73,16 +73,8 @@ export const ChatDashboardContent = () => {
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(messages[0]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const selectedMessageRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (selectedMessageRef.current) {
-      selectedMessageRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-        inline: 'nearest'
-      });
-    }
-  }, [selectedMessage]);
+  const listRef = useRef<HTMLDivElement>(null);
+  const [indicator, setIndicator] = useState({ top: 0, height: 0, visible: false });
 
   const filteredMessages = messages.filter((msg) => {
     if (selectedPlatform === "all") return !msg.archived;
@@ -90,6 +82,31 @@ export const ChatDashboardContent = () => {
     if (selectedPlatform === "archived") return msg.archived;
     return msg.platform === selectedPlatform && !msg.archived;
   });
+
+  useEffect(() => {
+    const updateIndicator = () => {
+      if (selectedMessageRef.current && listRef.current) {
+        const rect = selectedMessageRef.current.getBoundingClientRect();
+        const listRect = listRef.current.getBoundingClientRect();
+        setIndicator({
+          top: rect.top - listRect.top + listRef.current.scrollTop,
+          height: rect.height,
+          visible: true
+        });
+        selectedMessageRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'nearest'
+        });
+      } else {
+        setIndicator(prev => ({ ...prev, visible: false }));
+      }
+    };
+
+    updateIndicator();
+    window.addEventListener('resize', updateIndicator);
+    return () => window.removeEventListener('resize', updateIndicator);
+  }, [selectedMessage, filteredMessages]);
 
   const toggleStar = () => {
     if (!selectedMessage || selectedMessage.archived) return;
@@ -195,41 +212,48 @@ export const ChatDashboardContent = () => {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <div className="w-96 border-r bg-card flex flex-col">
-          <ScrollArea className="flex-1 scroll-smooth">
-            {filteredMessages.map((message) => (
-              <div
-                key={message.id}
-                ref={selectedMessage?.id === message.id ? selectedMessageRef : null}
-                onClick={() => setSelectedMessage(message)}
-                className={`flex items-start gap-3 p-4 cursor-pointer hover:bg-secondary/50 transition-all duration-300 border-l-4 ${
-                  selectedMessage?.id === message.id
-                    ? "border-l-primary bg-secondary/30"
-                    : "border-l-transparent"
-                }`}
-              >
-                <div className="relative">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={message.avatar} />
-                    <AvatarFallback>{message.sender[0]}</AvatarFallback>
-                  </Avatar>
-                  <div className={cn(
-                    "absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center border-2 border-background p-0.5",
-                    getPlatformBgColor(message.platform)
-                  )}>
-                    {getPlatformIcon(message.platform)}
+          <ScrollArea className="flex-1">
+            <div ref={listRef} className="relative">
+              {indicator.visible && (
+                <div 
+                  className="absolute left-0 w-1 bg-primary rounded-r-md transition-all duration-300 ease-out pointer-events-none z-10"
+                  style={{ top: `${indicator.top}px`, height: `${indicator.height}px` }}
+                />
+              )}
+              {filteredMessages.map((message) => (
+                <div
+                  key={message.id}
+                  ref={selectedMessage?.id === message.id ? selectedMessageRef : null}
+                  onClick={() => setSelectedMessage(message)}
+                  className={cn(
+                    "flex items-start gap-3 p-4 cursor-pointer hover:bg-secondary/50 transition-colors",
+                    selectedMessage?.id === message.id && "bg-secondary/30"
+                  )}
+                >
+                  <div className="relative">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={message.avatar} />
+                      <AvatarFallback>{message.sender[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className={cn(
+                      "absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center border-2 border-background p-0.5",
+                      getPlatformBgColor(message.platform)
+                    )}>
+                      {getPlatformIcon(message.platform)}
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <span className={`font-medium ${message.unread ? "text-foreground" : "text-muted-foreground"}`}>
+                        {message.sender}
+                      </span>
+                      <span className="text-xs text-muted-foreground">{message.timestamp}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground truncate">{message.preview}</p>
                   </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <span className={`font-medium ${message.unread ? "text-foreground" : "text-muted-foreground"}`}>
-                      {message.sender}
-                    </span>
-                    <span className="text-xs text-muted-foreground">{message.timestamp}</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground truncate">{message.preview}</p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </ScrollArea>
         </div>
 
