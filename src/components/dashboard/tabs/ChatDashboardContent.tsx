@@ -253,11 +253,7 @@ export const ChatDashboardContent = () => {
               <ScrollArea className="flex-1 p-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-center my-6">
-                    <div className="flex items-center gap-3 max-w-xs">
-                      <div className="flex-1 border-t border-border"></div>
-                      <span className="text-xs text-muted-foreground whitespace-nowrap">Oct 24, 2025</span>
-                      <div className="flex-1 border-t border-border"></div>
-                    </div>
+                    <span className="text-xs text-muted-foreground">Oct 24, 2025</span>
                   </div>
 
                   <div className="flex flex-col items-start gap-2">
@@ -273,11 +269,7 @@ export const ChatDashboardContent = () => {
                   </div>
 
                   <div className="flex items-center justify-center my-6">
-                    <div className="flex items-center gap-3 max-w-xs">
-                      <div className="flex-1 border-t border-border"></div>
-                      <span className="text-xs text-muted-foreground whitespace-nowrap">Oct 25, 2025</span>
-                      <div className="flex-1 border-t border-border"></div>
-                    </div>
+                    <span className="text-xs text-muted-foreground">Oct 25, 2025</span>
                   </div>
 
                   <div className="flex flex-col items-end gap-2">
