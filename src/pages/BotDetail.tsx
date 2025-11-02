@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { Wand2, Eye, Link2, Settings } from "lucide-react";
+import { Wand2, Eye, Link2, Settings, MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import TrainingTab from "@/components/dashboard/tabs/TrainingTab";
 import PreviewTab from "@/components/dashboard/tabs/PreviewTab";
@@ -47,6 +48,16 @@ const BotDetailContent = () => {
         onTabChange={(tabId) => {
           navigate(`/dashboard/bot/${botId}/${tabId}`);
         }}
+        actionButton={
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => navigate("/chat-dashboard")}
+          >
+            <MessageSquare className="h-4 w-4" />
+            Chat Dashboard
+          </Button>
+        }
       >
         <ContentContainer className="px-8 py-12 max-w-4xl mx-auto">
           {renderTabContent()}

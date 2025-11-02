@@ -17,6 +17,7 @@ interface TabbedPageLayoutProps {
   onTabChange: (tabId: string) => void;
   children: React.ReactNode;
   headerAction?: React.ReactNode;
+  actionButton?: React.ReactNode;
 }
 
 export const TabbedPageLayout = ({
@@ -28,6 +29,7 @@ export const TabbedPageLayout = ({
   onTabChange,
   children,
   headerAction,
+  actionButton,
 }: TabbedPageLayoutProps) => {
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
@@ -78,7 +80,7 @@ export const TabbedPageLayout = ({
               ) : null}
               <h1 className="text-2xl font-bold">{title}</h1>
             </div>
-            {headerAction}
+            {headerAction || actionButton}
           </div>
 
           {/* Tabs */}
