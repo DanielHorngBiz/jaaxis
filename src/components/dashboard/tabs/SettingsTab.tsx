@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Pencil, Upload, Trash2, Plus, MoreHorizontal } from "lucide-react";
+import { Pencil, Upload, Trash2, Plus } from "lucide-react";
 import { useBotConfig } from "@/contexts/BotConfigContext";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef, useEffect } from "react";
@@ -24,11 +24,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 const colors = [
   "#FF9800",
   "#9C27B0",
@@ -43,6 +44,7 @@ interface TeamMember {
   email: string;
   role: string;
   created_at: string;
+  accepted?: boolean;
 }
 
 const SettingsTab = () => {
@@ -58,6 +60,8 @@ const SettingsTab = () => {
   const [mobileDisplay, setMobileDisplay] = useState(config.mobileDisplay);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [memberToDelete, setMemberToDelete] = useState<TeamMember | null>(null);
+  const [memberToEdit, setMemberToEdit] = useState<TeamMember | null>(null);
+  const [editRole, setEditRole] = useState<string>("");
 
   useEffect(() => {
     if (chatbotId) {
@@ -109,6 +113,41 @@ const SettingsTab = () => {
     } finally {
       setMemberToDelete(null);
     }
+  };
+
+  const handleEditMember = async () => {
+    if (!memberToEdit) return;
+
+    try {
+      const { error } = await supabase
+        .from("team_members")
+        .update({ role: editRole })
+        .eq("id", memberToEdit.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Role updated",
+        description: `${memberToEdit.email}'s role has been updated to ${editRole}`,
+      });
+
+      fetchTeamMembers();
+    } catch (error) {
+      console.error("Error updating team member:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update role. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setMemberToEdit(null);
+      setEditRole("");
+    }
+  };
+
+  const openEditDialog = (member: TeamMember) => {
+    setMemberToEdit(member);
+    setEditRole(member.role);
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -332,39 +371,38 @@ const SettingsTab = () => {
                 <TableRow>
                   <TableHead>E-mail</TableHead>
                   <TableHead>Role</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 <TableRow>
                   <TableCell className="font-medium">{user?.email}</TableCell>
                   <TableCell>Owner (You)</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" disabled>
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
-                  </TableCell>
+                  <TableCell className="text-right"></TableCell>
                 </TableRow>
                 {teamMembers.map((member) => (
                   <TableRow key={member.id}>
                     <TableCell className="font-medium">{member.email}</TableCell>
                     <TableCell className="capitalize">{member.role}</TableCell>
                     <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="w-4 h-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            className="text-destructive focus:text-destructive"
-                            onClick={() => setMemberToDelete(member)}
+                      <div className="flex items-center justify-end gap-1">
+                        {member.accepted && (
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => openEditDialog(member)}
                           >
-                            Remove
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                        )}
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => setMemberToDelete(member)}
+                        >
+                          <Trash2 className="w-4 h-4 text-destructive" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -406,6 +444,44 @@ const SettingsTab = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Edit Member Role Dialog */}
+      <Dialog open={!!memberToEdit} onOpenChange={() => setMemberToEdit(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Team Member Role</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 pt-4">
+            <div className="space-y-2">
+              <Label>E-mail</Label>
+              <Input value={memberToEdit?.email || ""} disabled />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-role">Role</Label>
+              <Select value={editRole} onValueChange={setEditRole}>
+                <SelectTrigger id="edit-role">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="manager">Manager</SelectItem>
+                  <SelectItem value="support">Support</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex gap-2">
+              <Button variant="outline" className="flex-1" onClick={() => setMemberToEdit(null)}>
+                Cancel
+              </Button>
+              <Button className="flex-1" onClick={handleEditMember}>
+                Update Role
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
