@@ -288,13 +288,14 @@ export const ChatDashboardContent = () => {
                         <p className="text-sm">所以使用RAW檔的話 需要先把白平衡調整好再套用嗎 還是可以直接套用沒關係</p>
                       </div>
                     </div>
+                    <span className="text-xs text-muted-foreground ml-11">1:45 PM</span>
                   </div>
 
                   <div className="flex flex-col items-end gap-2">
                     <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 max-w-md">
                       <p className="text-sm">可以先調到高感的背景用</p>
                     </div>
-                    <span className="text-xs text-muted-foreground mr-2">Sent</span>
+                    <span className="text-xs text-muted-foreground mr-2">1:48 PM</span>
                   </div>
                 </div>
               </ScrollArea>
@@ -306,7 +307,7 @@ export const ChatDashboardContent = () => {
                     <Paperclip className="h-5 w-5" />
                   </Button>
                   <Textarea 
-                    placeholder="Reply on Instagram..." 
+                    placeholder="Type a message..." 
                     className="flex-1 min-h-[40px] resize-none"
                     rows={1}
                   />
