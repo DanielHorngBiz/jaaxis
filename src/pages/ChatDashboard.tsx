@@ -98,39 +98,21 @@ const ChatDashboard = () => {
                 className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3"
               >
                 All messages
-                {platformCounts.all > 0 && (
-                  <Badge variant="destructive" className="ml-2">{platformCounts.all}</Badge>
-                )}
               </TabsTrigger>
               <TabsTrigger value="starred" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
                 Starred
-                {platformCounts.starred > 0 && (
-                  <Badge variant="destructive" className="ml-2">{platformCounts.starred}</Badge>
-                )}
               </TabsTrigger>
               <TabsTrigger value="messenger" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
                 Messenger
-                {platformCounts.messenger > 0 && (
-                  <Badge variant="destructive" className="ml-2">{platformCounts.messenger}</Badge>
-                )}
               </TabsTrigger>
               <TabsTrigger value="instagram" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
                 Instagram
-                {platformCounts.instagram > 0 && (
-                  <Badge variant="destructive" className="ml-2">{platformCounts.instagram}</Badge>
-                )}
               </TabsTrigger>
               <TabsTrigger value="website" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
                 Website
-                {platformCounts.website > 0 && (
-                  <Badge variant="destructive" className="ml-2">{platformCounts.website}</Badge>
-                )}
               </TabsTrigger>
               <TabsTrigger value="archived" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
                 Archived
-                {platformCounts.archived > 0 && (
-                  <Badge variant="destructive" className="ml-2">{platformCounts.archived}</Badge>
-                )}
               </TabsTrigger>
             </TabsList>
           </Tabs>
