@@ -383,7 +383,10 @@ const SettingsTab = () => {
                 {teamMembers.map((member) => (
                   <TableRow key={member.id}>
                     <TableCell className="font-medium">{member.email}</TableCell>
-                    <TableCell className="capitalize">{member.role}</TableCell>
+                    <TableCell className="capitalize">
+                      {member.role}
+                      {!member.accepted && <span className="text-muted-foreground ml-1">(Pending)</span>}
+                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         {member.accepted && (

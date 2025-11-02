@@ -159,6 +159,7 @@ export type Database = {
       }
       team_members: {
         Row: {
+          accepted: boolean
           chatbot_id: string
           created_at: string
           email: string
@@ -166,6 +167,7 @@ export type Database = {
           role: string
         }
         Insert: {
+          accepted?: boolean
           chatbot_id: string
           created_at?: string
           email: string
@@ -173,6 +175,7 @@ export type Database = {
           role: string
         }
         Update: {
+          accepted?: boolean
           chatbot_id?: string
           created_at?: string
           email?: string
