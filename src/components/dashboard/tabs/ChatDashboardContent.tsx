@@ -201,8 +201,8 @@ export const ChatDashboardContent = () => {
                   </Button>
                   <Textarea 
                     placeholder="Reply on Instagram..." 
-                    className="flex-1 min-h-[80px] resize-none"
-                    rows={3}
+                    className="flex-1 min-h-[40px] resize-none"
+                    rows={1}
                   />
                   <Button size="icon" className="mb-1">
                     <Send className="h-5 w-5" />
