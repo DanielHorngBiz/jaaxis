@@ -1,11 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Wand2, Eye, Link2, Settings, MessageSquare } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import TrainingTab from "@/components/dashboard/tabs/TrainingTab";
 import PreviewTab from "@/components/dashboard/tabs/PreviewTab";
 import ConnectTab from "@/components/dashboard/tabs/ConnectTab";
 import SettingsTab from "@/components/dashboard/tabs/SettingsTab";
+import ChatDashboardTab from "@/components/dashboard/tabs/ChatDashboardTab";
 import { TabbedPageLayout } from "@/components/layout/TabbedPageLayout";
 import { ContentContainer } from "@/components/layout/ContentContainer";
 import { BotConfigProvider, useBotConfig } from "@/contexts/BotConfigContext";
@@ -15,6 +15,7 @@ const tabs = [
   { id: "preview", label: "Preview", icon: Eye },
   { id: "connect", label: "Connect", icon: Link2 },
   { id: "settings", label: "Settings", icon: Settings },
+  { id: "chat-dashboard", label: "Chat Dashboard", icon: MessageSquare },
 ];
 
 const BotDetailContent = () => {
@@ -33,6 +34,8 @@ const BotDetailContent = () => {
         return <ConnectTab />;
       case "settings":
         return <SettingsTab />;
+      case "chat-dashboard":
+        return <ChatDashboardTab />;
       default:
         return <TrainingTab />;
     }
@@ -48,14 +51,6 @@ const BotDetailContent = () => {
         onTabChange={(tabId) => {
           navigate(`/dashboard/bot/${botId}/${tabId}`);
         }}
-        actionButton={
-          <Button
-            variant="outline"
-            onClick={() => navigate("/chat-dashboard")}
-          >
-            Chat Dashboard
-          </Button>
-        }
       >
         <ContentContainer className="px-8 py-12 max-w-4xl mx-auto">
           {renderTabContent()}
