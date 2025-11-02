@@ -254,29 +254,6 @@ const AccountTab = () => {
         </div>
       </div>
 
-      {/* Address */}
-      <div className="pb-8 border-b">
-        <h3 className="text-lg font-semibold mb-6">Address</h3>
-        <div className="grid grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label htmlFor="street">Street/Avenue</Label>
-            <Input id="street" placeholder="Enter street address" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="city">City</Label>
-            <Input id="city" placeholder="Enter city" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="state">State</Label>
-            <Input id="state" placeholder="Enter state" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="postal">Postal Code</Label>
-            <Input id="postal" placeholder="Enter postal code" />
-          </div>
-        </div>
-      </div>
-
       {/* Actions */}
       <div className="flex items-center justify-between">
         <Button variant="outline" className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground">
