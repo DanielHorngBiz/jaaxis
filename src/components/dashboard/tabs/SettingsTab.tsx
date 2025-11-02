@@ -14,22 +14,14 @@ import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 import AddTeamMemberDialog from "@/components/dashboard/AddTeamMemberDialog";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
+import { useNavigate } from "react-router-dom";
 const colors = [
   "#FF9800",
   "#9C27B0",
@@ -51,6 +43,7 @@ const SettingsTab = () => {
   const { config, updateConfig, chatbotId } = useBotConfig();
   const { toast } = useToast();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [botName, setBotName] = useState(config.botName);
   const [brandLogo, setBrandLogo] = useState<string>(config.brandLogo || "");
@@ -62,6 +55,8 @@ const SettingsTab = () => {
   const [memberToDelete, setMemberToDelete] = useState<TeamMember | null>(null);
   const [memberToEdit, setMemberToEdit] = useState<TeamMember | null>(null);
   const [editRole, setEditRole] = useState<string>("");
+  const [showDeleteBotDialog, setShowDeleteBotDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (chatbotId) {
@@ -89,6 +84,7 @@ const SettingsTab = () => {
   const handleDeleteMember = async () => {
     if (!memberToDelete) return;
 
+    setIsDeleting(true);
     try {
       const { error } = await supabase
         .from("team_members")
@@ -103,6 +99,7 @@ const SettingsTab = () => {
       });
 
       fetchTeamMembers();
+      setMemberToDelete(null);
     } catch (error) {
       console.error("Error deleting team member:", error);
       toast({
@@ -111,7 +108,44 @@ const SettingsTab = () => {
         variant: "destructive",
       });
     } finally {
-      setMemberToDelete(null);
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDeleteBot = async () => {
+    if (!chatbotId) return;
+
+    setIsDeleting(true);
+    try {
+      // Delete all related data first
+      await supabase.from("team_members").delete().eq("chatbot_id", chatbotId);
+      await supabase.from("knowledge_sources").delete().eq("chatbot_id", chatbotId);
+      
+      // Delete the chatbot
+      const { error } = await supabase
+        .from("chatbots")
+        .delete()
+        .eq("id", chatbotId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Bot deleted",
+        description: "Your bot and all associated data have been permanently deleted.",
+      });
+
+      // Navigate back to dashboard
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error deleting bot:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete bot. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteBotDialog(false);
     }
   };
 
@@ -424,29 +458,34 @@ const SettingsTab = () => {
         <p className="text-sm text-muted-foreground mb-6">
           Delete this bot and all data. The action is not reversible
         </p>
-        <Button variant="outline" className="gap-2 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground">
+        <Button 
+          variant="outline" 
+          className="gap-2 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+          onClick={() => setShowDeleteBotDialog(true)}
+        >
           <Trash2 className="w-4 h-4" />
           Delete the Bot
         </Button>
       </div>
 
+      {/* Delete Bot Confirmation Dialog */}
+      <DeleteConfirmationDialog
+        open={showDeleteBotDialog}
+        onOpenChange={setShowDeleteBotDialog}
+        onConfirm={handleDeleteBot}
+        description="Deleting this bot will permanently erase all conversations, settings, and data."
+        isDeleting={isDeleting}
+      />
+
       {/* Delete Member Confirmation Dialog */}
-      <AlertDialog open={!!memberToDelete} onOpenChange={() => setMemberToDelete(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remove Team Member</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to remove {memberToDelete?.email} from your team? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteMember} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Remove
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmationDialog
+        open={!!memberToDelete}
+        onOpenChange={() => setMemberToDelete(null)}
+        onConfirm={handleDeleteMember}
+        title="Remove Team Member"
+        description={`Are you sure you want to remove ${memberToDelete?.email} from your team? This action cannot be undone.`}
+        isDeleting={isDeleting}
+      />
 
       {/* Edit Member Role Dialog */}
       <Dialog open={!!memberToEdit} onOpenChange={() => setMemberToEdit(null)}>

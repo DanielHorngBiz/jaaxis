@@ -8,14 +8,19 @@ import { useAuth } from "@/hooks/use-auth";
 import { ChangePasswordDialog } from "./ChangePasswordDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
+import { useNavigate } from "react-router-dom";
 
 const AccountTab = () => {
   const { user, profile, refetchProfile } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [newEmail, setNewEmail] = useState(user?.email || "");
   const [uploading, setUploading] = useState(false);
+  const [showDeleteAccountDialog, setShowDeleteAccountDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleEmailEdit = async () => {
@@ -167,6 +172,47 @@ const AccountTab = () => {
     return user?.email?.[0].toUpperCase() || "U";
   };
 
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+
+    setIsDeleting(true);
+    try {
+      // Delete all user's chatbots and related data
+      const { data: chatbots } = await supabase
+        .from("chatbots")
+        .select("id")
+        .eq("user_id", user.id);
+
+      if (chatbots) {
+        for (const bot of chatbots) {
+          await supabase.from("team_members").delete().eq("chatbot_id", bot.id);
+          await supabase.from("knowledge_sources").delete().eq("chatbot_id", bot.id);
+        }
+      }
+
+      await supabase.from("chatbots").delete().eq("user_id", user.id);
+      await supabase.from("profiles").delete().eq("user_id", user.id);
+
+      toast({
+        title: "Account deleted",
+        description: "Your account has been permanently deleted.",
+      });
+
+      // Sign out and redirect
+      await supabase.auth.signOut();
+      navigate("/auth");
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete account. Please contact support.",
+        variant: "destructive",
+      });
+      setIsDeleting(false);
+      setShowDeleteAccountDialog(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Profile Picture */}
@@ -256,7 +302,11 @@ const AccountTab = () => {
 
       {/* Actions */}
       <div className="flex items-center justify-between">
-        <Button variant="outline" className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground">
+        <Button 
+          variant="outline" 
+          className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+          onClick={() => setShowDeleteAccountDialog(true)}
+        >
           <Trash2 className="w-4 h-4 mr-2" />
           Delete Account
         </Button>
@@ -266,6 +316,15 @@ const AccountTab = () => {
       <ChangePasswordDialog 
         open={passwordDialogOpen} 
         onOpenChange={setPasswordDialogOpen} 
+      />
+
+      <DeleteConfirmationDialog
+        open={showDeleteAccountDialog}
+        onOpenChange={setShowDeleteAccountDialog}
+        onConfirm={handleDeleteAccount}
+        title="Delete Account"
+        description="Are you sure? Deleting your account will permanently erase all your bots, conversations, settings, and data."
+        isDeleting={isDeleting}
       />
     </div>
   );
