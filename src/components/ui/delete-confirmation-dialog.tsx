@@ -4,10 +4,11 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, X } from "lucide-react";
+import { Label } from "@/components/ui/label";
 
 interface DeleteConfirmationDialogProps {
   open: boolean;
@@ -22,7 +23,7 @@ export function DeleteConfirmationDialog({
   open,
   onOpenChange,
   onConfirm,
-  title = "Are You Sure?",
+  title = "Delete Confirmation",
   description,
   isDeleting = false,
 }: DeleteConfirmationDialogProps) {
@@ -43,38 +44,27 @@ export function DeleteConfirmationDialog({
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
-        <button
-          onClick={handleClose}
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none z-50"
-        >
-          <X className="h-4 w-4" />
-        </button>
-        
-        <div className="flex flex-col items-center space-y-6 pt-6">
-          <div className="w-24 h-24 rounded-full bg-destructive/20 flex items-center justify-center">
-            <AlertTriangle className="w-12 h-12 text-destructive" />
-          </div>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          {description && (
+            <DialogDescription>
+              {description}
+            </DialogDescription>
+          )}
+        </DialogHeader>
 
-          <DialogHeader className="text-center space-y-3">
-            <DialogTitle className="text-2xl font-bold text-center">{title}</DialogTitle>
-            {description && (
-              <p className="text-muted-foreground text-center">
-                {description}
-              </p>
-            )}
-          </DialogHeader>
-
-          <div className="w-full space-y-2">
-            <p className="text-sm font-medium">Type "Delete" to confirm</p>
+        <div className="space-y-4 pt-4">
+          <div className="space-y-2">
+            <Label htmlFor="confirm-delete">Type "Delete" to confirm</Label>
             <Input
+              id="confirm-delete"
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value)}
               placeholder="Delete"
-              className="w-full"
             />
           </div>
 
-          <div className="flex gap-3 w-full">
+          <div className="flex gap-3 pt-2">
             <Button
               variant="outline"
               onClick={handleClose}
@@ -86,9 +76,10 @@ export function DeleteConfirmationDialog({
             <Button
               onClick={handleConfirm}
               disabled={confirmText !== "Delete" || isDeleting}
-              className="flex-1 bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              variant="destructive"
+              className="flex-1"
             >
-              {isDeleting ? "Deleting..." : "Confirm"}
+              {isDeleting ? "Deleting..." : "Delete"}
             </Button>
           </div>
         </div>
