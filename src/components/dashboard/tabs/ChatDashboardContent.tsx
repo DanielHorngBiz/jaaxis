@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { MessageSquare, Star, Pause, Archive, Send, Paperclip } from "lucide-react";
+import { MessageSquare, Star, Pause, Archive, Send, Paperclip, Instagram, Facebook } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 interface Message {
   id: string;
@@ -62,6 +63,32 @@ export const ChatDashboardContent = () => {
     return msg.platform === selectedPlatform;
   });
 
+  const getPlatformIcon = (platform: Message["platform"]) => {
+    switch (platform) {
+      case "instagram":
+        return <Instagram className="w-3 h-3 text-white" />;
+      case "messenger":
+        return <Facebook className="w-3 h-3 text-white" />;
+      case "website":
+        return <MessageSquare className="w-3 h-3 text-white" />;
+      default:
+        return null;
+    }
+  };
+
+  const getPlatformColor = (platform: Message["platform"]) => {
+    switch (platform) {
+      case "instagram":
+        return "bg-gradient-to-tr from-[#f58529] via-[#dd2a7b] to-[#8134af]";
+      case "messenger":
+        return "bg-[#0084ff]";
+      case "website":
+        return "bg-primary";
+      default:
+        return "bg-secondary";
+    }
+  };
+
   return (
     <div className="flex flex-col h-full">
       {/* Platform Tabs */}
@@ -105,10 +132,18 @@ export const ChatDashboardContent = () => {
                     : "border-l-transparent"
                 }`}
               >
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={message.avatar} />
-                  <AvatarFallback>{message.sender[0]}</AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={message.avatar} />
+                    <AvatarFallback>{message.sender[0]}</AvatarFallback>
+                  </Avatar>
+                  <div className={cn(
+                    "absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center border-2 border-background",
+                    getPlatformColor(message.platform)
+                  )}>
+                    {getPlatformIcon(message.platform)}
+                  </div>
+                </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <span className={`font-medium ${message.unread ? "text-foreground" : "text-muted-foreground"}`}>
