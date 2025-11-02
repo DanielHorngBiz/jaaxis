@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Star, Pause, Archive, Send, Paperclip, MessageSquare } from "lucide-react";
+import { Star, Pause, Play, Archive, Send, Paperclip, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,6 +19,7 @@ interface Message {
   unread?: boolean;
   starred?: boolean;
   archived?: boolean;
+  paused?: boolean;
   platform: "all" | "starred" | "messenger" | "instagram" | "website" | "archived";
 }
 
@@ -80,7 +81,13 @@ export const ChatDashboardContent = () => {
 
   const togglePause = () => {
     if (!selectedMessage || selectedMessage.archived) return;
-    // Pause functionality can be implemented here
+    
+    setMessages(prev => prev.map(msg => 
+      msg.id === selectedMessage.id 
+        ? { ...msg, paused: !msg.paused }
+        : msg
+    ));
+    setSelectedMessage(prev => prev ? { ...prev, paused: !prev.paused } : null);
   };
 
   const toggleArchive = () => {
@@ -88,13 +95,13 @@ export const ChatDashboardContent = () => {
     
     setMessages(prev => prev.map(msg => 
       msg.id === selectedMessage.id 
-        ? { ...msg, archived: !msg.archived, starred: msg.archived ? msg.starred : false }
+        ? { ...msg, archived: !msg.archived, starred: msg.archived ? msg.starred : false, paused: msg.archived ? msg.paused : true }
         : msg
     ));
     
     if (!selectedMessage.archived) {
-      // Archiving: unstar the message
-      setSelectedMessage(prev => prev ? { ...prev, archived: true, starred: false } : null);
+      // Archiving: unstar and pause the message
+      setSelectedMessage(prev => prev ? { ...prev, archived: true, starred: false, paused: true } : null);
     } else {
       // Unarchiving: restore the message
       setSelectedMessage(prev => prev ? { ...prev, archived: false } : null);
@@ -225,7 +232,11 @@ export const ChatDashboardContent = () => {
                     onClick={togglePause}
                     disabled={selectedMessage?.archived}
                   >
-                    <Pause className="h-5 w-5" />
+                    {selectedMessage?.paused ? (
+                      <Play className="h-5 w-5" />
+                    ) : (
+                      <Pause className="h-5 w-5" />
+                    )}
                   </Button>
                   <Button 
                     variant="ghost" 
