@@ -68,25 +68,22 @@ export const ChatDashboardContent = () => {
       <div className="border-b bg-card px-6">
         <Tabs value={selectedPlatform} onValueChange={setSelectedPlatform}>
           <TabsList className="w-full justify-start h-auto bg-transparent border-b rounded-none p-0 gap-2">
-            <TabsTrigger 
-              value="all" 
-              className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3"
-            >
+            <TabsTrigger value="all">
               All messages
             </TabsTrigger>
-            <TabsTrigger value="starred" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
+            <TabsTrigger value="starred">
               Starred
             </TabsTrigger>
-            <TabsTrigger value="messenger" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
+            <TabsTrigger value="messenger">
               Messenger
             </TabsTrigger>
-            <TabsTrigger value="instagram" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
+            <TabsTrigger value="instagram">
               Instagram
             </TabsTrigger>
-            <TabsTrigger value="website" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
+            <TabsTrigger value="website">
               Website
             </TabsTrigger>
-            <TabsTrigger value="archived" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
+            <TabsTrigger value="archived">
               Archived
             </TabsTrigger>
           </TabsList>
