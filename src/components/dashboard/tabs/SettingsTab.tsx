@@ -8,10 +8,27 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Pencil, Upload, Trash2, Plus, MoreHorizontal } from "lucide-react";
 import { useBotConfig } from "@/contexts/BotConfigContext";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 import AddTeamMemberDialog from "@/components/dashboard/AddTeamMemberDialog";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 const colors = [
   "#FF9800",
   "#9C27B0",
@@ -21,8 +38,15 @@ const colors = [
   "#009688",
 ];
 
+interface TeamMember {
+  id: string;
+  email: string;
+  role: string;
+  created_at: string;
+}
+
 const SettingsTab = () => {
-  const { config, updateConfig } = useBotConfig();
+  const { config, updateConfig, chatbotId } = useBotConfig();
   const { toast } = useToast();
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -32,6 +56,60 @@ const SettingsTab = () => {
   const [customColor, setCustomColor] = useState(config.primaryColor);
   const [chatPosition, setChatPosition] = useState(config.chatPosition);
   const [mobileDisplay, setMobileDisplay] = useState(config.mobileDisplay);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [memberToDelete, setMemberToDelete] = useState<TeamMember | null>(null);
+
+  useEffect(() => {
+    if (chatbotId) {
+      fetchTeamMembers();
+    }
+  }, [chatbotId]);
+
+  const fetchTeamMembers = async () => {
+    if (!chatbotId) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("team_members")
+        .select("*")
+        .eq("chatbot_id", chatbotId)
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+      setTeamMembers(data || []);
+    } catch (error) {
+      console.error("Error fetching team members:", error);
+    }
+  };
+
+  const handleDeleteMember = async () => {
+    if (!memberToDelete) return;
+
+    try {
+      const { error } = await supabase
+        .from("team_members")
+        .delete()
+        .eq("id", memberToDelete.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Team member removed",
+        description: `${memberToDelete.email} has been removed from your team`,
+      });
+
+      fetchTeamMembers();
+    } catch (error) {
+      console.error("Error deleting team member:", error);
+      toast({
+        title: "Error",
+        description: "Failed to remove team member. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setMemberToDelete(null);
+    }
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -267,11 +345,34 @@ const SettingsTab = () => {
                     </Button>
                   </TableCell>
                 </TableRow>
+                {teamMembers.map((member) => (
+                  <TableRow key={member.id}>
+                    <TableCell className="font-medium">{member.email}</TableCell>
+                    <TableCell className="capitalize">{member.role}</TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => setMemberToDelete(member)}
+                          >
+                            Remove
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </div>
           <div className="flex justify-center">
-            <AddTeamMemberDialog />
+            <AddTeamMemberDialog chatbotId={chatbotId || ""} onMemberAdded={fetchTeamMembers} />
           </div>
         </div>
       </div>
@@ -287,6 +388,24 @@ const SettingsTab = () => {
           Delete the Bot
         </Button>
       </div>
+
+      {/* Delete Member Confirmation Dialog */}
+      <AlertDialog open={!!memberToDelete} onOpenChange={() => setMemberToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Team Member</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove {memberToDelete?.email} from your team? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteMember} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

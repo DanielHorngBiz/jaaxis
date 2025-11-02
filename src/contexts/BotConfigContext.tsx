@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 interface BotConfig {
   botName: string;
@@ -11,6 +13,7 @@ interface BotConfig {
 interface BotConfigContextType {
   config: BotConfig;
   updateConfig: (updates: Partial<BotConfig>) => void;
+  chatbotId: string | null;
 }
 
 const defaultConfig: BotConfig = {
@@ -24,31 +27,68 @@ const defaultConfig: BotConfig = {
 const BotConfigContext = createContext<BotConfigContextType | undefined>(undefined);
 
 export const BotConfigProvider = ({ children }: { children: ReactNode }) => {
-  const [config, setConfig] = useState<BotConfig>(() => {
-    const saved = localStorage.getItem("botConfig");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        return { ...defaultConfig, ...parsed };
-      } catch {
-        // ignore parsing error and fall back
-      }
-    }
-    return defaultConfig;
-  });
+  const { botId } = useParams();
+  const [chatbotId, setChatbotId] = useState<string | null>(null);
+  const [config, setConfig] = useState<BotConfig>(defaultConfig);
 
   useEffect(() => {
-    localStorage.setItem("botConfig", JSON.stringify(config));
-    // Dispatch custom event to notify other components
-    window.dispatchEvent(new CustomEvent("botConfigUpdated", { detail: config }));
-  }, [config]);
+    if (botId) {
+      loadBotConfig(botId);
+    }
+  }, [botId]);
 
-  const updateConfig = (updates: Partial<BotConfig>) => {
-    setConfig((prev) => ({ ...prev, ...updates }));
+  const loadBotConfig = async (slug: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("chatbots")
+        .select("*")
+        .eq("slug", slug)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setChatbotId(data.id);
+        setConfig({
+          botName: data.name || "",
+          brandLogo: data.avatar_url || "",
+          primaryColor: data.primary_color || "#3888FF",
+          chatPosition: (data.chat_position as "left" | "right") || "right",
+          mobileDisplay: (data.mobile_display as "show" | "hide") || "show",
+        });
+      }
+    } catch (error) {
+      console.error("Error loading bot config:", error);
+    }
+  };
+
+  const updateConfig = async (updates: Partial<BotConfig>) => {
+    const newConfig = { ...config, ...updates };
+    setConfig(newConfig);
+
+    if (chatbotId) {
+      try {
+        await supabase
+          .from("chatbots")
+          .update({
+            name: updates.botName !== undefined ? updates.botName : undefined,
+            avatar_url: updates.brandLogo !== undefined ? updates.brandLogo : undefined,
+            primary_color: updates.primaryColor !== undefined ? updates.primaryColor : undefined,
+            chat_position: updates.chatPosition !== undefined ? updates.chatPosition : undefined,
+            mobile_display: updates.mobileDisplay !== undefined ? updates.mobileDisplay : undefined,
+          })
+          .eq("id", chatbotId);
+      } catch (error) {
+        console.error("Error updating bot config:", error);
+      }
+    }
+
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new CustomEvent("botConfigUpdated", { detail: newConfig }));
   };
 
   return (
-    <BotConfigContext.Provider value={{ config, updateConfig }}>
+    <BotConfigContext.Provider value={{ config, updateConfig, chatbotId }}>
       {children}
     </BotConfigContext.Provider>
   );

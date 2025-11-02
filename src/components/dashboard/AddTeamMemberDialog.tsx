@@ -6,14 +6,21 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
-const AddTeamMemberDialog = () => {
+interface AddTeamMemberDialogProps {
+  chatbotId: string;
+  onMemberAdded: () => void;
+}
+
+const AddTeamMemberDialog = ({ chatbotId, onMemberAdded }: AddTeamMemberDialogProps) => {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("support");
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email) {
@@ -25,14 +32,38 @@ const AddTeamMemberDialog = () => {
       return;
     }
 
-    toast({
-      title: "Invitation sent",
-      description: `Team member invitation sent to ${email}`,
-    });
+    setIsLoading(true);
 
-    setEmail("");
-    setRole("support");
-    setOpen(false);
+    try {
+      const { error } = await supabase
+        .from("team_members")
+        .insert({
+          chatbot_id: chatbotId,
+          email,
+          role,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Team member added",
+        description: `${email} has been added to your team`,
+      });
+
+      setEmail("");
+      setRole("support");
+      setOpen(false);
+      onMemberAdded();
+    } catch (error) {
+      console.error("Error adding team member:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add team member. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -56,12 +87,13 @@ const AddTeamMemberDialog = () => {
               placeholder="Enter e-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="role">Role</Label>
-            <Select value={role} onValueChange={setRole}>
+            <Select value={role} onValueChange={setRole} disabled={isLoading}>
               <SelectTrigger id="role">
                 <SelectValue />
               </SelectTrigger>
@@ -73,8 +105,8 @@ const AddTeamMemberDialog = () => {
             </Select>
           </div>
 
-          <Button type="submit" className="w-full">
-            Send Invitation
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Adding..." : "Send Invitation"}
           </Button>
         </form>
       </DialogContent>
