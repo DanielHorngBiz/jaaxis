@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { MessageSquare, Star, Pause, Archive } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { MessageSquare, Star, Pause, Archive, Send, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Message {
   id: string;
@@ -195,10 +195,17 @@ export const ChatDashboardContent = () => {
 
               {/* Input Area */}
               <div className="p-4 border-t bg-card">
-                <div className="flex items-center gap-2">
-                  <Input placeholder="Reply on Instagram..." className="flex-1" />
-                  <Button variant="ghost" size="icon">
-                    <MessageSquare className="h-5 w-5" />
+                <div className="flex items-end gap-2">
+                  <Button variant="ghost" size="icon" className="mb-1">
+                    <Paperclip className="h-5 w-5" />
+                  </Button>
+                  <Textarea 
+                    placeholder="Reply on Instagram..." 
+                    className="flex-1 min-h-[80px] resize-none"
+                    rows={3}
+                  />
+                  <Button size="icon" className="mb-1">
+                    <Send className="h-5 w-5" />
                   </Button>
                 </div>
               </div>
