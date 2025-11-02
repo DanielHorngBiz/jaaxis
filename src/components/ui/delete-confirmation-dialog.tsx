@@ -9,6 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { AlertTriangle } from "lucide-react";
 
 interface DeleteConfirmationDialogProps {
   open: boolean;
@@ -44,10 +45,16 @@ export function DeleteConfirmationDialog({
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
+        <div className="flex flex-col items-center pt-4">
+          <div className="w-20 h-20 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
+            <AlertTriangle className="w-10 h-10 text-destructive" />
+          </div>
+        </div>
+
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <DialogTitle className="text-center">{title}</DialogTitle>
           {description && (
-            <DialogDescription>
+            <DialogDescription className="text-center">
               {description}
             </DialogDescription>
           )}
