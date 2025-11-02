@@ -26,7 +26,7 @@ const mockMessages: Message[] = [
     id: "1",
     sender: "Michelle Hoh",
     preview: "你好 我想請問一下這是哪種只在lightroom裡...",
-    timestamp: "Sat",
+    timestamp: "24/10/2025",
     unread: true,
     platform: "instagram",
   },
@@ -34,14 +34,14 @@ const mockMessages: Message[] = [
     id: "2",
     sender: "Charles",
     preview: "You: 可以先關到高感的背景用",
-    timestamp: "Sat",
+    timestamp: "24/10/2025",
     platform: "messenger",
   },
   {
     id: "3",
     sender: "Lain Liu",
     preview: "謝謝您",
-    timestamp: "Sat",
+    timestamp: "23/10/2025",
     unread: true,
     platform: "messenger",
   },
@@ -49,7 +49,7 @@ const mockMessages: Message[] = [
     id: "4",
     sender: "ZT",
     preview: "You: 您好，教學可以參考這裡：...",
-    timestamp: "Fri",
+    timestamp: "22/10/2025",
     platform: "website",
   },
 ];
@@ -145,9 +145,6 @@ const ChatDashboard = () => {
                     </div>
                     <p className="text-sm text-muted-foreground truncate">{message.preview}</p>
                   </div>
-                  {message.unread && (
-                    <div className="h-2 w-2 bg-destructive rounded-full mt-2" />
-                  )}
                 </div>
               ))}
             </ScrollArea>
