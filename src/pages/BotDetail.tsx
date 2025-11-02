@@ -51,10 +51,8 @@ const BotDetailContent = () => {
         actionButton={
           <Button
             variant="outline"
-            className="gap-2"
             onClick={() => navigate("/chat-dashboard")}
           >
-            <MessageSquare className="h-4 w-4" />
             Chat Dashboard
           </Button>
         }
