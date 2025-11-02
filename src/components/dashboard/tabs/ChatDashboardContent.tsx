@@ -1,11 +1,21 @@
 import { useState } from "react";
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
-import { Star, Pause, Play, Archive, Send, Paperclip, MessageSquare } from "lucide-react";
+import { Star, Pause, Play, Archive, Send, Paperclip, MessageSquare, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import instagramIcon from "@/assets/instagram.svg";
 import messengerIcon from "@/assets/messenger.svg";
@@ -61,6 +71,7 @@ export const ChatDashboardContent = () => {
   const [selectedPlatform, setSelectedPlatform] = useState<string>("all");
   const [messages, setMessages] = useState<Message[]>(mockMessages);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(messages[0]);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const filteredMessages = messages.filter((msg) => {
     if (selectedPlatform === "all") return !msg.archived;
@@ -107,6 +118,14 @@ export const ChatDashboardContent = () => {
       // Unarchiving: restore the message
       setSelectedMessage(prev => prev ? { ...prev, archived: false } : null);
     }
+  };
+
+  const handleDelete = () => {
+    if (!selectedMessage) return;
+    
+    setMessages(prev => prev.filter(msg => msg.id !== selectedMessage.id));
+    setSelectedMessage(null);
+    setShowDeleteDialog(false);
   };
 
   const getPlatformIcon = (platform: Message["platform"]) => {
@@ -256,6 +275,15 @@ export const ChatDashboardContent = () => {
                   >
                     <Archive className={cn("h-5 w-5", selectedMessage?.archived && "fill-current")} />
                   </Button>
+                  {selectedMessage?.archived && (
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => setShowDeleteDialog(true)}
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </Button>
+                  )}
                 </div>
               </div>
 
@@ -337,6 +365,21 @@ export const ChatDashboardContent = () => {
           )}
         </div>
       </div>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Conversation</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to permanently delete this conversation?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
