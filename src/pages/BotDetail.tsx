@@ -1,11 +1,13 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Wand2, Eye, Link2, Settings, MessageSquare } from "lucide-react";
+import { Wand2, Eye, Link2, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import TrainingTab from "@/components/dashboard/tabs/TrainingTab";
 import PreviewTab from "@/components/dashboard/tabs/PreviewTab";
 import ConnectTab from "@/components/dashboard/tabs/ConnectTab";
 import SettingsTab from "@/components/dashboard/tabs/SettingsTab";
+import { ChatDashboardContent } from "@/components/dashboard/tabs/ChatDashboardContent";
 import { TabbedPageLayout } from "@/components/layout/TabbedPageLayout";
 import { ContentContainer } from "@/components/layout/ContentContainer";
 import { BotConfigProvider, useBotConfig } from "@/contexts/BotConfigContext";
@@ -22,6 +24,7 @@ const BotDetailContent = () => {
   const navigate = useNavigate();
   const currentTab = tab || "training";
   const { config } = useBotConfig();
+  const [showChatDashboard, setShowChatDashboard] = useState(false);
 
   const renderTabContent = () => {
     switch (currentTab) {
@@ -45,21 +48,26 @@ const BotDetailContent = () => {
         avatarSrc={config.brandLogo}
         tabs={tabs}
         activeTab={currentTab}
+        hideTabs={showChatDashboard}
         onTabChange={(tabId) => {
           navigate(`/dashboard/bot/${botId}/${tabId}`);
         }}
         actionButton={
           <Button
             variant="outline"
-            onClick={() => navigate("/chat-dashboard")}
+            onClick={() => setShowChatDashboard(!showChatDashboard)}
           >
-            Chat Dashboard
+            {showChatDashboard ? "Back to Bot Settings" : "Chat Dashboard"}
           </Button>
         }
       >
-        <ContentContainer className="px-8 py-12 max-w-4xl mx-auto">
-          {renderTabContent()}
-        </ContentContainer>
+        {showChatDashboard ? (
+          <ChatDashboardContent />
+        ) : (
+          <ContentContainer className="px-8 py-12 max-w-4xl mx-auto">
+            {renderTabContent()}
+          </ContentContainer>
+        )}
       </TabbedPageLayout>
     </DashboardLayout>
   );

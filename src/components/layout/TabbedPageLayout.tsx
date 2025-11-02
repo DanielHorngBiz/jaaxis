@@ -18,6 +18,7 @@ interface TabbedPageLayoutProps {
   children: React.ReactNode;
   headerAction?: React.ReactNode;
   actionButton?: React.ReactNode;
+  hideTabs?: boolean;
 }
 
 export const TabbedPageLayout = ({
@@ -30,6 +31,7 @@ export const TabbedPageLayout = ({
   children,
   headerAction,
   actionButton,
+  hideTabs = false,
 }: TabbedPageLayoutProps) => {
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
@@ -84,36 +86,38 @@ export const TabbedPageLayout = ({
           </div>
 
           {/* Tabs */}
-          <div className="relative" ref={tabsContainerRef}>
-            <div className="flex gap-6 border-b border-border/40">
-              {tabs.map((tab) => {
-                const TabIcon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => onTabChange(tab.id)}
-                    data-state={activeTab === tab.id ? "active" : "inactive"}
-                    className={cn(
-                      "flex items-center gap-2 px-1 py-3 text-sm font-medium transition-colors relative",
-                      activeTab === tab.id
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    <TabIcon className="w-4 h-4" />
-                    {tab.label}
-                  </button>
-                );
-              })}
+          {!hideTabs && (
+            <div className="relative" ref={tabsContainerRef}>
+              <div className="flex gap-6 border-b border-border/40">
+                {tabs.map((tab) => {
+                  const TabIcon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => onTabChange(tab.id)}
+                      data-state={activeTab === tab.id ? "active" : "inactive"}
+                      className={cn(
+                        "flex items-center gap-2 px-1 py-3 text-sm font-medium transition-colors relative",
+                        activeTab === tab.id
+                          ? "text-foreground"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      <TabIcon className="w-4 h-4" />
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <div
+                className="absolute bottom-0 h-0.5 bg-primary transition-all duration-300 ease-out"
+                style={{
+                  left: `${indicatorStyle.left}px`,
+                  width: `${indicatorStyle.width}px`,
+                }}
+              />
             </div>
-            <div
-              className="absolute bottom-0 h-0.5 bg-primary transition-all duration-300 ease-out"
-              style={{
-                left: `${indicatorStyle.left}px`,
-                width: `${indicatorStyle.width}px`,
-              }}
-            />
-          </div>
+          )}
         </div>
       </div>
 
