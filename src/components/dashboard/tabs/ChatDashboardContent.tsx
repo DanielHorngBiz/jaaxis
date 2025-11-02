@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { MessageSquare, Star, Pause, Archive, Send, Paperclip, Instagram, Facebook } from "lucide-react";
+import { Star, Pause, Archive, Send, Paperclip, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import instagramIcon from "@/assets/instagram.svg";
+import messengerIcon from "@/assets/messenger.svg";
+import jaaxisIcon from "@/assets/jaaxis.svg";
 
 interface Message {
   id: string;
@@ -66,24 +69,22 @@ export const ChatDashboardContent = () => {
   const getPlatformIcon = (platform: Message["platform"]) => {
     switch (platform) {
       case "instagram":
-        return <Instagram className="w-3 h-3 text-white" />;
+        return <img src={instagramIcon} alt="Instagram" className="w-full h-full" />;
       case "messenger":
-        return <Facebook className="w-3 h-3 text-white" />;
+        return <img src={messengerIcon} alt="Messenger" className="w-full h-full" />;
       case "website":
-        return <MessageSquare className="w-3 h-3 text-white" />;
+        return <img src={jaaxisIcon} alt="Website" className="w-full h-full" />;
       default:
         return null;
     }
   };
 
-  const getPlatformColor = (platform: Message["platform"]) => {
+  const getPlatformBgColor = (platform: Message["platform"]) => {
     switch (platform) {
       case "instagram":
-        return "bg-gradient-to-tr from-[#f58529] via-[#dd2a7b] to-[#8134af]";
       case "messenger":
-        return "bg-[#0084ff]";
       case "website":
-        return "bg-primary";
+        return "bg-white";
       default:
         return "bg-secondary";
     }
@@ -138,8 +139,8 @@ export const ChatDashboardContent = () => {
                     <AvatarFallback>{message.sender[0]}</AvatarFallback>
                   </Avatar>
                   <div className={cn(
-                    "absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center border-2 border-background",
-                    getPlatformColor(message.platform)
+                    "absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center border-2 border-background p-0.5",
+                    getPlatformBgColor(message.platform)
                   )}>
                     {getPlatformIcon(message.platform)}
                   </div>
