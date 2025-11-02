@@ -209,9 +209,17 @@ export const ChatDashboardContent = () => {
               {/* Chat Header */}
               <div className="flex items-center justify-between p-4 border-b bg-card">
                 <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarFallback>{selectedMessage.sender[0]}</AvatarFallback>
-                  </Avatar>
+                  <div className="relative">
+                    <Avatar className="h-10 w-10">
+                      <AvatarFallback>{selectedMessage.sender[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className={cn(
+                      "absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center border-2 border-background p-0.5",
+                      getPlatformBgColor(selectedMessage.platform)
+                    )}>
+                      {getPlatformIcon(selectedMessage.platform)}
+                    </div>
+                  </div>
                   <div>
                     <h3 className="font-medium">{selectedMessage.sender}</h3>
                     {selectedMessage.platform === "website" && (
