@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
+import AddTeamMemberDialog from "@/components/dashboard/AddTeamMemberDialog";
 const colors = [
   "#FF9800",
   "#9C27B0",
@@ -270,10 +271,7 @@ const SettingsTab = () => {
             </Table>
           </div>
           <div className="flex justify-center">
-            <Button className="gap-2">
-              <Plus className="w-4 h-4" />
-              Add Member
-            </Button>
+            <AddTeamMemberDialog />
           </div>
         </div>
       </div>
