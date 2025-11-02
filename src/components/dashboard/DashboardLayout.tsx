@@ -113,7 +113,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
         <div className="flex-1 px-4 space-y-1 overflow-y-auto">
           {bots.map((bot) => (
-            <Link key={bot.id} to={`/dashboard/bot/${bot.slug}`}>
+            <Link 
+              key={bot.id} 
+              to={location.pathname.includes('/chat') ? `/dashboard/bot/${bot.slug}` : `/dashboard/bot/${bot.slug}`}
+            >
               <div
                 className={`flex items-center ${isCollapsed ? 'justify-center p-2' : 'gap-3 p-3'} rounded-lg transition-all hover:bg-secondary/80 ${
                   location.pathname.includes(bot.slug) ? "bg-secondary shadow-sm" : ""
