@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MessageSquare, Search, Trash2, Star, Mail, Check, ChevronLeft } from "lucide-react";
+import { MessageSquare, Trash2, Star, Mail, Check, ChevronLeft } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,9 @@ interface Message {
   preview: string;
   timestamp: string;
   unread?: boolean;
-  platform: "all" | "messenger" | "instagram" | "whatsapp" | "facebook" | "instagram-comments";
+  starred?: boolean;
+  archived?: boolean;
+  platform: "all" | "starred" | "messenger" | "instagram" | "website" | "archived";
 }
 
 const mockMessages: Message[] = [
@@ -48,7 +50,7 @@ const mockMessages: Message[] = [
     sender: "ZT",
     preview: "You: 您好，教學可以參考這裡：...",
     timestamp: "Fri",
-    platform: "whatsapp",
+    platform: "website",
   },
 ];
 
@@ -56,22 +58,22 @@ const ChatDashboard = () => {
   const navigate = useNavigate();
   const [selectedPlatform, setSelectedPlatform] = useState<string>("all");
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(mockMessages[0]);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const platformCounts = {
-    all: 1,
-    messenger: 1,
+    all: 2,
+    starred: 0,
+    messenger: 2,
     instagram: 1,
-    whatsapp: 0,
-    facebook: 6,
-    "instagram-comments": 8,
+    website: 1,
+    archived: 0,
   };
 
-  const filteredMessages = mockMessages.filter(
-    (msg) =>
-      (selectedPlatform === "all" || msg.platform === selectedPlatform) &&
-      msg.sender.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredMessages = mockMessages.filter((msg) => {
+    if (selectedPlatform === "all") return !msg.archived;
+    if (selectedPlatform === "starred") return msg.starred;
+    if (selectedPlatform === "archived") return msg.archived;
+    return msg.platform === selectedPlatform;
+  });
 
   return (
     <DashboardLayout>
@@ -100,6 +102,12 @@ const ChatDashboard = () => {
                   <Badge variant="destructive" className="ml-2">{platformCounts.all}</Badge>
                 )}
               </TabsTrigger>
+              <TabsTrigger value="starred" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
+                Starred
+                {platformCounts.starred > 0 && (
+                  <Badge variant="destructive" className="ml-2">{platformCounts.starred}</Badge>
+                )}
+              </TabsTrigger>
               <TabsTrigger value="messenger" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
                 Messenger
                 {platformCounts.messenger > 0 && (
@@ -112,20 +120,16 @@ const ChatDashboard = () => {
                   <Badge variant="destructive" className="ml-2">{platformCounts.instagram}</Badge>
                 )}
               </TabsTrigger>
-              <TabsTrigger value="whatsapp" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
-                WhatsApp
-                <Badge variant="secondary" className="ml-2 bg-green-500 text-white">New</Badge>
-              </TabsTrigger>
-              <TabsTrigger value="facebook" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
-                Facebook comments
-                {platformCounts.facebook > 0 && (
-                  <Badge variant="destructive" className="ml-2">{platformCounts.facebook}</Badge>
+              <TabsTrigger value="website" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
+                Website
+                {platformCounts.website > 0 && (
+                  <Badge variant="destructive" className="ml-2">{platformCounts.website}</Badge>
                 )}
               </TabsTrigger>
-              <TabsTrigger value="instagram-comments" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
-                Instagram comments
-                {platformCounts["instagram-comments"] > 0 && (
-                  <Badge variant="destructive" className="ml-2">{platformCounts["instagram-comments"]}</Badge>
+              <TabsTrigger value="archived" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
+                Archived
+                {platformCounts.archived > 0 && (
+                  <Badge variant="destructive" className="ml-2">{platformCounts.archived}</Badge>
                 )}
               </TabsTrigger>
             </TabsList>
@@ -136,33 +140,7 @@ const ChatDashboard = () => {
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar */}
           <div className="w-96 border-r bg-card flex flex-col">
-            <div className="p-4 space-y-4 border-b">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Mail className="h-4 w-4" />
-                  Unread
-                </Button>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <MessageSquare className="h-4 w-4" />
-                  Ad resp...
-                </Button>
-                <Button variant="outline" size="sm" className="gap-2">
-                  Labels
-                </Button>
-              </div>
-            </div>
-
-            <ScrollArea className="flex-1">
-              {filteredMessages.map((message) => (
+            <ScrollArea className="flex-1">{filteredMessages.map((message) => (
                 <div
                   key={message.id}
                   onClick={() => setSelectedMessage(message)}
