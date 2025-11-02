@@ -214,7 +214,12 @@ export const ChatDashboardContent = () => {
                   </Avatar>
                   <div>
                     <h3 className="font-medium">{selectedMessage.sender}</h3>
-                    <p className="text-xs text-muted-foreground">Assign this conversation</p>
+                    {(selectedMessage.platform === "messenger" || selectedMessage.platform === "instagram") && (
+                      <p className="text-xs text-muted-foreground">Assign this conversation</p>
+                    )}
+                    {selectedMessage.platform === "website" && (
+                      <p className="text-xs text-muted-foreground">{selectedMessage.sender.toLowerCase().replace(' ', '')}@email.com</p>
+                    )}
                   </div>
                 </div>
                 <div className="flex gap-2">
