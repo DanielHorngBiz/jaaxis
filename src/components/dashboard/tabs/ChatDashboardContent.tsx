@@ -292,8 +292,8 @@ export const ChatDashboardContent = () => {
 
               {/* Input Area */}
               <div className="p-4 border-t bg-card">
-                <div className="flex items-end gap-2">
-                  <Button variant="ghost" size="icon" className="mb-1">
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="icon" className="shrink-0">
                     <Paperclip className="h-5 w-5" />
                   </Button>
                   <Textarea 
@@ -301,7 +301,7 @@ export const ChatDashboardContent = () => {
                     className="flex-1 min-h-[40px] resize-none"
                     rows={1}
                   />
-                  <Button size="icon" className="mb-1">
+                  <Button size="icon" className="shrink-0">
                     <Send className="h-5 w-5" />
                   </Button>
                 </div>
