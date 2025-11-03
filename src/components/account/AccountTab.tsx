@@ -241,11 +241,12 @@ const AccountTab = () => {
               {uploading ? "Uploading..." : "Upload new picture"}
             </Button>
             <Button 
-              variant="outline" 
+              variant="ghost"
+              size="icon"
               onClick={handleAvatarRemove}
               disabled={!profile?.avatar_url || uploading}
             >
-              Remove
+              <Trash2 className="w-4 h-4 text-destructive" />
             </Button>
           </div>
         </div>
