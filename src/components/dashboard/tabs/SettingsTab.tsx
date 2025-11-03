@@ -478,7 +478,7 @@ const SettingsTab = () => {
         </p>
         <div className="space-y-6">
           <Textarea
-            placeholder="e.g., https://example.com/private, https://example.com/admin"
+            placeholder="https://example.com/private, https://example.com/admin"
             className="min-h-[60px] resize-none"
             value={blockPagesInput}
             onChange={(e) => setBlockPagesInput(e.target.value)}
