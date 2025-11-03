@@ -50,7 +50,7 @@ export const ChatInput = ({
       {editingMessageId && onCancelEdit && (
         <div className="mb-2 flex items-center justify-between">
           <h4 className="text-sm font-medium text-foreground">Edit message</h4>
-          <div className="h-9 flex items-center">
+          <div className="h-9 flex items-center justify-center">
             <Button
               variant="ghost"
               size="icon"
