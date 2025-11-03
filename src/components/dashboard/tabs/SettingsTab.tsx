@@ -450,7 +450,7 @@ const SettingsTab = () => {
               <h4 className="text-base font-semibold mb-4">Whitelisted Domains</h4>
               <div className="space-y-3">
                 {whitelistedDomains.map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
                       <p className="font-medium">{item.domain}</p>
                     </div>
