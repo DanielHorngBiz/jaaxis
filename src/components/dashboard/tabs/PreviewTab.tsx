@@ -14,7 +14,7 @@ interface Message {
   id: string;
   role: 'user' | 'bot';
   content: string;
-  image?: string;
+  images?: string[];
   timestamp: Date;
   originalContent?: string;
   showingOriginal?: boolean;
@@ -56,7 +56,7 @@ const PreviewTab = () => {
       id: Date.now().toString(),
       role: 'user',
       content: inputValue,
-      image: selectedImages[0] || undefined,
+      images: selectedImages.length > 0 ? [...selectedImages] : undefined,
       timestamp: new Date()
     };
 
@@ -184,13 +184,18 @@ const PreviewTab = () => {
                 )}
                 {message.role === 'user' && (
                   <div className="flex flex-col items-end gap-2 max-w-[80%]">
-                    {message.image && (
-                      <img 
-                        src={message.image} 
-                        alt="Uploaded" 
-                        className="rounded-lg max-h-48 max-w-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={() => setPreviewImage(message.image!)}
-                      />
+                    {message.images && message.images.length > 0 && (
+                      <div className="flex flex-wrap gap-2 justify-end">
+                        {message.images.map((img, i) => (
+                          <img 
+                            key={i}
+                            src={img} 
+                            alt={`Uploaded ${i + 1}`}
+                            className="rounded-lg max-h-48 max-w-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                            onClick={() => setPreviewImage(img)}
+                          />
+                        ))}
+                      </div>
                     )}
                     {message.content && (
                       <div
