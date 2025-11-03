@@ -41,6 +41,7 @@ interface ChatMessage {
   content: string;
   timestamp: string;
   date?: string; // Date string for grouping (e.g., "Oct 24, 2025")
+  images?: string[]; // Optional attached images
   originalContent?: string;
   showingOriginal?: boolean;
   isManual?: boolean; // For bot messages: true = manual, false/undefined = auto
@@ -275,7 +276,7 @@ export const ChatDashboardContent = () => {
   };
 
   const handleSendMessage = () => {
-    if (!inputValue.trim() || !selectedMessage) return;
+    if (((!inputValue.trim() && selectedImages.length === 0) || !selectedMessage)) return;
     
     if (editingMessageId) {
       setConversationChats(prev => ({
@@ -298,6 +299,7 @@ export const ChatDashboardContent = () => {
         id: `${selectedMessage.id}-${Date.now()}`,
         role: 'bot',
         content: inputValue,
+        images: selectedImages.length > 0 ? [...selectedImages] : undefined,
         timestamp: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
         date: now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
         isManual: true, // Messages sent via input are manual
@@ -525,7 +527,14 @@ export const ChatDashboardContent = () => {
                               <AvatarFallback>{selectedMessage.sender[0]}</AvatarFallback>
                             </Avatar>
                             <div className="bg-secondary rounded-2xl rounded-tl-sm px-4 py-2 max-w-md">
-                              <p className="text-sm">{chatMsg.content}</p>
+                              {chatMsg.content && <p className="text-sm">{chatMsg.content}</p>}
+                              {chatMsg.images && chatMsg.images.length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                  {chatMsg.images.map((img, i) => (
+                                    <img key={i} src={img} alt={`Attachment ${i + 1}`} className="w-16 h-16 rounded-md object-cover" />
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           </div>
                           <span className="text-xs text-muted-foreground ml-11">{chatMsg.timestamp}</span>
@@ -552,7 +561,16 @@ export const ChatDashboardContent = () => {
                                 ? 'bg-muted text-foreground' 
                                 : 'bg-primary text-primary-foreground'
                             }`}>
-                              <p className="text-sm">{chatMsg.showingOriginal ? chatMsg.originalContent : chatMsg.content}</p>
+                              {chatMsg.content && (
+                                <p className="text-sm">{chatMsg.showingOriginal ? chatMsg.originalContent : chatMsg.content}</p>
+                              )}
+                              {chatMsg.images && chatMsg.images.length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                  {chatMsg.images.map((img, i) => (
+                                    <img key={i} src={img} alt={`Attachment ${i + 1}`} className="w-16 h-16 rounded-md object-cover" />
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           </div>
                           <div className="flex items-center gap-2 mr-2">
