@@ -164,10 +164,10 @@ const PreviewTab = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent text-muted-foreground hover:text-foreground"
+                            className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent text-muted-foreground/60 hover:text-muted-foreground"
                             onClick={() => handleEditMessage(message.id, message.content)}
                           >
-                            <Pencil className="h-3.5 w-3.5" />
+                            <Pencil className="h-3 w-3" />
                           </Button>
                         )}
                       </div>
