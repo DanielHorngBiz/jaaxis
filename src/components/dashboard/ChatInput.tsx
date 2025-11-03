@@ -53,10 +53,10 @@ export const ChatInput = ({
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6 rounded-full bg-secondary"
+            className="h-9 w-9 rounded-full bg-secondary"
             onClick={onCancelEdit}
           >
-            <X className="h-3.5 w-3.5" />
+            <X className="h-4 w-4" />
           </Button>
         </div>
       )}
