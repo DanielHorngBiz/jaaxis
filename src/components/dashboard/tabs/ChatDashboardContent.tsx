@@ -40,6 +40,7 @@ interface ChatMessage {
   role: 'user' | 'bot';
   content: string;
   timestamp: string;
+  date?: string; // Date string for grouping (e.g., "Oct 24, 2025")
   originalContent?: string;
   showingOriginal?: boolean;
   isManual?: boolean; // For bot messages: true = manual, false/undefined = auto
@@ -124,22 +125,22 @@ export const ChatDashboardContent = () => {
   // Store chat messages per conversation
   const [conversationChats, setConversationChats] = useState<Record<string, ChatMessage[]>>({
     "1": [
-      { id: '1-1', role: 'user', content: 'Hi! I have a question about your product features.', timestamp: '11:22 AM' },
-      { id: '1-2', role: 'bot', content: 'Of course! What would you like to know?', timestamp: '11:23 AM', isManual: false },
-      { id: '1-3', role: 'user', content: 'Does it come with a warranty and what does it cover?', timestamp: '11:25 AM' },
-      { id: '1-4', role: 'bot', content: 'Yes! It includes a 2-year warranty covering all manufacturing defects.', timestamp: '11:28 AM', isManual: false },
+      { id: '1-1', role: 'user', content: 'Hi! I have a question about your product features.', timestamp: '11:22 AM', date: 'Oct 24, 2025' },
+      { id: '1-2', role: 'bot', content: 'Of course! What would you like to know?', timestamp: '11:23 AM', date: 'Oct 24, 2025', isManual: false },
+      { id: '1-3', role: 'user', content: 'Does it come with a warranty and what does it cover?', timestamp: '11:25 AM', date: 'Oct 24, 2025' },
+      { id: '1-4', role: 'bot', content: 'Yes! It includes a 2-year warranty covering all manufacturing defects.', timestamp: '11:28 AM', date: 'Oct 24, 2025', isManual: false },
     ],
     "2": [
-      { id: '2-1', role: 'user', content: 'Thanks for the quick response! Really appreciate it.', timestamp: '9:15 AM' },
-      { id: '2-2', role: 'bot', content: 'You\'re welcome! Is there anything else I can help you with?', timestamp: '9:16 AM', isManual: false },
-      { id: '2-3', role: 'user', content: 'Yes, what are the shipping options?', timestamp: '9:18 AM' },
-      { id: '2-4', role: 'bot', content: 'We offer standard (5-7 days) and express (2-3 days) shipping.', timestamp: '9:19 AM', isManual: false },
+      { id: '2-1', role: 'user', content: 'Thanks for the quick response! Really appreciate it.', timestamp: '9:15 AM', date: 'Oct 24, 2025' },
+      { id: '2-2', role: 'bot', content: 'You\'re welcome! Is there anything else I can help you with?', timestamp: '9:16 AM', date: 'Oct 24, 2025', isManual: false },
+      { id: '2-3', role: 'user', content: 'Yes, what are the shipping options?', timestamp: '9:18 AM', date: 'Oct 24, 2025' },
+      { id: '2-4', role: 'bot', content: 'We offer standard (5-7 days) and express (2-3 days) shipping.', timestamp: '9:19 AM', date: 'Oct 24, 2025', isManual: false },
     ],
     "3": [
-      { id: '3-1', role: 'user', content: 'Can you help me with the shipping details?', timestamp: '2:30 PM' },
-      { id: '3-2', role: 'bot', content: 'Absolutely! What would you like to know about shipping?', timestamp: '2:31 PM' },
-      { id: '3-3', role: 'user', content: 'Do you ship internationally?', timestamp: '2:33 PM' },
-      { id: '3-4', role: 'bot', content: 'Yes, we ship to over 50 countries worldwide!', timestamp: '2:34 PM' },
+      { id: '3-1', role: 'user', content: 'Can you help me with the shipping details?', timestamp: '2:30 PM', date: 'Oct 23, 2025' },
+      { id: '3-2', role: 'bot', content: 'Absolutely! What would you like to know about shipping?', timestamp: '2:31 PM', date: 'Oct 23, 2025', isManual: false },
+      { id: '3-3', role: 'user', content: 'Do you ship internationally?', timestamp: '2:33 PM', date: 'Oct 23, 2025' },
+      { id: '3-4', role: 'bot', content: 'Yes, we ship to over 50 countries worldwide!', timestamp: '2:34 PM', date: 'Oct 23, 2025', isManual: false },
     ],
     "4": [
       { id: '4-1', role: 'user', content: 'Do you have a tutorial on how to use this?', timestamp: '10:00 AM' },
@@ -290,11 +291,13 @@ export const ChatDashboardContent = () => {
       }));
       setEditingMessageId(null);
     } else {
+      const now = new Date();
       const newMessage: ChatMessage = {
         id: `${selectedMessage.id}-${Date.now()}`,
         role: 'bot',
         content: inputValue,
-        timestamp: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
+        timestamp: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
+        date: now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
         isManual: true, // Messages sent via input are manual
       };
       setConversationChats(prev => ({
@@ -492,17 +495,17 @@ export const ChatDashboardContent = () => {
               {/* Messages Area */}
               <ScrollArea className="flex-1 p-6">
                 <div className="space-y-4">
-                  <div className="flex items-center justify-center my-6">
-                    <span className="text-xs text-muted-foreground">Oct 24, 2025</span>
-                  </div>
-
-                  {(conversationChats[selectedMessage.id] || []).map((chatMsg, index) => (
-                    <div key={chatMsg.id}>
-                      {index > 0 && (conversationChats[selectedMessage.id] || [])[index - 1].timestamp !== chatMsg.timestamp && (
-                        <div className="flex items-center justify-center my-6">
-                          <span className="text-xs text-muted-foreground">Oct 25, 2025</span>
-                        </div>
-                      )}
+                  {(conversationChats[selectedMessage.id] || []).map((chatMsg, index) => {
+                    const showDate = index === 0 || 
+                      (conversationChats[selectedMessage.id] || [])[index - 1].date !== chatMsg.date;
+                    
+                    return (
+                      <div key={chatMsg.id}>
+                        {showDate && chatMsg.date && (
+                          <div className="flex items-center justify-center my-6">
+                            <span className="text-xs text-muted-foreground">{chatMsg.date}</span>
+                          </div>
+                        )}
 
                       {chatMsg.role === 'user' ? (
                         <div className="flex flex-col items-start gap-2">
@@ -555,7 +558,8 @@ export const ChatDashboardContent = () => {
                         </div>
                       )}
                     </div>
-                  ))}
+                  );
+                })}
                 </div>
               </ScrollArea>
 
