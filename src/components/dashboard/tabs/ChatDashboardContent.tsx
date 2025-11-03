@@ -117,12 +117,17 @@ export const ChatDashboardContent = () => {
   const [messages, setMessages] = useState<Message[]>(mockMessages);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(messages[0]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    { id: '1', role: 'user', content: 'Hi! I have a question about your product features.', timestamp: '11:22 PM' },
-    { id: '2', role: 'bot', content: 'Of course! What would you like to know?', timestamp: '1:42 PM' },
-    { id: '3', role: 'user', content: 'Does it come with a warranty and what does it cover?', timestamp: '1:45 PM' },
-    { id: '4', role: 'bot', content: 'Yes! It includes a 2-year warranty covering all manufacturing defects.', timestamp: '1:48 PM' },
-  ]);
+  
+  // Store chat messages per conversation
+  const [conversationChats, setConversationChats] = useState<Record<string, ChatMessage[]>>({
+    "1": [
+      { id: '1-1', role: 'user', content: 'Hi! I have a question about your product features.', timestamp: '11:22 PM' },
+      { id: '1-2', role: 'bot', content: 'Of course! What would you like to know?', timestamp: '1:42 PM' },
+      { id: '1-3', role: 'user', content: 'Does it come with a warranty and what does it cover?', timestamp: '1:45 PM' },
+      { id: '1-4', role: 'bot', content: 'Yes! It includes a 2-year warranty covering all manufacturing defects.', timestamp: '1:48 PM' },
+    ],
+  });
+  
   const [inputValue, setInputValue] = useState("");
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
@@ -211,23 +216,27 @@ export const ChatDashboardContent = () => {
   };
 
   const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || !selectedMessage) return;
     
     if (editingMessageId) {
-      setChatMessages(prev =>
-        prev.map(msg =>
+      setConversationChats(prev => ({
+        ...prev,
+        [selectedMessage.id]: (prev[selectedMessage.id] || []).map(msg =>
           msg.id === editingMessageId ? { ...msg, content: inputValue } : msg
         )
-      );
+      }));
       setEditingMessageId(null);
     } else {
       const newMessage: ChatMessage = {
-        id: Date.now().toString(),
+        id: `${selectedMessage.id}-${Date.now()}`,
         role: 'bot',
         content: inputValue,
         timestamp: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
       };
-      setChatMessages(prev => [...prev, newMessage]);
+      setConversationChats(prev => ({
+        ...prev,
+        [selectedMessage.id]: [...(prev[selectedMessage.id] || []), newMessage]
+      }));
     }
     setInputValue("");
   };
@@ -423,9 +432,9 @@ export const ChatDashboardContent = () => {
                     <span className="text-xs text-muted-foreground">Oct 24, 2025</span>
                   </div>
 
-                  {chatMessages.map((chatMsg, index) => (
+                  {(conversationChats[selectedMessage.id] || []).map((chatMsg, index) => (
                     <div key={chatMsg.id}>
-                      {index > 0 && chatMessages[index - 1].timestamp !== chatMsg.timestamp && (
+                      {index > 0 && (conversationChats[selectedMessage.id] || [])[index - 1].timestamp !== chatMsg.timestamp && (
                         <div className="flex items-center justify-center my-6">
                           <span className="text-xs text-muted-foreground">Oct 25, 2025</span>
                         </div>
