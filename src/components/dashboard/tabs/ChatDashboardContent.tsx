@@ -40,6 +40,8 @@ interface ChatMessage {
   role: 'user' | 'bot';
   content: string;
   timestamp: string;
+  originalContent?: string;
+  showingOriginal?: boolean;
 }
 
 const mockMessages: Message[] = [
@@ -131,6 +133,16 @@ export const ChatDashboardContent = () => {
   const [inputValue, setInputValue] = useState("");
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
+
+  const handleToggleOriginal = (messageId: string) => {
+    if (!selectedMessage) return;
+    setConversationChats(prev => ({
+      ...prev,
+      [selectedMessage.id]: (prev[selectedMessage.id] || []).map(msg =>
+        msg.id === messageId ? { ...msg, showingOriginal: !msg.showingOriginal } : msg
+      )
+    }));
+  };
   const selectedMessageRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const [indicator, setIndicator] = useState({ top: 0, height: 0, visible: false });
@@ -222,7 +234,14 @@ export const ChatDashboardContent = () => {
       setConversationChats(prev => ({
         ...prev,
         [selectedMessage.id]: (prev[selectedMessage.id] || []).map(msg =>
-          msg.id === editingMessageId ? { ...msg, content: inputValue } : msg
+          msg.id === editingMessageId 
+            ? { 
+                ...msg, 
+                content: inputValue,
+                originalContent: msg.originalContent || msg.content,
+                showingOriginal: false
+              } 
+            : msg
         )
       }));
       setEditingMessageId(null);
@@ -470,10 +489,20 @@ export const ChatDashboardContent = () => {
                               </Button>
                             )}
                             <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 max-w-md">
-                              <p className="text-sm">{chatMsg.content}</p>
+                              <p className="text-sm">{chatMsg.showingOriginal ? chatMsg.originalContent : chatMsg.content}</p>
                             </div>
                           </div>
-                          <span className="text-xs text-muted-foreground mr-2">{chatMsg.timestamp}</span>
+                          <div className="flex items-center gap-2 mr-2">
+                            <span className="text-xs text-muted-foreground">{chatMsg.timestamp}</span>
+                            {chatMsg.originalContent && (
+                              <button
+                                onClick={() => handleToggleOriginal(chatMsg.id)}
+                                className="text-xs text-muted-foreground hover:text-foreground underline"
+                              >
+                                {chatMsg.showingOriginal ? 'View edited' : 'View original'}
+                              </button>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
