@@ -1,12 +1,13 @@
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Paperclip, Send } from "lucide-react";
+import { Paperclip, Send, X } from "lucide-react";
 import { useBotConfig } from "@/contexts/BotConfigContext";
 import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 import { useState, useRef, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 interface Message {
   id: string;
@@ -21,6 +22,7 @@ const PreviewTab = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -133,7 +135,8 @@ const PreviewTab = () => {
                       <img 
                         src={message.image} 
                         alt="Uploaded" 
-                        className="rounded-lg max-h-48 max-w-full object-cover"
+                        className="rounded-lg max-h-48 max-w-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => setPreviewImage(message.image!)}
                       />
                     )}
                     {message.content && (
@@ -203,6 +206,27 @@ const PreviewTab = () => {
           </div>
         </div>
       </Card>
+
+      {/* Image Preview Dialog */}
+      <Dialog open={!!previewImage} onOpenChange={() => setPreviewImage(null)}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden">
+          <div className="relative">
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute top-4 right-4 z-10 bg-black/50 text-white rounded-full p-2 hover:bg-black/70 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            {previewImage && (
+              <img 
+                src={previewImage} 
+                alt="Preview" 
+                className="w-full h-auto max-h-[80vh] object-contain"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
