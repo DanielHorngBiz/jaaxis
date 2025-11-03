@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Trash2, Edit2 } from "lucide-react";
+import { Trash2, Edit2, Upload } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { ChangePasswordDialog } from "./ChangePasswordDialog";
 import { supabase } from "@/integrations/supabase/client";
@@ -235,10 +235,13 @@ const AccountTab = () => {
               className="hidden"
             />
             <Button 
+              variant="outline"
+              className="gap-2"
               onClick={() => fileInputRef.current?.click()} 
               disabled={uploading}
             >
-              {uploading ? "Uploading..." : "Upload new picture"}
+              <Upload className="w-4 h-4" />
+              {uploading ? "Uploading..." : "Upload Image"}
             </Button>
             <Button 
               variant="ghost"
