@@ -491,7 +491,7 @@ const SettingsTab = () => {
               <h4 className="text-base font-semibold mb-4">Currently Hidden Pages</h4>
               <div className="space-y-3">
                 {blockedPages.map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
                       <p className="font-medium">{item.url}</p>
                     </div>
