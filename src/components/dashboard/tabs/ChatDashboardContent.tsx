@@ -128,8 +128,6 @@ export const ChatDashboardContent = () => {
       { id: '1-2', role: 'bot', content: 'Of course! What would you like to know?', timestamp: '11:23 AM', isManual: false },
       { id: '1-3', role: 'user', content: 'Does it come with a warranty and what does it cover?', timestamp: '11:25 AM' },
       { id: '1-4', role: 'bot', content: 'Yes! It includes a 2-year warranty covering all manufacturing defects.', timestamp: '11:28 AM', isManual: false },
-      { id: '1-5', role: 'user', content: 'What are the pricing options?', timestamp: '11:30 AM' },
-      { id: '1-6', role: 'bot', content: 'Let me get someone from our team to help you with pricing details.', timestamp: '11:31 AM', isManual: true },
     ],
     "2": [
       { id: '2-1', role: 'user', content: 'Thanks for the quick response! Really appreciate it.', timestamp: '9:15 AM' },
@@ -297,6 +295,7 @@ export const ChatDashboardContent = () => {
         role: 'bot',
         content: inputValue,
         timestamp: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
+        isManual: true, // Messages sent via input are manual
       };
       setConversationChats(prev => ({
         ...prev,
