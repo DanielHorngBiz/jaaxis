@@ -42,6 +42,7 @@ interface ChatMessage {
   timestamp: string;
   originalContent?: string;
   showingOriginal?: boolean;
+  isManual?: boolean; // For bot messages: true = manual, false/undefined = auto
 }
 
 const mockMessages: Message[] = [
@@ -124,15 +125,17 @@ export const ChatDashboardContent = () => {
   const [conversationChats, setConversationChats] = useState<Record<string, ChatMessage[]>>({
     "1": [
       { id: '1-1', role: 'user', content: 'Hi! I have a question about your product features.', timestamp: '11:22 AM' },
-      { id: '1-2', role: 'bot', content: 'Of course! What would you like to know?', timestamp: '11:23 AM' },
+      { id: '1-2', role: 'bot', content: 'Of course! What would you like to know?', timestamp: '11:23 AM', isManual: false },
       { id: '1-3', role: 'user', content: 'Does it come with a warranty and what does it cover?', timestamp: '11:25 AM' },
-      { id: '1-4', role: 'bot', content: 'Yes! It includes a 2-year warranty covering all manufacturing defects.', timestamp: '11:28 AM' },
+      { id: '1-4', role: 'bot', content: 'Yes! It includes a 2-year warranty covering all manufacturing defects.', timestamp: '11:28 AM', isManual: false },
+      { id: '1-5', role: 'user', content: 'What are the pricing options?', timestamp: '11:30 AM' },
+      { id: '1-6', role: 'bot', content: 'Let me get someone from our team to help you with pricing details.', timestamp: '11:31 AM', isManual: true },
     ],
     "2": [
       { id: '2-1', role: 'user', content: 'Thanks for the quick response! Really appreciate it.', timestamp: '9:15 AM' },
-      { id: '2-2', role: 'bot', content: 'You\'re welcome! Is there anything else I can help you with?', timestamp: '9:16 AM' },
+      { id: '2-2', role: 'bot', content: 'You\'re welcome! Is there anything else I can help you with?', timestamp: '9:16 AM', isManual: false },
       { id: '2-3', role: 'user', content: 'Yes, what are the shipping options?', timestamp: '9:18 AM' },
-      { id: '2-4', role: 'bot', content: 'We offer standard (5-7 days) and express (2-3 days) shipping.', timestamp: '9:19 AM' },
+      { id: '2-4', role: 'bot', content: 'We offer standard (5-7 days) and express (2-3 days) shipping.', timestamp: '9:19 AM', isManual: false },
     ],
     "3": [
       { id: '3-1', role: 'user', content: 'Can you help me with the shipping details?', timestamp: '2:30 PM' },
@@ -521,7 +524,7 @@ export const ChatDashboardContent = () => {
                             onMouseEnter={() => setHoveredMessageId(chatMsg.id)}
                             onMouseLeave={() => setHoveredMessageId(null)}
                           >
-                            {hoveredMessageId === chatMsg.id && (
+                            {hoveredMessageId === chatMsg.id && !chatMsg.isManual && (
                               <Button
                                 variant="ghost"
                                 size="icon"
@@ -531,7 +534,11 @@ export const ChatDashboardContent = () => {
                                 <Pencil className="h-3 w-3" />
                               </Button>
                             )}
-                            <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 max-w-md">
+                            <div className={`rounded-2xl rounded-tr-sm px-4 py-2 max-w-md ${
+                              chatMsg.isManual 
+                                ? 'bg-muted text-foreground' 
+                                : 'bg-primary text-primary-foreground'
+                            }`}>
                               <p className="text-sm">{chatMsg.showingOriginal ? chatMsg.originalContent : chatMsg.content}</p>
                             </div>
                           </div>
