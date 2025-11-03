@@ -435,17 +435,14 @@ const SettingsTab = () => {
           Separate each domain by commas
         </p>
         <div className="space-y-6">
-          <div className="flex gap-3">
-            <Textarea
-              placeholder="https://example.com, https://another-site.com"
-              className="min-h-[100px] flex-1 resize-none"
-              value={whitelistInput}
-              onChange={(e) => setWhitelistInput(e.target.value)}
-            />
-            <Button onClick={handleAddWhitelistDomain} className="gap-2 self-start">
-              <Plus className="w-4 h-4" />
-              Add
-            </Button>
+          <Textarea
+            placeholder="https://example.com, https://another-site.com"
+            className="min-h-[100px] resize-none"
+            value={whitelistInput}
+            onChange={(e) => setWhitelistInput(e.target.value)}
+          />
+          <div className="flex justify-end">
+            <Button onClick={handleAddWhitelistDomain}>Save</Button>
           </div>
           
           {whitelistedDomains.length > 0 && (
@@ -473,29 +470,26 @@ const SettingsTab = () => {
         </div>
       </div>
 
-      {/* Block On Specific Pages Section */}
+      {/* Hide On Specific Pages Section */}
       <div className="pb-8 border-b">
-        <h3 className="text-lg font-semibold mb-2">Block On Specific Pages</h3>
+        <h3 className="text-lg font-semibold mb-2">Hide On Specific Pages</h3>
         <p className="text-sm text-muted-foreground mb-6">
           Enter full URLs separated by commas. These pages will not show the chatbot. Example: https://example.com/private, https://example.com/admin
         </p>
         <div className="space-y-6">
-          <div className="flex gap-3">
-            <Textarea
-              placeholder="e.g., https://example.com/private, https://example.com/admin, https://example.com/restricted"
-              className="min-h-[100px] flex-1 resize-none"
-              value={blockPagesInput}
-              onChange={(e) => setBlockPagesInput(e.target.value)}
-            />
-            <Button onClick={handleBlockPages} className="gap-2 self-start">
-              <Plus className="w-4 h-4" />
-              Block
-            </Button>
+          <Textarea
+            placeholder="e.g., https://example.com/private, https://example.com/admin, https://example.com/restricted"
+            className="min-h-[100px] resize-none"
+            value={blockPagesInput}
+            onChange={(e) => setBlockPagesInput(e.target.value)}
+          />
+          <div className="flex justify-end">
+            <Button onClick={handleBlockPages}>Save</Button>
           </div>
           
           {blockedPages.length > 0 && (
             <div>
-              <h4 className="text-base font-semibold mb-4">Currently Blocked Pages</h4>
+              <h4 className="text-base font-semibold mb-4">Currently Hidden Pages</h4>
               <div className="space-y-3">
                 {blockedPages.map((item, index) => (
                   <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
