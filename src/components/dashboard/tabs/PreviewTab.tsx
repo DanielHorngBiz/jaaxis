@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Paperclip, Send, X } from "lucide-react";
+import { Paperclip, Send } from "lucide-react";
 import { useBotConfig } from "@/contexts/BotConfigContext";
 import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 import { useState, useRef, useEffect } from "react";
@@ -210,21 +210,13 @@ const PreviewTab = () => {
       {/* Image Preview Dialog */}
       <Dialog open={!!previewImage} onOpenChange={() => setPreviewImage(null)}>
         <DialogContent className="max-w-4xl p-0 overflow-hidden">
-          <div className="relative">
-            <button
-              onClick={() => setPreviewImage(null)}
-              className="absolute top-4 right-4 z-10 bg-black/50 text-white rounded-full p-2 hover:bg-black/70 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            {previewImage && (
-              <img 
-                src={previewImage} 
-                alt="Preview" 
-                className="w-full h-auto max-h-[80vh] object-contain"
-              />
-            )}
-          </div>
+          {previewImage && (
+            <img 
+              src={previewImage} 
+              alt="Preview" 
+              className="w-full h-auto max-h-[80vh] object-contain"
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
