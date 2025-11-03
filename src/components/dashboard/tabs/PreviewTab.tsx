@@ -109,7 +109,7 @@ const PreviewTab = () => {
         </div>
 
         {/* Chat Content */}
-        <ScrollArea ref={scrollAreaRef} className="bg-white h-[500px] p-6">
+        <ScrollArea ref={scrollAreaRef} className="bg-white h-[500px] px-4 py-6">
           <div className="space-y-4">
             {messages.map((message) => (
               <div
@@ -117,7 +117,7 @@ const PreviewTab = () => {
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {message.role === 'bot' && (
-                  <div className="flex items-start gap-3 max-w-[85%]">
+                  <div className="flex items-start gap-3 max-w-[80%]">
                     <Avatar className="h-8 w-8 flex-shrink-0">
                       <AvatarImage src={config.brandLogo} />
                       <AvatarFallback>{config.botName[0]}</AvatarFallback>
@@ -129,14 +129,14 @@ const PreviewTab = () => {
                 )}
                 {message.role === 'user' && (
                   <div
-                    className="text-white rounded-2xl rounded-tr-sm px-4 py-2 max-w-[85%] break-words"
+                    className="text-white rounded-2xl rounded-tr-sm px-4 py-2 max-w-[80%] break-words"
                     style={{ backgroundColor: config.primaryColor }}
                   >
                     {message.image && (
                       <img 
                         src={message.image} 
                         alt="Uploaded" 
-                        className="rounded-lg mb-2 w-full h-auto max-w-full object-contain"
+                        className="rounded-lg mb-2 w-full max-h-48 object-cover"
                       />
                     )}
                     {message.content && <p className="text-sm whitespace-pre-wrap">{message.content}</p>}
