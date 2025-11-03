@@ -7,7 +7,7 @@ import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 const PreviewTab = () => {
   const { config } = useBotConfig();
   return (
-    <div className="flex items-center justify-center p-8 lg:p-12 h-[calc(100vh-200px)] animate-fade-in">
+    <div className="flex items-center justify-center p-8 lg:p-12 h-[calc(100vh-200px)]">
       <Card className="w-full max-w-md shadow-xl border-border overflow-hidden rounded-2xl">
         {/* Chat Header */}
         <div className="text-white p-5 flex items-center gap-4" style={{ backgroundColor: config.primaryColor }}>
