@@ -16,6 +16,8 @@ interface Message {
   content: string;
   image?: string;
   timestamp: Date;
+  originalContent?: string;
+  showingOriginal?: boolean;
 }
 
 const PreviewTab = () => {
@@ -27,6 +29,14 @@ const PreviewTab = () => {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  const handleToggleOriginal = (messageId: string) => {
+    setMessages(prev =>
+      prev.map(msg =>
+        msg.id === messageId ? { ...msg, showingOriginal: !msg.showingOriginal } : msg
+      )
+    );
+  };
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -93,7 +103,12 @@ const PreviewTab = () => {
     setMessages(prev => 
       prev.map(msg => 
         msg.id === editingMessageId 
-          ? { ...msg, content: inputValue }
+          ? { 
+              ...msg, 
+              content: inputValue,
+              originalContent: msg.originalContent || msg.content,
+              showingOriginal: false
+            }
           : msg
       )
     );
@@ -132,29 +147,39 @@ const PreviewTab = () => {
               >
                 {message.role === 'bot' && (
                   <div 
-                    className="flex items-start gap-3 max-w-[80%] group"
+                    className="flex flex-col items-start gap-2 max-w-[80%] group"
                     onMouseEnter={() => setHoveredMessageId(message.id)}
                     onMouseLeave={() => setHoveredMessageId(null)}
                   >
-                    <Avatar className="h-8 w-8 flex-shrink-0">
-                      <AvatarImage src={config.brandLogo} />
-                      <AvatarFallback>{config.botName[0]}</AvatarFallback>
-                    </Avatar>
-                    <div className="relative flex items-center gap-2">
-                      <div className="bg-secondary text-foreground rounded-2xl rounded-tl-sm px-4 py-2 break-words">
-                        <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                    <div className="flex items-start gap-3">
+                      <Avatar className="h-8 w-8 flex-shrink-0">
+                        <AvatarImage src={config.brandLogo} />
+                        <AvatarFallback>{config.botName[0]}</AvatarFallback>
+                      </Avatar>
+                      <div className="relative flex items-center gap-2">
+                        <div className="bg-secondary text-foreground rounded-2xl rounded-tl-sm px-4 py-2 break-words">
+                          <p className="text-sm whitespace-pre-wrap">{message.showingOriginal ? message.originalContent : message.content}</p>
+                        </div>
+                        {hoveredMessageId === message.id && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent text-muted-foreground hover:text-foreground"
+                            onClick={() => handleEditMessage(message.id, message.content)}
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
                       </div>
-                      {hoveredMessageId === message.id && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent text-muted-foreground hover:text-foreground"
-                          onClick={() => handleEditMessage(message.id, message.content)}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                      )}
                     </div>
+                    {message.originalContent && (
+                      <button
+                        onClick={() => handleToggleOriginal(message.id)}
+                        className="text-xs text-muted-foreground hover:text-foreground underline ml-11"
+                      >
+                        {message.showingOriginal ? 'View edited' : 'View original'}
+                      </button>
+                    )}
                   </div>
                 )}
                 {message.role === 'user' && (
