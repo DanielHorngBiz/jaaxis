@@ -170,7 +170,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
-          role: string
+          role: Database["public"]["Enums"]["team_role"]
         }
         Insert: {
           accepted?: boolean
@@ -178,7 +178,7 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
-          role: string
+          role: Database["public"]["Enums"]["team_role"]
         }
         Update: {
           accepted?: boolean
@@ -186,7 +186,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
-          role?: string
+          role?: Database["public"]["Enums"]["team_role"]
         }
         Relationships: [
           {
@@ -206,7 +206,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      team_role: "admin" | "manager" | "support"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -333,6 +333,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      team_role: ["admin", "manager", "support"],
+    },
   },
 } as const

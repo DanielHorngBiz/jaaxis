@@ -7,6 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Database } from "@/integrations/supabase/types";
+
+type TeamRole = Database["public"]["Enums"]["team_role"];
 
 interface AddTeamMemberDialogProps {
   chatbotId: string;
@@ -16,7 +19,7 @@ interface AddTeamMemberDialogProps {
 const AddTeamMemberDialog = ({ chatbotId, onMemberAdded }: AddTeamMemberDialogProps) => {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("support");
+  const [role, setRole] = useState<TeamRole>("support");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -93,7 +96,7 @@ const AddTeamMemberDialog = ({ chatbotId, onMemberAdded }: AddTeamMemberDialogPr
 
           <div className="space-y-2">
             <Label htmlFor="role">Role</Label>
-            <Select value={role} onValueChange={setRole} disabled={isLoading}>
+            <Select value={role} onValueChange={(value) => setRole(value as TeamRole)} disabled={isLoading}>
               <SelectTrigger id="role">
                 <SelectValue />
               </SelectTrigger>

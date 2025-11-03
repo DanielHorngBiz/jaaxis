@@ -22,6 +22,9 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { useNavigate } from "react-router-dom";
+import { Database } from "@/integrations/supabase/types";
+
+type TeamRole = Database["public"]["Enums"]["team_role"];
 const colors = [
   "#FF9800",
   "#9C27B0",
@@ -34,7 +37,7 @@ const colors = [
 interface TeamMember {
   id: string;
   email: string;
-  role: string;
+  role: TeamRole;
   created_at: string;
   accepted?: boolean;
 }
@@ -54,7 +57,7 @@ const SettingsTab = () => {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [memberToDelete, setMemberToDelete] = useState<TeamMember | null>(null);
   const [memberToEdit, setMemberToEdit] = useState<TeamMember | null>(null);
-  const [editRole, setEditRole] = useState<string>("");
+  const [editRole, setEditRole] = useState<TeamRole>("support");
   const [showDeleteBotDialog, setShowDeleteBotDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   
@@ -209,7 +212,7 @@ const SettingsTab = () => {
       });
     } finally {
       setMemberToEdit(null);
-      setEditRole("");
+      setEditRole("support");
     }
   };
 
@@ -726,7 +729,7 @@ const SettingsTab = () => {
 
             <div className="space-y-2">
               <Label htmlFor="edit-role">Role</Label>
-              <Select value={editRole} onValueChange={setEditRole}>
+              <Select value={editRole} onValueChange={(value) => setEditRole(value as TeamRole)}>
                 <SelectTrigger id="edit-role">
                   <SelectValue />
                 </SelectTrigger>

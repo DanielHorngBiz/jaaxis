@@ -1,4 +1,4 @@
 project_id = "ivawontyaejtxtwkcyya"
 
 [functions.fetch-store-statuses]
-verify_jwt = false
+verify_jwt = true
