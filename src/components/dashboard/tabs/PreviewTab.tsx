@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Paperclip, Send, X } from "lucide-react";
+import { Paperclip, Send, X, Pencil, Check } from "lucide-react";
 import { useBotConfig } from "@/contexts/BotConfigContext";
 import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 import { useState, useRef, useEffect } from "react";
@@ -23,6 +23,8 @@ const PreviewTab = () => {
   const [inputValue, setInputValue] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -85,8 +87,36 @@ const PreviewTab = () => {
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      if (editingMessageId) {
+        handleSaveEdit();
+      } else {
+        handleSend();
+      }
     }
+  };
+
+  const handleEditMessage = (messageId: string, content: string) => {
+    setEditingMessageId(messageId);
+    setInputValue(content);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingMessageId(null);
+    setInputValue("");
+  };
+
+  const handleSaveEdit = () => {
+    if (!inputValue.trim() || !editingMessageId) return;
+    
+    setMessages(prev => 
+      prev.map(msg => 
+        msg.id === editingMessageId 
+          ? { ...msg, content: inputValue }
+          : msg
+      )
+    );
+    setEditingMessageId(null);
+    setInputValue("");
   };
 
   return (
@@ -119,13 +149,29 @@ const PreviewTab = () => {
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {message.role === 'bot' && (
-                  <div className="flex items-start gap-3 max-w-[80%]">
+                  <div 
+                    className="flex items-start gap-3 max-w-[80%] group"
+                    onMouseEnter={() => setHoveredMessageId(message.id)}
+                    onMouseLeave={() => setHoveredMessageId(null)}
+                  >
                     <Avatar className="h-8 w-8 flex-shrink-0">
                       <AvatarImage src={config.brandLogo} />
                       <AvatarFallback>{config.botName[0]}</AvatarFallback>
                     </Avatar>
-                    <div className="bg-secondary text-foreground rounded-2xl rounded-tl-sm px-4 py-2 break-words">
-                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                    <div className="relative flex items-center gap-2">
+                      <div className="bg-secondary text-foreground rounded-2xl rounded-tl-sm px-4 py-2 break-words">
+                        <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                      </div>
+                      {hoveredMessageId === message.id && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => handleEditMessage(message.id, message.content)}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 )}
@@ -156,7 +202,20 @@ const PreviewTab = () => {
 
         {/* Chat Input */}
         <div className="bg-white border-t p-4">
-          {selectedImage && (
+          {editingMessageId && (
+            <div className="mb-3 flex items-center justify-between">
+              <h4 className="font-semibold text-foreground">Edit message</h4>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full bg-secondary"
+                onClick={handleCancelEdit}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+          {selectedImage && !editingMessageId && (
             <div className="mb-3 relative inline-block w-16 h-16">
               <img 
                 src={selectedImage} 
@@ -172,21 +231,25 @@ const PreviewTab = () => {
             </div>
           )}
           <div className="flex items-center gap-3">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-              className="hidden"
-            />
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="text-muted-foreground hover:text-foreground shrink-0"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Paperclip className="w-5 h-5" />
-            </Button>
+            {!editingMessageId && (
+              <>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-muted-foreground hover:text-foreground shrink-0"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Paperclip className="w-5 h-5" />
+                </Button>
+              </>
+            )}
             <Input
               placeholder="Write a message"
               className="flex-1 border-none shadow-none focus-visible:ring-0 px-0"
@@ -198,10 +261,10 @@ const PreviewTab = () => {
               size="icon" 
               className="shrink-0 shadow-sm text-white"
               style={{ backgroundColor: config.primaryColor }}
-              onClick={handleSend}
+              onClick={editingMessageId ? handleSaveEdit : handleSend}
               disabled={!inputValue.trim() && !selectedImage}
             >
-              <Send className="w-4 h-4" />
+              {editingMessageId ? <Check className="w-4 h-4" /> : <Send className="w-4 h-4" />}
             </Button>
           </div>
         </div>
