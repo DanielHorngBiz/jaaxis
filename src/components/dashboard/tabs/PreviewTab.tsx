@@ -209,12 +209,12 @@ const PreviewTab = () => {
 
       {/* Image Preview Dialog */}
       <Dialog open={!!previewImage} onOpenChange={() => setPreviewImage(null)}>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden">
+        <DialogContent className="max-w-[90vw] max-h-[90vh] p-0 overflow-hidden w-fit">
           {previewImage && (
             <img 
               src={previewImage} 
               alt="Preview" 
-              className="w-full h-auto max-h-[80vh] object-contain"
+              className="w-auto h-auto max-w-[90vw] max-h-[90vh] object-contain"
             />
           )}
         </DialogContent>
