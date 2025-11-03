@@ -133,7 +133,7 @@ const PreviewTab = () => {
                       <img 
                         src={message.image} 
                         alt="Uploaded" 
-                        className="rounded-lg max-h-48 object-cover"
+                        className="rounded-lg max-h-48 max-w-full object-cover"
                       />
                     )}
                     {message.content && (
