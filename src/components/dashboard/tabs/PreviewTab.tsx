@@ -117,29 +117,29 @@ const PreviewTab = () => {
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {message.role === 'bot' && (
-                  <div className="flex items-start gap-3">
-                    <Avatar className="h-8 w-8">
+                  <div className="flex items-start gap-3 max-w-[85%]">
+                    <Avatar className="h-8 w-8 flex-shrink-0">
                       <AvatarImage src={config.brandLogo} />
                       <AvatarFallback>{config.botName[0]}</AvatarFallback>
                     </Avatar>
-                    <div className="bg-secondary text-foreground rounded-2xl rounded-tl-sm px-4 py-2 max-w-md">
-                      <p className="text-sm">{message.content}</p>
+                    <div className="bg-secondary text-foreground rounded-2xl rounded-tl-sm px-4 py-2 break-words">
+                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                     </div>
                   </div>
                 )}
                 {message.role === 'user' && (
                   <div
-                    className="text-white rounded-2xl rounded-tr-sm px-4 py-2 max-w-md"
+                    className="text-white rounded-2xl rounded-tr-sm px-4 py-2 max-w-[85%] break-words"
                     style={{ backgroundColor: config.primaryColor }}
                   >
                     {message.image && (
                       <img 
                         src={message.image} 
                         alt="Uploaded" 
-                        className="rounded-lg mb-2 max-w-full"
+                        className="rounded-lg mb-2 w-full h-auto max-w-full object-contain"
                       />
                     )}
-                    {message.content && <p className="text-sm">{message.content}</p>}
+                    {message.content && <p className="text-sm whitespace-pre-wrap">{message.content}</p>}
                   </div>
                 )}
               </div>
