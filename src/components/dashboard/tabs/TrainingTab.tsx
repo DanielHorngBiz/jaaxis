@@ -41,8 +41,7 @@ const TrainingTab = () => {
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const [editingName, setEditingName] = useState<string | null>(null);
   const [editNameValue, setEditNameValue] = useState("");
-  const [editingContent, setEditingContent] = useState<string | null>(null);
-  const [editContentValue, setEditContentValue] = useState("");
+  const [contentValues, setContentValues] = useState<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -166,8 +165,22 @@ const TrainingTab = () => {
     fetchKnowledgeSources();
   };
   const filteredTrainedItems = trainedItems.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  
   const toggleExpand = (id: string) => {
-    setExpandedItems(prev => prev.includes(id) ? prev.filter(itemId => itemId !== id) : [...prev, id]);
+    setExpandedItems(prev => {
+      const isExpanding = !prev.includes(id);
+      if (isExpanding) {
+        // Initialize content value when expanding
+        const item = trainedItems.find(i => i.id === id);
+        if (item) {
+          setContentValues(vals => ({
+            ...vals,
+            [id]: item.content || getSampleContent(item.type)
+          }));
+        }
+      }
+      return isExpanding ? [...prev, id] : prev.filter(itemId => itemId !== id);
+    });
   };
   const startEditingName = (id: string, currentName: string) => {
     setEditingName(id);
@@ -204,16 +217,21 @@ const TrainingTab = () => {
   };
 
   const startEditingContent = (id: string, currentContent: string) => {
-    setEditingContent(id);
-    setEditContentValue(currentContent);
+    setContentValues(vals => ({
+      ...vals,
+      [id]: currentContent
+    }));
   };
 
   const saveContentEdit = async (id: string) => {
     if (!chatbotId) return;
 
+    const content = contentValues[id];
+    if (!content) return;
+
     const { error } = await supabase
       .from('knowledge_sources')
-      .update({ content: editContentValue })
+      .update({ content })
       .eq('id', id);
 
     if (error) {
@@ -227,20 +245,13 @@ const TrainingTab = () => {
 
     setTrainedItems(prev => prev.map(item => item.id === id ? {
       ...item,
-      content: editContentValue,
+      content,
       lastUpdated: 'Just now'
     } : item));
-    setEditingContent(null);
-    setEditContentValue("");
     toast({
       title: "Updated",
       description: "Content updated successfully."
     });
-  };
-
-  const cancelContentEdit = () => {
-    setEditingContent(null);
-    setEditContentValue("");
   };
   const getSampleContent = (type: string) => {
     switch (type) {
@@ -636,41 +647,17 @@ const TrainingTab = () => {
                         </div>
                         
                         {expandedItems.includes(item.id) && <div className="px-4 pb-4">
-                            <div className="mt-2 p-4 bg-muted/50 rounded-lg">
-                              {editingContent === item.id ? (
-                                <div className="space-y-2">
-                                  <Textarea 
-                                    value={editContentValue}
-                                    onChange={e => setEditContentValue(e.target.value)}
-                                    className="min-h-[120px] resize-none"
-                                  />
-                                  <div className="flex gap-2 justify-end">
-                                    <Button size="sm" variant="ghost" onClick={cancelContentEdit}>
-                                      <X className="h-4 w-4 mr-1" />
-                                      Cancel
-                                    </Button>
-                                    <Button size="sm" onClick={() => saveContentEdit(item.id)}>
-                                      <Check className="h-4 w-4 mr-1" />
-                                      Save
-                                    </Button>
-                                  </div>
-                                </div>
-                              ) : (
-                                <div className="group">
-                                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                                    {item.content || getSampleContent(item.type)}
-                                  </p>
-                                  <Button 
-                                    size="sm" 
-                                    variant="ghost" 
-                                    className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    onClick={() => startEditingContent(item.id, item.content || getSampleContent(item.type))}
-                                  >
-                                    <Pencil className="h-3 w-3 mr-1" />
-                                    Edit content
-                                  </Button>
-                                </div>
-                              )}
+                            <div className="mt-2 space-y-3">
+                              <Textarea 
+                                value={contentValues[item.id] || item.content || getSampleContent(item.type)}
+                                onChange={e => setContentValues(vals => ({ ...vals, [item.id]: e.target.value }))}
+                                className="min-h-[150px] resize-none"
+                              />
+                              <div className="flex justify-end">
+                                <Button size="sm" onClick={() => saveContentEdit(item.id)}>
+                                  Save
+                                </Button>
+                              </div>
                             </div>
                           </div>}
                       </div>)}
