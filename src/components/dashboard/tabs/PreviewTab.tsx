@@ -86,31 +86,25 @@ const PreviewTab = () => {
 
         {/* Chat Content */}
         <ScrollArea ref={scrollAreaRef} className="bg-white h-[500px] p-6">
-          {messages.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-              Start a conversation to preview your bot
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {messages.map((message) => (
+          <div className="space-y-4">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
                 <div
-                  key={message.id}
-                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`max-w-[80%] rounded-2xl px-4 py-2 ${
+                    message.role === 'user'
+                      ? 'text-white'
+                      : 'bg-secondary text-foreground'
+                  }`}
+                  style={message.role === 'user' ? { backgroundColor: config.primaryColor } : {}}
                 >
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-2 ${
-                      message.role === 'user'
-                        ? 'text-white'
-                        : 'bg-secondary text-foreground'
-                    }`}
-                    style={message.role === 'user' ? { backgroundColor: config.primaryColor } : {}}
-                  >
-                    <p className="text-sm">{message.content}</p>
-                  </div>
+                  <p className="text-sm">{message.content}</p>
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
         </ScrollArea>
 
         {/* Chat Input */}
