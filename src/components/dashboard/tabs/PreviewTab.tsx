@@ -128,18 +128,22 @@ const PreviewTab = () => {
                   </div>
                 )}
                 {message.role === 'user' && (
-                  <div
-                    className="text-white rounded-2xl rounded-tr-sm px-4 py-2 max-w-[80%] break-words"
-                    style={{ backgroundColor: config.primaryColor }}
-                  >
+                  <div className="flex flex-col items-end gap-2 max-w-[80%]">
                     {message.image && (
                       <img 
                         src={message.image} 
                         alt="Uploaded" 
-                        className="rounded-lg mb-2 w-full max-h-48 object-cover"
+                        className="rounded-lg max-h-48 object-cover"
                       />
                     )}
-                    {message.content && <p className="text-sm whitespace-pre-wrap">{message.content}</p>}
+                    {message.content && (
+                      <div
+                        className="text-white rounded-2xl rounded-tr-sm px-4 py-2 break-words"
+                        style={{ backgroundColor: config.primaryColor }}
+                      >
+                        <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -150,11 +154,11 @@ const PreviewTab = () => {
         {/* Chat Input */}
         <div className="bg-white border-t p-4">
           {selectedImage && (
-            <div className="mb-3 relative inline-block">
+            <div className="mb-3 relative inline-block w-32 h-32">
               <img 
                 src={selectedImage} 
                 alt="Selected" 
-                className="rounded-lg max-h-32 max-w-full"
+                className="rounded-lg w-full h-full object-cover"
               />
               <button
                 onClick={handleRemoveImage}
