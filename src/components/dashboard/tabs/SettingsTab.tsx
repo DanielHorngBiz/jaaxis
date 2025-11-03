@@ -436,16 +436,16 @@ const SettingsTab = () => {
             <Label className="mb-4 block">Primary Color</Label>
             <div className="flex items-center gap-4 flex-wrap">
               <div className="flex gap-2">
-                {colors.map((color) => (
-                  <button
-                    key={color}
-                    onClick={() => handleColorSelect(color)}
-                    className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 ${
-                      selectedColor === color ? 'border-foreground' : 'border-transparent hover:border-foreground/30'
-                    }`}
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
+              {colors.map((color) => (
+                <button
+                  key={color}
+                  onClick={() => handleColorSelect(color)}
+                  className={`w-6 h-6 rounded-full border-2 transition-all hover:scale-110 ${
+                    selectedColor === color ? 'border-foreground' : 'border-transparent hover:border-foreground/30'
+                  }`}
+                  style={{ backgroundColor: color }}
+                />
+              ))}
               </div>
               <div className="flex items-center gap-2">
                 <div className="relative">
