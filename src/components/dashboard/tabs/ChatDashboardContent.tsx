@@ -123,10 +123,53 @@ export const ChatDashboardContent = () => {
   // Store chat messages per conversation
   const [conversationChats, setConversationChats] = useState<Record<string, ChatMessage[]>>({
     "1": [
-      { id: '1-1', role: 'user', content: 'Hi! I have a question about your product features.', timestamp: '11:22 PM' },
-      { id: '1-2', role: 'bot', content: 'Of course! What would you like to know?', timestamp: '1:42 PM' },
-      { id: '1-3', role: 'user', content: 'Does it come with a warranty and what does it cover?', timestamp: '1:45 PM' },
-      { id: '1-4', role: 'bot', content: 'Yes! It includes a 2-year warranty covering all manufacturing defects.', timestamp: '1:48 PM' },
+      { id: '1-1', role: 'user', content: 'Hi! I have a question about your product features.', timestamp: '11:22 AM' },
+      { id: '1-2', role: 'bot', content: 'Of course! What would you like to know?', timestamp: '11:23 AM' },
+      { id: '1-3', role: 'user', content: 'Does it come with a warranty and what does it cover?', timestamp: '11:25 AM' },
+      { id: '1-4', role: 'bot', content: 'Yes! It includes a 2-year warranty covering all manufacturing defects.', timestamp: '11:28 AM' },
+    ],
+    "2": [
+      { id: '2-1', role: 'user', content: 'Thanks for the quick response! Really appreciate it.', timestamp: '9:15 AM' },
+      { id: '2-2', role: 'bot', content: 'You\'re welcome! Is there anything else I can help you with?', timestamp: '9:16 AM' },
+      { id: '2-3', role: 'user', content: 'Yes, what are the shipping options?', timestamp: '9:18 AM' },
+      { id: '2-4', role: 'bot', content: 'We offer standard (5-7 days) and express (2-3 days) shipping.', timestamp: '9:19 AM' },
+    ],
+    "3": [
+      { id: '3-1', role: 'user', content: 'Can you help me with the shipping details?', timestamp: '2:30 PM' },
+      { id: '3-2', role: 'bot', content: 'Absolutely! What would you like to know about shipping?', timestamp: '2:31 PM' },
+      { id: '3-3', role: 'user', content: 'Do you ship internationally?', timestamp: '2:33 PM' },
+      { id: '3-4', role: 'bot', content: 'Yes, we ship to over 50 countries worldwide!', timestamp: '2:34 PM' },
+    ],
+    "4": [
+      { id: '4-1', role: 'user', content: 'Do you have a tutorial on how to use this?', timestamp: '10:00 AM' },
+      { id: '4-2', role: 'bot', content: 'Sure! The tutorial can be found in our help center.', timestamp: '10:01 AM' },
+      { id: '4-3', role: 'user', content: 'Perfect, thank you!', timestamp: '10:03 AM' },
+    ],
+    "5": [
+      { id: '5-1', role: 'user', content: 'Is this available in other colors?', timestamp: '3:45 PM' },
+      { id: '5-2', role: 'bot', content: 'Yes! We have blue, red, green, and black options.', timestamp: '3:46 PM' },
+      { id: '5-3', role: 'user', content: 'Great! I\'ll take the blue one.', timestamp: '3:48 PM' },
+    ],
+    "6": [
+      { id: '6-1', role: 'user', content: 'What payment methods do you accept?', timestamp: '1:20 PM' },
+      { id: '6-2', role: 'bot', content: 'Yes, we have it in blue, red, and green. Which one would you prefer?', timestamp: '1:21 PM' },
+      { id: '6-3', role: 'user', content: 'I think I\'ll go with blue, thanks!', timestamp: '1:23 PM' },
+    ],
+    "7": [
+      { id: '7-1', role: 'user', content: 'How long does delivery usually take?', timestamp: '4:10 PM' },
+      { id: '7-2', role: 'bot', content: 'Standard delivery takes 5-7 business days, express is 2-3 days.', timestamp: '4:11 PM' },
+      { id: '7-3', role: 'user', content: 'Can I track my order?', timestamp: '4:13 PM' },
+      { id: '7-4', role: 'bot', content: 'Yes, you\'ll receive a tracking number once your order ships.', timestamp: '4:14 PM' },
+    ],
+    "8": [
+      { id: '8-1', role: 'user', content: 'What\'s the return policy?', timestamp: '11:30 AM' },
+      { id: '8-2', role: 'bot', content: 'Great question! Delivery takes 3-5 business days for standard shipping.', timestamp: '11:31 AM' },
+      { id: '8-3', role: 'user', content: 'And for returns?', timestamp: '11:33 AM' },
+      { id: '8-4', role: 'bot', content: 'We offer 30-day returns for unused items in original packaging.', timestamp: '11:34 AM' },
+    ],
+    "9": [
+      { id: '9-1', role: 'user', content: 'Thank you so much for your help!', timestamp: '5:00 PM' },
+      { id: '9-2', role: 'bot', content: 'You\'re very welcome! Feel free to reach out if you need anything else.', timestamp: '5:01 PM' },
     ],
   });
   
