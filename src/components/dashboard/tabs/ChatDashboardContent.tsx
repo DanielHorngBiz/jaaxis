@@ -308,6 +308,7 @@ export const ChatDashboardContent = () => {
       }));
     }
     setInputValue("");
+    setSelectedImages([]);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
