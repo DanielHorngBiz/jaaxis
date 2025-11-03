@@ -453,7 +453,6 @@ const SettingsTab = () => {
                   <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <p className="font-medium">{item.domain}</p>
-                      <p className="text-sm text-muted-foreground">Added on {item.addedOn}</p>
                     </div>
                     <Button
                       variant="ghost"
