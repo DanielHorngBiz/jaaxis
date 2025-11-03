@@ -12,6 +12,7 @@ interface Message {
   id: string;
   role: 'user' | 'bot';
   content: string;
+  image?: string;
   timestamp: Date;
 }
 
@@ -19,7 +20,9 @@ const PreviewTab = () => {
   const { config } = useBotConfig();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -32,18 +35,20 @@ const PreviewTab = () => {
   }, [messages]);
 
   const handleSend = () => {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() && !selectedImage) return;
 
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content: inputValue,
+      image: selectedImage || undefined,
       timestamp: new Date()
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
+    setSelectedImage(null);
 
     // Bot responds after a short delay
     setTimeout(() => {
@@ -55,6 +60,24 @@ const PreviewTab = () => {
       };
       setMessages(prev => [...prev, botMessage]);
     }, 500);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setSelectedImage(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -109,7 +132,14 @@ const PreviewTab = () => {
                     className="text-white rounded-2xl rounded-tr-sm px-4 py-2 max-w-md"
                     style={{ backgroundColor: config.primaryColor }}
                   >
-                    <p className="text-sm">{message.content}</p>
+                    {message.image && (
+                      <img 
+                        src={message.image} 
+                        alt="Uploaded" 
+                        className="rounded-lg mb-2 max-w-full"
+                      />
+                    )}
+                    {message.content && <p className="text-sm">{message.content}</p>}
                   </div>
                 )}
               </div>
@@ -118,26 +148,55 @@ const PreviewTab = () => {
         </ScrollArea>
 
         {/* Chat Input */}
-        <div className="bg-white border-t p-4 flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground shrink-0">
-            <Paperclip className="w-5 h-5" />
-          </Button>
-          <Input
-            placeholder="Write a message"
-            className="flex-1 border-none shadow-none focus-visible:ring-0 px-0"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={handleKeyPress}
-          />
-          <Button 
-            size="icon" 
-            className="shrink-0 shadow-sm text-white"
-            style={{ backgroundColor: config.primaryColor }}
-            onClick={handleSend}
-            disabled={!inputValue.trim()}
-          >
-            <Send className="w-4 h-4" />
-          </Button>
+        <div className="bg-white border-t p-4">
+          {selectedImage && (
+            <div className="mb-3 relative inline-block">
+              <img 
+                src={selectedImage} 
+                alt="Selected" 
+                className="rounded-lg max-h-32 max-w-full"
+              />
+              <button
+                onClick={handleRemoveImage}
+                className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-destructive/90"
+              >
+                ×
+              </button>
+            </div>
+          )}
+          <div className="flex items-center gap-3">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-muted-foreground hover:text-foreground shrink-0"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Paperclip className="w-5 h-5" />
+            </Button>
+            <Input
+              placeholder="Write a message"
+              className="flex-1 border-none shadow-none focus-visible:ring-0 px-0"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyPress={handleKeyPress}
+            />
+            <Button 
+              size="icon" 
+              className="shrink-0 shadow-sm text-white"
+              style={{ backgroundColor: config.primaryColor }}
+              onClick={handleSend}
+              disabled={!inputValue.trim() && !selectedImage}
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </Card>
     </div>
