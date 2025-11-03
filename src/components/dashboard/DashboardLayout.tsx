@@ -13,6 +13,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Globe } from "lucide-react";
 import { CreateChatbotDialog } from "./CreateChatbotDialog";
 
 interface DashboardLayoutProps {
@@ -249,6 +257,22 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   <Settings className="w-4 h-4" />
                   Account Settings
                 </Button>
+                
+                <div className="px-2 py-1.5">
+                  <Select defaultValue="en">
+                    <SelectTrigger className="w-full h-9 gap-2 text-muted-foreground hover:text-foreground border-none bg-transparent hover:bg-secondary/50 px-2">
+                      <div className="flex items-center gap-2">
+                        <Globe className="w-4 h-4" />
+                        <SelectValue />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en">English</SelectItem>
+                      <SelectItem value="zh">繁體中文</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <Button
                   variant="ghost"
                   className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
