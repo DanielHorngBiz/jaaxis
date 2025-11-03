@@ -210,7 +210,7 @@ const PreviewTab = () => {
       {/* Image Preview Dialog */}
       <Dialog open={!!previewImage} onOpenChange={() => setPreviewImage(null)}>
         <DialogContent className="max-w-[90vw] max-h-[90vh] p-0 overflow-hidden w-fit border-0">
-          <DialogClose className="absolute right-2 top-2 z-10 rounded-full bg-black/60 text-white p-2 opacity-70 hover:opacity-100 hover:bg-black/80 transition-all focus:outline-none focus:ring-2 focus:ring-white">
+          <DialogClose className="absolute right-2 top-2 z-10 bg-black/60 text-white p-1.5 opacity-70 hover:opacity-100 hover:bg-black/80 transition-all focus:outline-none focus:ring-0">
             <X className="h-5 w-5" />
             <span className="sr-only">Close</span>
           </DialogClose>
