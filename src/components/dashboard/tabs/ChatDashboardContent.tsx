@@ -37,31 +37,68 @@ interface Message {
 const mockMessages: Message[] = [
   {
     id: "1",
-    sender: "Michelle Hoh",
-    preview: "你好 我想請問一下這是哪種只在lightroom裡...",
+    sender: "Sarah Johnson",
+    preview: "Hi! I have a question about your product features...",
     timestamp: "24/10/2025",
     unread: true,
     platform: "instagram",
   },
   {
     id: "2",
-    sender: "Charles",
-    preview: "You: 可以先關到高感的背景用",
+    sender: "Michael Chen",
+    preview: "Thanks for the quick response! Really appreciate it.",
+    timestamp: "24/10/2025",
+    platform: "instagram",
+  },
+  {
+    id: "3",
+    sender: "Emma Davis",
+    preview: "Can you help me with the shipping details?",
+    timestamp: "23/10/2025",
+    unread: true,
+    platform: "instagram",
+  },
+  {
+    id: "4",
+    sender: "James Wilson",
+    preview: "You: Sure! The tutorial can be found here...",
     timestamp: "24/10/2025",
     platform: "messenger",
   },
   {
-    id: "3",
-    sender: "Lain Liu",
-    preview: "謝謝您",
+    id: "5",
+    sender: "Olivia Brown",
+    preview: "Is this available in other colors?",
     timestamp: "23/10/2025",
     unread: true,
     platform: "messenger",
   },
   {
-    id: "4",
-    sender: "ZT",
-    preview: "You: 您好，教學可以參考這裡：...",
+    id: "6",
+    sender: "Daniel Martinez",
+    preview: "You: Yes, we have it in blue, red, and black.",
+    timestamp: "22/10/2025",
+    platform: "messenger",
+  },
+  {
+    id: "7",
+    sender: "Sophia Anderson",
+    preview: "How long does delivery usually take?",
+    timestamp: "24/10/2025",
+    unread: true,
+    platform: "website",
+  },
+  {
+    id: "8",
+    sender: "Lucas Thompson",
+    preview: "You: Great question! Delivery takes 3-5 business days.",
+    timestamp: "23/10/2025",
+    platform: "website",
+  },
+  {
+    id: "9",
+    sender: "Ava Garcia",
+    preview: "Thank you so much for your help!",
     timestamp: "22/10/2025",
     platform: "website",
   },
@@ -336,7 +373,7 @@ export const ChatDashboardContent = () => {
                         <AvatarFallback>{selectedMessage.sender[0]}</AvatarFallback>
                       </Avatar>
                       <div className="bg-secondary rounded-2xl rounded-tl-sm px-4 py-2 max-w-md">
-                        <p className="text-sm">請問更使用Flexoresets是用RAW會比JPG格式還要來得嗎</p>
+                        <p className="text-sm">Hi! I have a question about your product features.</p>
                       </div>
                     </div>
                     <span className="text-xs text-muted-foreground ml-11">11:22 PM</span>
@@ -348,7 +385,7 @@ export const ChatDashboardContent = () => {
 
                   <div className="flex flex-col items-end gap-2">
                     <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 max-w-md">
-                      <p className="text-sm">是的喔，RAW本身能調整的部分就會比較多</p>
+                      <p className="text-sm">Of course! What would you like to know?</p>
                     </div>
                     <span className="text-xs text-muted-foreground mr-2">1:42 PM</span>
                   </div>
@@ -359,7 +396,7 @@ export const ChatDashboardContent = () => {
                         <AvatarFallback>{selectedMessage.sender[0]}</AvatarFallback>
                       </Avatar>
                       <div className="bg-secondary rounded-2xl rounded-tl-sm px-4 py-2 max-w-md">
-                        <p className="text-sm">所以使用RAW檔的話 需要先把白平衡調整好再套用嗎 還是可以直接套用沒關係</p>
+                        <p className="text-sm">Does it come with a warranty and what does it cover?</p>
                       </div>
                     </div>
                     <span className="text-xs text-muted-foreground ml-11">1:45 PM</span>
@@ -367,7 +404,7 @@ export const ChatDashboardContent = () => {
 
                   <div className="flex flex-col items-end gap-2">
                     <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 max-w-md">
-                      <p className="text-sm">可以先調到高感的背景用</p>
+                      <p className="text-sm">Yes! It includes a 2-year warranty covering all manufacturing defects.</p>
                     </div>
                     <span className="text-xs text-muted-foreground mr-2">1:48 PM</span>
                   </div>
