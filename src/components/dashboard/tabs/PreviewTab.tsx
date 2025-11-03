@@ -252,7 +252,7 @@ const PreviewTab = () => {
             )}
             <Input
               placeholder="Write a message"
-              className="flex-1 border-none shadow-none focus-visible:ring-0 px-0"
+              className="flex-1"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
