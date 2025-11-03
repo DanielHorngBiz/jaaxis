@@ -526,13 +526,17 @@ export const ChatDashboardContent = () => {
                             <Avatar className="h-8 w-8">
                               <AvatarFallback>{selectedMessage.sender[0]}</AvatarFallback>
                             </Avatar>
-                            <div className="bg-secondary rounded-2xl rounded-tl-sm px-4 py-2 max-w-md">
-                              {chatMsg.content && <p className="text-sm">{chatMsg.content}</p>}
+                            <div className="flex flex-col gap-2 max-w-md">
                               {chatMsg.images && chatMsg.images.length > 0 && (
-                                <div className="mt-2 flex flex-wrap gap-2">
+                                <div className="flex flex-wrap gap-2">
                                   {chatMsg.images.map((img, i) => (
-                                    <img key={i} src={img} alt={`Attachment ${i + 1}`} className="w-16 h-16 rounded-md object-cover" />
+                                    <img key={i} src={img} alt={`Attachment ${i + 1}`} className="rounded-lg max-h-48 max-w-full object-cover" />
                                   ))}
+                                </div>
+                              )}
+                              {chatMsg.content && (
+                                <div className="bg-secondary rounded-2xl rounded-tl-sm px-4 py-2">
+                                  <p className="text-sm">{chatMsg.content}</p>
                                 </div>
                               )}
                             </div>
@@ -556,19 +560,21 @@ export const ChatDashboardContent = () => {
                                 <Pencil className="h-3 w-3" />
                               </Button>
                             )}
-                            <div className={`rounded-2xl rounded-tr-sm px-4 py-2 max-w-md ${
-                              chatMsg.isManual 
-                                ? 'bg-muted text-foreground' 
-                                : 'bg-primary text-primary-foreground'
-                            }`}>
-                              {chatMsg.content && (
-                                <p className="text-sm">{chatMsg.showingOriginal ? chatMsg.originalContent : chatMsg.content}</p>
-                              )}
+                            <div className="flex flex-col gap-2 items-end max-w-md">
                               {chatMsg.images && chatMsg.images.length > 0 && (
-                                <div className="mt-2 flex flex-wrap gap-2">
+                                <div className="flex flex-wrap gap-2 justify-end">
                                   {chatMsg.images.map((img, i) => (
-                                    <img key={i} src={img} alt={`Attachment ${i + 1}`} className="w-16 h-16 rounded-md object-cover" />
+                                    <img key={i} src={img} alt={`Attachment ${i + 1}`} className="rounded-lg max-h-48 max-w-full object-cover" />
                                   ))}
+                                </div>
+                              )}
+                              {chatMsg.content && (
+                                <div className={`rounded-2xl rounded-tr-sm px-4 py-2 ${
+                                  chatMsg.isManual 
+                                    ? 'bg-muted text-foreground' 
+                                    : 'bg-primary text-primary-foreground'
+                                }`}>
+                                  <p className="text-sm">{chatMsg.showingOriginal ? chatMsg.originalContent : chatMsg.content}</p>
                                 </div>
                               )}
                             </div>
