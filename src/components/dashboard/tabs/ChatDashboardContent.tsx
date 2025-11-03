@@ -584,7 +584,7 @@ export const ChatDashboardContent = () => {
                 selectedImages={selectedImages}
                 onImagesSelect={handleImagesSelect}
                 onRemoveImage={handleRemoveImage}
-                disabled={!inputValue.trim()}
+                disabled={!inputValue.trim() && selectedImages.length === 0}
               />
             </>
           ) : (
