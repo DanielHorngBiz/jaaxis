@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
-import { Star, Pause, Play, Archive, Trash2, Pencil } from "lucide-react";
+import { Star, Pause, Play, Archive, Trash2, Pencil, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,6 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { MessageSquare } from "lucide-react";
 import instagramIcon from "@/assets/instagram.svg";
@@ -181,6 +182,7 @@ export const ChatDashboardContent = () => {
   const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const handleToggleOriginal = (messageId: string) => {
     if (!selectedMessage) return;
@@ -530,7 +532,13 @@ export const ChatDashboardContent = () => {
                               {chatMsg.images && chatMsg.images.length > 0 && (
                                 <div className="flex flex-wrap gap-2">
                                   {chatMsg.images.map((img, i) => (
-                                    <img key={i} src={img} alt={`Attachment ${i + 1}`} className="rounded-lg max-h-48 max-w-full object-cover" />
+                                    <img 
+                                      key={i} 
+                                      src={img} 
+                                      alt={`Attachment ${i + 1}`} 
+                                      className="rounded-lg max-h-48 max-w-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                                      onClick={() => setPreviewImage(img)}
+                                    />
                                   ))}
                                 </div>
                               )}
@@ -564,7 +572,13 @@ export const ChatDashboardContent = () => {
                               {chatMsg.images && chatMsg.images.length > 0 && (
                                 <div className="flex flex-wrap gap-2 justify-end">
                                   {chatMsg.images.map((img, i) => (
-                                    <img key={i} src={img} alt={`Attachment ${i + 1}`} className="rounded-lg max-h-48 max-w-full object-cover" />
+                                    <img 
+                                      key={i} 
+                                      src={img} 
+                                      alt={`Attachment ${i + 1}`} 
+                                      className="rounded-lg max-h-48 max-w-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                                      onClick={() => setPreviewImage(img)}
+                                    />
                                   ))}
                                 </div>
                               )}
@@ -636,6 +650,23 @@ export const ChatDashboardContent = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Image Preview Dialog */}
+      <Dialog open={!!previewImage} onOpenChange={() => setPreviewImage(null)}>
+        <DialogContent className="max-w-[90vw] max-h-[90vh] p-0 overflow-hidden w-fit border-0">
+          <DialogClose className="absolute right-2 top-2 z-10 bg-black/60 text-white p-1.5 opacity-70 hover:opacity-100 hover:bg-black/80 transition-all focus:outline-none focus:ring-0">
+            <X className="h-5 w-5" />
+            <span className="sr-only">Close</span>
+          </DialogClose>
+          {previewImage && (
+            <img 
+              src={previewImage} 
+              alt="Preview" 
+              className="w-auto h-auto max-w-[90vw] max-h-[90vh] object-contain"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
