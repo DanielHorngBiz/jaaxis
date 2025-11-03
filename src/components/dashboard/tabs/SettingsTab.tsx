@@ -438,7 +438,7 @@ const SettingsTab = () => {
           <div className="flex gap-3">
             <Textarea
               placeholder="https://example.com, https://another-site.com"
-              className="min-h-[100px] flex-1"
+              className="min-h-[100px] flex-1 resize-none"
               value={whitelistInput}
               onChange={(e) => setWhitelistInput(e.target.value)}
             />
@@ -483,7 +483,7 @@ const SettingsTab = () => {
           <div className="flex gap-3">
             <Textarea
               placeholder="e.g., https://example.com/private, https://example.com/admin, https://example.com/restricted"
-              className="min-h-[100px] flex-1"
+              className="min-h-[100px] flex-1 resize-none"
               value={blockPagesInput}
               onChange={(e) => setBlockPagesInput(e.target.value)}
             />
@@ -527,7 +527,7 @@ const SettingsTab = () => {
         <div className="space-y-6">
           <Textarea
             placeholder="Type here..."
-            className="min-h-[100px]"
+            className="min-h-[100px] resize-none"
           />
           <div className="flex justify-end">
             <Button>Save</Button>
