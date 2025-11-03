@@ -38,7 +38,7 @@ const mockMessages: Message[] = [
   {
     id: "1",
     sender: "Sarah Johnson",
-    preview: "Hi! I have a question about your product features...",
+    preview: "Hi! I have a question about your product...",
     timestamp: "24/10/2025",
     unread: true,
     platform: "instagram",
@@ -46,14 +46,14 @@ const mockMessages: Message[] = [
   {
     id: "2",
     sender: "Michael Chen",
-    preview: "Thanks for the quick response! Really appreciate it.",
+    preview: "Thanks for the quick response! Really...",
     timestamp: "24/10/2025",
     platform: "instagram",
   },
   {
     id: "3",
     sender: "Emma Davis",
-    preview: "Can you help me with the shipping details?",
+    preview: "Can you help me with the shipping...",
     timestamp: "23/10/2025",
     unread: true,
     platform: "instagram",
@@ -61,7 +61,7 @@ const mockMessages: Message[] = [
   {
     id: "4",
     sender: "James Wilson",
-    preview: "You: Sure! The tutorial can be found here...",
+    preview: "You: Sure! The tutorial can be found...",
     timestamp: "24/10/2025",
     platform: "messenger",
   },
@@ -76,7 +76,7 @@ const mockMessages: Message[] = [
   {
     id: "6",
     sender: "Daniel Martinez",
-    preview: "You: Yes, we have it in blue, red, and black.",
+    preview: "You: Yes, we have it in blue, red, and...",
     timestamp: "22/10/2025",
     platform: "messenger",
   },
@@ -91,7 +91,7 @@ const mockMessages: Message[] = [
   {
     id: "8",
     sender: "Lucas Thompson",
-    preview: "You: Great question! Delivery takes 3-5 business days.",
+    preview: "You: Great question! Delivery takes 3-5...",
     timestamp: "23/10/2025",
     platform: "website",
   },
