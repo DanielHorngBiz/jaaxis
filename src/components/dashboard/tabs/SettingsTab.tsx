@@ -468,7 +468,7 @@ const SettingsTab = () => {
                   className="w-32"
                 />
                 <div
-                  className="w-6 h-6 rounded-full border"
+                  className="w-8 h-8 rounded-full border"
                   style={{ backgroundColor: selectedColor }}
                 />
               </div>
