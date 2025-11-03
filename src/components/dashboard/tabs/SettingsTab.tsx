@@ -474,7 +474,7 @@ const SettingsTab = () => {
       <div className="pb-8 border-b">
         <h3 className="text-lg font-semibold mb-2">Hide On Specific Pages</h3>
         <p className="text-sm text-muted-foreground mb-6">
-          Enter full URLs separated by commas. These pages will not show the chatbot. Example: https://example.com/private, https://example.com/admin
+          Enter full URLs separated by commas. These pages will not show the chatbot.
         </p>
         <div className="space-y-6">
           <Textarea
