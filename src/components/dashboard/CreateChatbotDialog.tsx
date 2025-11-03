@@ -475,7 +475,7 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
                           key={color}
                           onClick={() => handleColorSelect(color)}
                           className={cn(
-                            "w-8 h-8 rounded-full border-2 transition-all hover:scale-110",
+                            "w-6 h-6 rounded-full border-2 transition-all hover:scale-110",
                             selectedColor === color 
                               ? "border-foreground" 
                               : "border-transparent hover:border-foreground/30"
@@ -500,10 +500,10 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
                         placeholder="#FF9800"
                         value={selectedColor}
                         onChange={(e) => handleColorSelect(e.target.value)}
-                        className="w-28 h-11"
+                        className="w-24"
                       />
                       <div
-                        className="w-8 h-8 rounded-full border-2 border-border"
+                        className="w-8 h-8 rounded-full border"
                         style={{ backgroundColor: selectedColor }}
                       />
                     </div>
