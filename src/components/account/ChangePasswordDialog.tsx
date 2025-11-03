@@ -23,6 +23,15 @@ export const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialo
   const { toast } = useToast();
 
   const handleSubmit = async () => {
+    if (!oldPassword) {
+      toast({
+        title: "Old password required",
+        description: "Please enter your current password.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (newPassword.length < 8) {
       toast({
         title: "Password too short",
@@ -43,11 +52,27 @@ export const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialo
 
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({
+      // First, verify the old password by attempting to sign in
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.email) {
+        throw new Error("User email not found");
+      }
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: oldPassword,
+      });
+
+      if (signInError) {
+        throw new Error("Current password is incorrect");
+      }
+
+      // If old password is verified, proceed with password update
+      const { error: updateError } = await supabase.auth.updateUser({
         password: newPassword,
       });
 
-      if (error) throw error;
+      if (updateError) throw updateError;
 
       toast({
         title: "Password updated",

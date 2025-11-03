@@ -203,7 +203,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_team_member: {
+        Args: {
+          _chatbot_id: string
+          _email: string
+          _role: Database["public"]["Enums"]["team_role"]
+        }
+        Returns: string
+      }
+      update_team_member_role: {
+        Args: {
+          _member_id: string
+          _new_role: Database["public"]["Enums"]["team_role"]
+        }
+        Returns: undefined
+      }
+      user_owns_chatbot: {
+        Args: { _chatbot_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       team_role: "admin" | "manager" | "support"

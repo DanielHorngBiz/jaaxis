@@ -38,13 +38,12 @@ const AddTeamMemberDialog = ({ chatbotId, onMemberAdded }: AddTeamMemberDialogPr
     setIsLoading(true);
 
     try {
-      const { error } = await supabase
-        .from("team_members")
-        .insert({
-          chatbot_id: chatbotId,
-          email,
-          role,
-        });
+      // Use the secure server-side function to add team members
+      const { data, error } = await supabase.rpc("add_team_member", {
+        _chatbot_id: chatbotId,
+        _email: email,
+        _role: role,
+      });
 
       if (error) throw error;
 
@@ -57,11 +56,11 @@ const AddTeamMemberDialog = ({ chatbotId, onMemberAdded }: AddTeamMemberDialogPr
       setRole("support");
       setOpen(false);
       onMemberAdded();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding team member:", error);
       toast({
         title: "Error",
-        description: "Failed to add team member. Please try again.",
+        description: error.message || "Failed to add team member. Please try again.",
         variant: "destructive",
       });
     } finally {

@@ -190,10 +190,11 @@ const SettingsTab = () => {
     if (!memberToEdit) return;
 
     try {
-      const { error } = await supabase
-        .from("team_members")
-        .update({ role: editRole })
-        .eq("id", memberToEdit.id);
+      // Use the secure server-side function to update team member roles
+      const { error } = await supabase.rpc("update_team_member_role", {
+        _member_id: memberToEdit.id,
+        _new_role: editRole,
+      });
 
       if (error) throw error;
 
@@ -203,11 +204,11 @@ const SettingsTab = () => {
       });
 
       fetchTeamMembers();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating team member:", error);
       toast({
         title: "Error",
-        description: "Failed to update role. Please try again.",
+        description: error.message || "Failed to update role. Please try again.",
         variant: "destructive",
       });
     } finally {
