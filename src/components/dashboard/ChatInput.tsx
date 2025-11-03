@@ -50,14 +50,16 @@ export const ChatInput = ({
       {editingMessageId && onCancelEdit && (
         <div className="mb-2 flex items-center justify-between">
           <h4 className="text-sm font-medium text-foreground">Edit message</h4>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 rounded-full bg-secondary"
-            onClick={onCancelEdit}
-          >
-            <X className="h-4 w-4" />
-          </Button>
+          <div className="h-9 flex items-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 rounded-full bg-secondary"
+              onClick={onCancelEdit}
+            >
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          </div>
         </div>
       )}
       {selectedImage && !editingMessageId && onRemoveImage && (
