@@ -179,6 +179,7 @@ export const ChatDashboardContent = () => {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
   const handleToggleOriginal = (messageId: string) => {
     if (!selectedMessage) return;
@@ -326,12 +327,12 @@ export const ChatDashboardContent = () => {
     setInputValue("");
   };
 
-  const handleImageSelect = (image: string) => {
-    setSelectedImage(image);
+  const handleImagesSelect = (images: string[]) => {
+    setSelectedImages(images);
   };
 
-  const handleRemoveImage = () => {
-    setSelectedImage(null);
+  const handleRemoveImage = (index: number) => {
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
   };
 
   const getPlatformIcon = (platform: Message["platform"]) => {
@@ -579,8 +580,8 @@ export const ChatDashboardContent = () => {
                 onKeyPress={handleKeyPress}
                 editingMessageId={editingMessageId}
                 onCancelEdit={handleCancelEdit}
-                selectedImage={selectedImage}
-                onImageSelect={handleImageSelect}
+                selectedImages={selectedImages}
+                onImagesSelect={handleImagesSelect}
                 onRemoveImage={handleRemoveImage}
                 disabled={!inputValue.trim()}
               />

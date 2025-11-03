@@ -24,7 +24,7 @@ const PreviewTab = () => {
   const { config } = useBotConfig();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
@@ -49,20 +49,20 @@ const PreviewTab = () => {
   }, [messages]);
 
   const handleSend = () => {
-    if (!inputValue.trim() && !selectedImage) return;
+    if (!inputValue.trim() && selectedImages.length === 0) return;
 
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content: inputValue,
-      image: selectedImage || undefined,
+      image: selectedImages[0] || undefined,
       timestamp: new Date()
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
-    setSelectedImage(null);
+    setSelectedImages([]);
 
     // Bot responds after a short delay
     setTimeout(() => {
@@ -212,13 +212,13 @@ const PreviewTab = () => {
           onChange={setInputValue}
           onSend={editingMessageId ? handleSaveEdit : handleSend}
           onKeyPress={handleKeyPress}
-          selectedImage={selectedImage}
-          onImageSelect={setSelectedImage}
-          onRemoveImage={() => setSelectedImage(null)}
+          selectedImages={selectedImages}
+          onImagesSelect={setSelectedImages}
+          onRemoveImage={(index) => setSelectedImages(prev => prev.filter((_, i) => i !== index))}
           editingMessageId={editingMessageId}
           onCancelEdit={handleCancelEdit}
           primaryColor={config.primaryColor}
-          disabled={!inputValue.trim() && !selectedImage}
+          disabled={!inputValue.trim() && selectedImages.length === 0}
         />
       </Card>
 

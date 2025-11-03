@@ -8,9 +8,9 @@ interface ChatInputProps {
   onChange: (value: string) => void;
   onSend: () => void;
   onKeyPress: (e: React.KeyboardEvent) => void;
-  selectedImage?: string | null;
-  onImageSelect?: (image: string) => void;
-  onRemoveImage?: () => void;
+  selectedImages?: string[];
+  onImagesSelect?: (images: string[]) => void;
+  onRemoveImage?: (index: number) => void;
   editingMessageId?: string | null;
   onCancelEdit?: () => void;
   primaryColor?: string;
@@ -23,8 +23,8 @@ export const ChatInput = ({
   onChange,
   onSend,
   onKeyPress,
-  selectedImage,
-  onImageSelect,
+  selectedImages = [],
+  onImagesSelect,
   onRemoveImage,
   editingMessageId,
   onCancelEdit,
@@ -35,14 +35,27 @@ export const ChatInput = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type.startsWith('image/') && onImageSelect) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        onImageSelect(event.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    const files = Array.from(e.target.files || []);
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    
+    if (imageFiles.length > 0 && onImagesSelect) {
+      const readers = imageFiles.map(file => {
+        return new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            resolve(event.target?.result as string);
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+      
+      Promise.all(readers).then(newImages => {
+        onImagesSelect([...selectedImages, ...newImages]);
+      });
     }
+    
+    // Reset input so same file can be selected again
+    e.target.value = '';
   };
 
   return (
@@ -62,19 +75,23 @@ export const ChatInput = ({
           </div>
         </div>
       )}
-      {selectedImage && !editingMessageId && onRemoveImage && (
-        <div className="mb-3 relative inline-block w-16 h-16">
-          <img 
-            src={selectedImage} 
-            alt="Selected" 
-            className="rounded-lg w-full h-full object-cover"
-          />
-          <button
-            onClick={onRemoveImage}
-            className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-destructive/90"
-          >
-            ×
-          </button>
+      {selectedImages.length > 0 && !editingMessageId && onRemoveImage && (
+        <div className="mb-3 flex flex-wrap gap-2">
+          {selectedImages.map((image, index) => (
+            <div key={index} className="relative inline-block w-16 h-16">
+              <img 
+                src={image} 
+                alt={`Selected ${index + 1}`}
+                className="rounded-lg w-full h-full object-cover"
+              />
+              <button
+                onClick={() => onRemoveImage(index)}
+                className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-destructive/90"
+              >
+                ×
+              </button>
+            </div>
+          ))}
         </div>
       )}
       <div className="flex items-center gap-3">
@@ -84,6 +101,7 @@ export const ChatInput = ({
               ref={fileInputRef}
               type="file"
               accept="image/*"
+              multiple
               onChange={handleFileSelect}
               className="hidden"
             />
