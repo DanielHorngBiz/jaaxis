@@ -138,7 +138,7 @@ const PreviewTab = () => {
                     )}
                     {message.content && (
                       <div
-                        className="text-white rounded-2xl rounded-tr-sm px-4 py-2 break-words"
+                        className="text-white rounded-2xl rounded-tr-sm px-4 py-2 break-all"
                         style={{ backgroundColor: config.primaryColor }}
                       >
                         <p className="text-sm whitespace-pre-wrap">{message.content}</p>
