@@ -57,6 +57,18 @@ const SettingsTab = () => {
   const [editRole, setEditRole] = useState<string>("");
   const [showDeleteBotDialog, setShowDeleteBotDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  
+  // Whitelist Domain state
+  const [whitelistInput, setWhitelistInput] = useState("");
+  const [whitelistedDomains, setWhitelistedDomains] = useState<Array<{ domain: string; addedOn: string }>>([
+    { domain: "https://flexpresets.com", addedOn: "10/22/2025" }
+  ]);
+  
+  // Block Pages state
+  const [blockPagesInput, setBlockPagesInput] = useState("");
+  const [blockedPages, setBlockedPages] = useState<Array<{ url: string; blockedOn: string }>>([
+    { url: "https://flexpresets.com/test/", blockedOn: "10/30/2025" }
+  ]);
 
   useEffect(() => {
     if (chatbotId) {
@@ -214,6 +226,44 @@ const SettingsTab = () => {
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
     setCustomColor(color);
+  };
+
+  const handleAddWhitelistDomain = () => {
+    if (!whitelistInput.trim()) return;
+    
+    const domains = whitelistInput.split(',').map(d => d.trim()).filter(d => d);
+    const newDomains = domains.map(domain => ({
+      domain,
+      addedOn: new Date().toLocaleDateString('en-US')
+    }));
+    
+    setWhitelistedDomains([...whitelistedDomains, ...newDomains]);
+    setWhitelistInput("");
+    toast({ title: "Domain(s) added to whitelist" });
+  };
+
+  const handleRemoveWhitelistDomain = (domain: string) => {
+    setWhitelistedDomains(whitelistedDomains.filter(d => d.domain !== domain));
+    toast({ title: "Domain removed from whitelist" });
+  };
+
+  const handleBlockPages = () => {
+    if (!blockPagesInput.trim()) return;
+    
+    const pages = blockPagesInput.split(',').map(p => p.trim()).filter(p => p);
+    const newPages = pages.map(url => ({
+      url,
+      blockedOn: new Date().toLocaleDateString('en-US')
+    }));
+    
+    setBlockedPages([...blockedPages, ...newPages]);
+    setBlockPagesInput("");
+    toast({ title: "Page(s) blocked successfully" });
+  };
+
+  const handleUnblockPage = (url: string) => {
+    setBlockedPages(blockedPages.filter(p => p.url !== url));
+    toast({ title: "Page unblocked" });
   };
 
   return (
@@ -375,6 +425,96 @@ const SettingsTab = () => {
           <div className="flex justify-end pt-4">
             <Button onClick={handleSaveAppearance}>Save</Button>
           </div>
+        </div>
+      </div>
+
+      {/* Whitelist Domain Section */}
+      <div className="pb-8 border-b">
+        <h3 className="text-lg font-semibold mb-2">Whitelist Domain</h3>
+        <p className="text-sm text-muted-foreground mb-6">
+          Separate each domain by commas
+        </p>
+        <div className="space-y-6">
+          <div className="flex gap-3">
+            <Textarea
+              placeholder="https://example.com, https://another-site.com"
+              className="min-h-[100px] flex-1"
+              value={whitelistInput}
+              onChange={(e) => setWhitelistInput(e.target.value)}
+            />
+            <Button onClick={handleAddWhitelistDomain} className="gap-2 self-start">
+              <Plus className="w-4 h-4" />
+              Add
+            </Button>
+          </div>
+          
+          {whitelistedDomains.length > 0 && (
+            <div>
+              <h4 className="text-base font-semibold mb-4">Whitelisted Domains</h4>
+              <div className="space-y-3">
+                {whitelistedDomains.map((item, index) => (
+                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div>
+                      <p className="font-medium">{item.domain}</p>
+                      <p className="text-sm text-muted-foreground">Added on {item.addedOn}</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveWhitelistDomain(item.domain)}
+                    >
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Block On Specific Pages Section */}
+      <div className="pb-8 border-b">
+        <h3 className="text-lg font-semibold mb-2">Block On Specific Pages</h3>
+        <p className="text-sm text-muted-foreground mb-6">
+          Enter full URLs separated by commas. These pages will not show the chatbot. Example: https://example.com/private, https://example.com/admin
+        </p>
+        <div className="space-y-6">
+          <div className="flex gap-3">
+            <Textarea
+              placeholder="e.g., https://example.com/private, https://example.com/admin, https://example.com/restricted"
+              className="min-h-[100px] flex-1"
+              value={blockPagesInput}
+              onChange={(e) => setBlockPagesInput(e.target.value)}
+            />
+            <Button onClick={handleBlockPages} className="gap-2 self-start">
+              <Plus className="w-4 h-4" />
+              Block
+            </Button>
+          </div>
+          
+          {blockedPages.length > 0 && (
+            <div>
+              <h4 className="text-base font-semibold mb-4">Currently Blocked Pages</h4>
+              <div className="space-y-3">
+                {blockedPages.map((item, index) => (
+                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div>
+                      <p className="font-medium">{item.url}</p>
+                      <p className="text-sm text-muted-foreground">Blocked on {item.blockedOn}</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleUnblockPage(item.url)}
+                    >
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
