@@ -52,8 +52,9 @@ export const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialo
 
     setIsLoading(true);
     try {
-      // First, verify the old password by attempting to sign in
+      // First, verify the old password by attempting to re-authenticate
       const { data: { user } } = await supabase.auth.getUser();
+      
       if (!user?.email) {
         throw new Error("User email not found");
       }
@@ -64,10 +65,16 @@ export const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialo
       });
 
       if (signInError) {
-        throw new Error("Current password is incorrect");
+        toast({
+          title: "Incorrect password",
+          description: "The old password you entered is incorrect.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
       }
 
-      // If old password is verified, proceed with password update
+      // Only update password if old password verification succeeded
       const { error: updateError } = await supabase.auth.updateUser({
         password: newPassword,
       });

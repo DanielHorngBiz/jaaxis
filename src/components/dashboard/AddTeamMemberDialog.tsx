@@ -38,8 +38,8 @@ const AddTeamMemberDialog = ({ chatbotId, onMemberAdded }: AddTeamMemberDialogPr
     setIsLoading(true);
 
     try {
-      // Use the secure server-side function to add team members
-      const { data, error } = await supabase.rpc("add_team_member", {
+      // Use the security definer function to add team members with proper authorization
+      const { error } = await supabase.rpc("add_team_member", {
         _chatbot_id: chatbotId,
         _email: email,
         _role: role,
