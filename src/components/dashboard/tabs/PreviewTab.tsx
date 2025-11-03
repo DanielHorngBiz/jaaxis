@@ -6,6 +6,7 @@ import { useBotConfig } from "@/contexts/BotConfigContext";
 import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 import { useState, useRef, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Message {
   id: string;
@@ -92,16 +93,25 @@ const PreviewTab = () => {
                 key={message.id}
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                <div
-                  className={`max-w-[80%] px-4 py-2 ${
-                    message.role === 'user'
-                      ? 'text-white rounded-2xl rounded-tr-sm'
-                      : 'bg-secondary text-foreground rounded-2xl rounded-tl-sm'
-                  }`}
-                  style={message.role === 'user' ? { backgroundColor: config.primaryColor } : {}}
-                >
-                  <p className="text-sm">{message.content}</p>
-                </div>
+                {message.role === 'bot' && (
+                  <div className="flex items-start gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={config.brandLogo} />
+                      <AvatarFallback>{config.botName[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className="bg-secondary text-foreground rounded-2xl rounded-tl-sm px-4 py-2 max-w-md">
+                      <p className="text-sm">{message.content}</p>
+                    </div>
+                  </div>
+                )}
+                {message.role === 'user' && (
+                  <div
+                    className="text-white rounded-2xl rounded-tr-sm px-4 py-2 max-w-md"
+                    style={{ backgroundColor: config.primaryColor }}
+                  >
+                    <p className="text-sm">{message.content}</p>
+                  </div>
+                )}
               </div>
             ))}
           </div>
