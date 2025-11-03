@@ -154,7 +154,7 @@ const PreviewTab = () => {
         {/* Chat Input */}
         <div className="bg-white border-t p-4">
           {selectedImage && (
-            <div className="mb-3 relative inline-block w-32 h-32">
+            <div className="mb-3 relative inline-block w-16 h-16">
               <img 
                 src={selectedImage} 
                 alt="Selected" 
