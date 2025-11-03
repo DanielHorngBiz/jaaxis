@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Upload, Trash2, Globe, FileText, CheckCircle2, Clock, RefreshCw, ChevronDown, Pencil, Check, X } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useBotConfig } from "@/contexts/BotConfigContext";
 interface QAPair {
   id: string;
   question: string;
@@ -18,9 +20,11 @@ interface TrainedItem {
   name: string;
   type: 'text' | 'qa' | 'website' | 'file';
   lastUpdated: string;
+  content?: string;
 }
 const TrainingTab = () => {
   const { toast } = useToast();
+  const { chatbotId } = useBotConfig();
   const [persona, setPersona] = useState("");
   const [qaPairs, setQaPairs] = useState<QAPair[]>([{
     id: '1',
@@ -37,7 +41,41 @@ const TrainingTab = () => {
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const [editingName, setEditingName] = useState<string | null>(null);
   const [editNameValue, setEditNameValue] = useState("");
+  const [editingContent, setEditingContent] = useState<string | null>(null);
+  const [editContentValue, setEditContentValue] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (chatbotId) {
+      fetchKnowledgeSources();
+    }
+  }, [chatbotId]);
+
+  const fetchKnowledgeSources = async () => {
+    if (!chatbotId) return;
+
+    const { data, error } = await supabase
+      .from('knowledge_sources')
+      .select('*')
+      .eq('chatbot_id', chatbotId)
+      .order('updated_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching knowledge sources:', error);
+      return;
+    }
+
+    if (data) {
+      const items: TrainedItem[] = data.map(item => ({
+        id: item.id,
+        name: item.file_name || item.url || `${item.type} - ${new Date(item.created_at).toLocaleDateString()}`,
+        type: item.type as 'text' | 'qa' | 'website' | 'file',
+        lastUpdated: new Date(item.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        content: item.content || ''
+      }));
+      setTrainedItems(items);
+    }
+  };
   const personaTemplates = {
     friendly: "You are a friendly and approachable assistant. Use a warm, conversational tone. Be empathetic and personable in your responses. Use casual language while maintaining professionalism.",
     professional: "You are a professional business assistant. Maintain a formal and courteous tone. Provide clear, concise responses. Focus on efficiency and accuracy in all communications.",
@@ -78,17 +116,54 @@ const TrainingTab = () => {
       setSelectedItems(prev => prev.filter(itemId => itemId !== id));
     }
   };
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = async () => {
+    if (!chatbotId) return;
+
+    const { error } = await supabase
+      .from('knowledge_sources')
+      .delete()
+      .in('id', selectedItems);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete selected items.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setTrainedItems(prev => prev.filter(item => !selectedItems.includes(item.id)));
     setSelectedItems([]);
+    toast({
+      title: "Deleted",
+      description: `${selectedItems.length} item(s) deleted successfully.`
+    });
   };
-  const handleDeleteItem = (id: string) => {
+
+  const handleDeleteItem = async (id: string) => {
+    if (!chatbotId) return;
+
+    const { error } = await supabase
+      .from('knowledge_sources')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete item.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setTrainedItems(prev => prev.filter(item => item.id !== id));
     setSelectedItems(prev => prev.filter(itemId => itemId !== id));
   };
+
   const handleRefresh = () => {
-    // Refresh logic here
-    console.log('Refreshing trained items...');
+    fetchKnowledgeSources();
   };
   const filteredTrainedItems = trainedItems.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
   const toggleExpand = (id: string) => {
@@ -98,7 +173,23 @@ const TrainingTab = () => {
     setEditingName(id);
     setEditNameValue(currentName);
   };
-  const saveNameEdit = (id: string) => {
+  const saveNameEdit = async (id: string) => {
+    if (!chatbotId) return;
+
+    const { error } = await supabase
+      .from('knowledge_sources')
+      .update({ file_name: editNameValue })
+      .eq('id', id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update name.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setTrainedItems(prev => prev.map(item => item.id === id ? {
       ...item,
       name: editNameValue
@@ -106,9 +197,50 @@ const TrainingTab = () => {
     setEditingName(null);
     setEditNameValue("");
   };
+
   const cancelNameEdit = () => {
     setEditingName(null);
     setEditNameValue("");
+  };
+
+  const startEditingContent = (id: string, currentContent: string) => {
+    setEditingContent(id);
+    setEditContentValue(currentContent);
+  };
+
+  const saveContentEdit = async (id: string) => {
+    if (!chatbotId) return;
+
+    const { error } = await supabase
+      .from('knowledge_sources')
+      .update({ content: editContentValue })
+      .eq('id', id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update content.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setTrainedItems(prev => prev.map(item => item.id === id ? {
+      ...item,
+      content: editContentValue,
+      lastUpdated: 'Just now'
+    } : item));
+    setEditingContent(null);
+    setEditContentValue("");
+    toast({
+      title: "Updated",
+      description: "Content updated successfully."
+    });
+  };
+
+  const cancelContentEdit = () => {
+    setEditingContent(null);
+    setEditContentValue("");
   };
   const getSampleContent = (type: string) => {
     switch (type) {
@@ -125,57 +257,129 @@ const TrainingTab = () => {
     }
   };
 
-  const handleSaveText = () => {
-    if (!textInput.trim()) return;
+  const handleSaveText = async () => {
+    if (!textInput.trim() || !chatbotId) return;
     
     const timestamp = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const newItem: TrainedItem = {
-      id: Date.now().toString(),
-      name: `Text Knowledge - ${timestamp}`,
-      type: 'text',
-      lastUpdated: 'Just now'
-    };
-    setTrainedItems(prev => [newItem, ...prev]);
-    setTextInput("");
-    toast({
-      title: "Knowledge saved",
-      description: "Text content has been added to your knowledge base.",
-    });
-  };
+    const { data, error } = await supabase
+      .from('knowledge_sources')
+      .insert({
+        chatbot_id: chatbotId,
+        type: 'text',
+        content: textInput,
+        file_name: `Text Knowledge - ${timestamp}`
+      })
+      .select()
+      .single();
 
-  const handleSaveQA = () => {
-    const validPairs = qaPairs.filter(pair => pair.question.trim() && pair.answer.trim());
-    if (validPairs.length === 0) return;
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save text content.",
+        variant: "destructive"
+      });
+      return;
+    }
 
-    const timestamp = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const newItem: TrainedItem = {
-      id: Date.now().toString(),
-      name: `Q&A Knowledge - ${timestamp}`,
-      type: 'qa',
-      lastUpdated: 'Just now'
-    };
-    setTrainedItems(prev => [newItem, ...prev]);
-    setQaPairs([{ id: '1', question: '', answer: '' }]);
-    toast({
-      title: "Knowledge saved",
-      description: `${validPairs.length} Q&A pair${validPairs.length > 1 ? 's' : ''} added to your knowledge base.`,
-    });
-  };
-
-  const handleScrapeWebsite = () => {
-    if (!websiteUrl.trim()) return;
-
-    const urls = websiteUrl.split(',').map(url => url.trim()).filter(url => url);
-    urls.forEach((url, index) => {
-      const cleanUrl = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    if (data) {
       const newItem: TrainedItem = {
-        id: (Date.now() + index).toString(),
-        name: cleanUrl,
-        type: 'website',
-        lastUpdated: 'Just now'
+        id: data.id,
+        name: data.file_name || `Text Knowledge - ${timestamp}`,
+        type: 'text',
+        lastUpdated: 'Just now',
+        content: textInput
       };
       setTrainedItems(prev => [newItem, ...prev]);
+      setTextInput("");
+      toast({
+        title: "Knowledge saved",
+        description: "Text content has been added to your knowledge base.",
+      });
+    }
+  };
+
+  const handleSaveQA = async () => {
+    const validPairs = qaPairs.filter(pair => pair.question.trim() && pair.answer.trim());
+    if (validPairs.length === 0 || !chatbotId) return;
+
+    const timestamp = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const qaContent = validPairs.map(pair => `Q: ${pair.question}\nA: ${pair.answer}`).join('\n\n');
+    
+    const { data, error } = await supabase
+      .from('knowledge_sources')
+      .insert({
+        chatbot_id: chatbotId,
+        type: 'qa',
+        content: qaContent,
+        file_name: `Q&A Knowledge - ${timestamp}`
+      })
+      .select()
+      .single();
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save Q&A pairs.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (data) {
+      const newItem: TrainedItem = {
+        id: data.id,
+        name: data.file_name || `Q&A Knowledge - ${timestamp}`,
+        type: 'qa',
+        lastUpdated: 'Just now',
+        content: qaContent
+      };
+      setTrainedItems(prev => [newItem, ...prev]);
+      setQaPairs([{ id: '1', question: '', answer: '' }]);
+      toast({
+        title: "Knowledge saved",
+        description: `${validPairs.length} Q&A pair${validPairs.length > 1 ? 's' : ''} added to your knowledge base.`,
+      });
+    }
+  };
+
+  const handleScrapeWebsite = async () => {
+    if (!websiteUrl.trim() || !chatbotId) return;
+
+    const urls = websiteUrl.split(',').map(url => url.trim()).filter(url => url);
+    
+    const insertPromises = urls.map(url => {
+      const cleanUrl = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+      const sampleContent = getSampleContent('website');
+      
+      return supabase
+        .from('knowledge_sources')
+        .insert({
+          chatbot_id: chatbotId,
+          type: 'website',
+          url: url,
+          file_name: cleanUrl,
+          content: sampleContent
+        })
+        .select()
+        .single();
     });
+
+    const results = await Promise.all(insertPromises);
+    const newItems: TrainedItem[] = [];
+
+    results.forEach((result, index) => {
+      if (result.data) {
+        newItems.push({
+          id: result.data.id,
+          name: result.data.file_name || urls[index],
+          type: 'website',
+          lastUpdated: 'Just now',
+          content: result.data.content || ''
+        });
+      }
+    });
+
+    setTrainedItems(prev => [...newItems, ...prev]);
     setWebsiteUrl("");
     toast({
       title: "Website scraped",
@@ -183,20 +387,42 @@ const TrainingTab = () => {
     });
   };
 
-  const handleSaveFiles = () => {
-    if (uploadedFiles.length === 0) return;
+  const handleSaveFiles = async () => {
+    if (uploadedFiles.length === 0 || !chatbotId) return;
 
-    uploadedFiles.forEach((file, index) => {
-      const fileName = file.name.replace(/\.[^/.]+$/, ''); // Remove extension
-      const newItem: TrainedItem = {
-        id: (Date.now() + index).toString(),
-        name: fileName,
-        type: 'file',
-        lastUpdated: 'Just now'
-      };
-      setTrainedItems(prev => [newItem, ...prev]);
+    const insertPromises = uploadedFiles.map(file => {
+      const fileName = file.name.replace(/\.[^/.]+$/, '');
+      const sampleContent = getSampleContent('file');
+      
+      return supabase
+        .from('knowledge_sources')
+        .insert({
+          chatbot_id: chatbotId,
+          type: 'file',
+          file_name: fileName,
+          content: sampleContent
+        })
+        .select()
+        .single();
     });
+
+    const results = await Promise.all(insertPromises);
+    const newItems: TrainedItem[] = [];
+
+    results.forEach((result, index) => {
+      if (result.data) {
+        newItems.push({
+          id: result.data.id,
+          name: result.data.file_name || uploadedFiles[index].name,
+          type: 'file',
+          lastUpdated: 'Just now',
+          content: result.data.content || ''
+        });
+      }
+    });
+
     const fileCount = uploadedFiles.length;
+    setTrainedItems(prev => [...newItems, ...prev]);
     setUploadedFiles([]);
     toast({
       title: "Files uploaded",
@@ -409,10 +635,42 @@ const TrainingTab = () => {
                           </div>
                         </div>
                         
-                        {expandedItems.includes(item.id) && <div className="px-4 pb-4 bg-muted/20 border-t space-y-3 pt-3">
-                            <Textarea id={`content-${item.id}`} className="min-h-[150px] resize-none" defaultValue={getSampleContent(item.type)} />
-                            <div className="flex justify-end">
-                              <Button size="sm">Save</Button>
+                        {expandedItems.includes(item.id) && <div className="px-4 pb-4">
+                            <div className="mt-2 p-4 bg-muted/50 rounded-lg">
+                              {editingContent === item.id ? (
+                                <div className="space-y-2">
+                                  <Textarea 
+                                    value={editContentValue}
+                                    onChange={e => setEditContentValue(e.target.value)}
+                                    className="min-h-[120px] resize-none"
+                                  />
+                                  <div className="flex gap-2 justify-end">
+                                    <Button size="sm" variant="ghost" onClick={cancelContentEdit}>
+                                      <X className="h-4 w-4 mr-1" />
+                                      Cancel
+                                    </Button>
+                                    <Button size="sm" onClick={() => saveContentEdit(item.id)}>
+                                      <Check className="h-4 w-4 mr-1" />
+                                      Save
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="group">
+                                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                                    {item.content || getSampleContent(item.type)}
+                                  </p>
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost" 
+                                    className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    onClick={() => startEditingContent(item.id, item.content || getSampleContent(item.type))}
+                                  >
+                                    <Pencil className="h-3 w-3 mr-1" />
+                                    Edit content
+                                  </Button>
+                                </div>
+                              )}
                             </div>
                           </div>}
                       </div>)}
