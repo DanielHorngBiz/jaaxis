@@ -480,7 +480,6 @@ export const ChatDashboardContent = () => {
                 editingMessageId={editingMessageId}
                 onCancelEdit={handleCancelEdit}
                 disabled={!inputValue.trim()}
-                showImageUpload={false}
               />
             </>
           ) : (
