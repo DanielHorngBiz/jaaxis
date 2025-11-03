@@ -420,10 +420,11 @@ const SettingsTab = () => {
                 </Button>
                 {brandLogo && (
                   <Button 
-                    variant="outline"
+                    variant="ghost"
+                    size="icon"
                     onClick={() => setBrandLogo("")}
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4 text-destructive" />
                   </Button>
                 )}
               </div>
