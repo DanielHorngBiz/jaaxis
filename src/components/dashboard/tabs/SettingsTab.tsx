@@ -60,19 +60,19 @@ const SettingsTab = () => {
   
   // Whitelist Domain state
   const [whitelistInput, setWhitelistInput] = useState("");
-  const [whitelistedDomains, setWhitelistedDomains] = useState<Array<{ domain: string; addedOn: string }>>([
-    { domain: "https://flexpresets.com", addedOn: "10/22/2025" }
-  ]);
+  const [whitelistedDomains, setWhitelistedDomains] = useState<string[]>([]);
   
   // Block Pages state
   const [blockPagesInput, setBlockPagesInput] = useState("");
-  const [blockedPages, setBlockedPages] = useState<Array<{ url: string; blockedOn: string }>>([
-    { url: "https://flexpresets.com/test/", blockedOn: "10/30/2025" }
-  ]);
+  const [blockedPages, setBlockedPages] = useState<string[]>([]);
+  
+  // Blocklist state
+  const [blocklistInput, setBlocklistInput] = useState("");
 
   useEffect(() => {
     if (chatbotId) {
       fetchTeamMembers();
+      fetchBotSettings();
     }
   }, [chatbotId]);
 
@@ -90,6 +90,28 @@ const SettingsTab = () => {
       setTeamMembers(data || []);
     } catch (error) {
       console.error("Error fetching team members:", error);
+    }
+  };
+
+  const fetchBotSettings = async () => {
+    if (!chatbotId) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("chatbots")
+        .select("whitelisted_domains, blocked_pages, blocklist")
+        .eq("id", chatbotId)
+        .single();
+
+      if (error) throw error;
+      
+      if (data) {
+        setWhitelistedDomains(data.whitelisted_domains || []);
+        setBlockedPages(data.blocked_pages || []);
+        setBlocklistInput(data.blocklist || "");
+      }
+    } catch (error) {
+      console.error("Error fetching bot settings:", error);
     }
   };
 
@@ -228,42 +250,110 @@ const SettingsTab = () => {
     setCustomColor(color);
   };
 
-  const handleAddWhitelistDomain = () => {
-    if (!whitelistInput.trim()) return;
+  const handleAddWhitelistDomain = async () => {
+    if (!whitelistInput.trim() || !chatbotId) return;
     
     const domains = whitelistInput.split(',').map(d => d.trim()).filter(d => d);
-    const newDomains = domains.map(domain => ({
-      domain,
-      addedOn: new Date().toLocaleDateString('en-US')
-    }));
+    const updatedDomains = [...whitelistedDomains, ...domains];
     
-    setWhitelistedDomains([...whitelistedDomains, ...newDomains]);
-    setWhitelistInput("");
-    toast({ title: "Domain(s) added to whitelist" });
+    try {
+      const { error } = await supabase
+        .from("chatbots")
+        .update({ whitelisted_domains: updatedDomains })
+        .eq("id", chatbotId);
+
+      if (error) throw error;
+
+      setWhitelistedDomains(updatedDomains);
+      setWhitelistInput("");
+      toast({ title: "Domain(s) added to whitelist" });
+    } catch (error) {
+      console.error("Error adding whitelist domain:", error);
+      toast({ title: "Failed to add domain(s)", variant: "destructive" });
+    }
   };
 
-  const handleRemoveWhitelistDomain = (domain: string) => {
-    setWhitelistedDomains(whitelistedDomains.filter(d => d.domain !== domain));
-    toast({ title: "Domain removed from whitelist" });
+  const handleRemoveWhitelistDomain = async (domain: string) => {
+    if (!chatbotId) return;
+
+    const updatedDomains = whitelistedDomains.filter(d => d !== domain);
+    
+    try {
+      const { error } = await supabase
+        .from("chatbots")
+        .update({ whitelisted_domains: updatedDomains })
+        .eq("id", chatbotId);
+
+      if (error) throw error;
+
+      setWhitelistedDomains(updatedDomains);
+      toast({ title: "Domain removed from whitelist" });
+    } catch (error) {
+      console.error("Error removing whitelist domain:", error);
+      toast({ title: "Failed to remove domain", variant: "destructive" });
+    }
   };
 
-  const handleBlockPages = () => {
-    if (!blockPagesInput.trim()) return;
+  const handleBlockPages = async () => {
+    if (!blockPagesInput.trim() || !chatbotId) return;
     
     const pages = blockPagesInput.split(',').map(p => p.trim()).filter(p => p);
-    const newPages = pages.map(url => ({
-      url,
-      blockedOn: new Date().toLocaleDateString('en-US')
-    }));
+    const updatedPages = [...blockedPages, ...pages];
     
-    setBlockedPages([...blockedPages, ...newPages]);
-    setBlockPagesInput("");
-    toast({ title: "Page(s) blocked successfully" });
+    try {
+      const { error } = await supabase
+        .from("chatbots")
+        .update({ blocked_pages: updatedPages })
+        .eq("id", chatbotId);
+
+      if (error) throw error;
+
+      setBlockedPages(updatedPages);
+      setBlockPagesInput("");
+      toast({ title: "Page(s) blocked successfully" });
+    } catch (error) {
+      console.error("Error blocking pages:", error);
+      toast({ title: "Failed to block page(s)", variant: "destructive" });
+    }
   };
 
-  const handleUnblockPage = (url: string) => {
-    setBlockedPages(blockedPages.filter(p => p.url !== url));
-    toast({ title: "Page unblocked" });
+  const handleUnblockPage = async (url: string) => {
+    if (!chatbotId) return;
+
+    const updatedPages = blockedPages.filter(p => p !== url);
+    
+    try {
+      const { error } = await supabase
+        .from("chatbots")
+        .update({ blocked_pages: updatedPages })
+        .eq("id", chatbotId);
+
+      if (error) throw error;
+
+      setBlockedPages(updatedPages);
+      toast({ title: "Page unblocked" });
+    } catch (error) {
+      console.error("Error unblocking page:", error);
+      toast({ title: "Failed to unblock page", variant: "destructive" });
+    }
+  };
+
+  const handleSaveBlocklist = async () => {
+    if (!chatbotId) return;
+
+    try {
+      const { error } = await supabase
+        .from("chatbots")
+        .update({ blocklist: blocklistInput })
+        .eq("id", chatbotId);
+
+      if (error) throw error;
+
+      toast({ title: "Blocklist saved successfully" });
+    } catch (error) {
+      console.error("Error saving blocklist:", error);
+      toast({ title: "Failed to save blocklist", variant: "destructive" });
+    }
   };
 
   return (
@@ -449,15 +539,15 @@ const SettingsTab = () => {
             <div>
               <h4 className="text-base font-semibold mb-4">Whitelisted Domains</h4>
               <div className="space-y-3">
-                {whitelistedDomains.map((item, index) => (
+                {whitelistedDomains.map((domain, index) => (
                   <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
-                      <p className="font-medium">{item.domain}</p>
+                      <p className="font-medium">{domain}</p>
                     </div>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleRemoveWhitelistDomain(item.domain)}
+                      onClick={() => handleRemoveWhitelistDomain(domain)}
                     >
                       <Trash2 className="w-4 h-4 text-destructive" />
                     </Button>
@@ -490,15 +580,15 @@ const SettingsTab = () => {
             <div>
               <h4 className="text-base font-semibold mb-4">Hidden Pages</h4>
               <div className="space-y-3">
-                {blockedPages.map((item, index) => (
+                {blockedPages.map((url, index) => (
                   <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
-                      <p className="font-medium">{item.url}</p>
+                      <p className="font-medium">{url}</p>
                     </div>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleUnblockPage(item.url)}
+                      onClick={() => handleUnblockPage(url)}
                     >
                       <Trash2 className="w-4 h-4 text-destructive" />
                     </Button>
@@ -520,9 +610,11 @@ const SettingsTab = () => {
           <Textarea
             placeholder="Type here..."
             className="min-h-[60px] resize-none"
+            value={blocklistInput}
+            onChange={(e) => setBlocklistInput(e.target.value)}
           />
           <div className="flex justify-end">
-            <Button>Save</Button>
+            <Button onClick={handleSaveBlocklist}>Save</Button>
           </div>
         </div>
       </div>

@@ -17,6 +17,7 @@ export type Database = {
       chatbots: {
         Row: {
           avatar_url: string | null
+          blocked_pages: string[] | null
           blocklist: string | null
           chat_position: string
           created_at: string
@@ -29,9 +30,11 @@ export type Database = {
           slug: string
           updated_at: string
           user_id: string
+          whitelisted_domains: string[] | null
         }
         Insert: {
           avatar_url?: string | null
+          blocked_pages?: string[] | null
           blocklist?: string | null
           chat_position?: string
           created_at?: string
@@ -44,9 +47,11 @@ export type Database = {
           slug: string
           updated_at?: string
           user_id: string
+          whitelisted_domains?: string[] | null
         }
         Update: {
           avatar_url?: string | null
+          blocked_pages?: string[] | null
           blocklist?: string | null
           chat_position?: string
           created_at?: string
@@ -59,6 +64,7 @@ export type Database = {
           slug?: string
           updated_at?: string
           user_id?: string
+          whitelisted_domains?: string[] | null
         }
         Relationships: []
       }
