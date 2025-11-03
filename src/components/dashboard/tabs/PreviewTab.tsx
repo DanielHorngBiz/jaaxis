@@ -1,13 +1,14 @@
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Paperclip, Send, X, Pencil, Check } from "lucide-react";
 import { useBotConfig } from "@/contexts/BotConfigContext";
 import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
 import { useState, useRef, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
+import { X } from "lucide-react";
+import { ChatInput } from "../ChatInput";
 
 interface Message {
   id: string;
@@ -26,7 +27,6 @@ const PreviewTab = () => {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -64,24 +64,6 @@ const PreviewTab = () => {
       };
       setMessages(prev => [...prev, botMessage]);
     }, 500);
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setSelectedImage(event.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleRemoveImage = () => {
-    setSelectedImage(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -200,74 +182,19 @@ const PreviewTab = () => {
           </div>
         </ScrollArea>
 
-        {/* Chat Input */}
-        <div className="bg-white border-t p-4">
-          {editingMessageId && (
-            <div className="mb-2 flex items-center justify-between">
-              <h4 className="text-sm font-medium text-foreground">Edit message</h4>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 rounded-full bg-secondary"
-                onClick={handleCancelEdit}
-              >
-                <X className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          )}
-          {selectedImage && !editingMessageId && (
-            <div className="mb-3 relative inline-block w-16 h-16">
-              <img 
-                src={selectedImage} 
-                alt="Selected" 
-                className="rounded-lg w-full h-full object-cover"
-              />
-              <button
-                onClick={handleRemoveImage}
-                className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold hover:bg-destructive/90"
-              >
-                ×
-              </button>
-            </div>
-          )}
-          <div className="flex items-center gap-3">
-            {!editingMessageId && (
-              <>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="text-muted-foreground hover:text-foreground shrink-0"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Paperclip className="w-5 h-5" />
-                </Button>
-              </>
-            )}
-            <Input
-              placeholder="Write a message"
-              className="flex-1"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
-            />
-            <Button 
-              size="icon" 
-              className="shrink-0 shadow-sm text-white"
-              style={{ backgroundColor: config.primaryColor }}
-              onClick={editingMessageId ? handleSaveEdit : handleSend}
-              disabled={!inputValue.trim() && !selectedImage}
-            >
-              {editingMessageId ? <Check className="w-4 h-4" /> : <Send className="w-4 h-4" />}
-            </Button>
-          </div>
-        </div>
+        <ChatInput
+          value={inputValue}
+          onChange={setInputValue}
+          onSend={editingMessageId ? handleSaveEdit : handleSend}
+          onKeyPress={handleKeyPress}
+          selectedImage={selectedImage}
+          onImageSelect={setSelectedImage}
+          onRemoveImage={() => setSelectedImage(null)}
+          editingMessageId={editingMessageId}
+          onCancelEdit={handleCancelEdit}
+          primaryColor={config.primaryColor}
+          disabled={!inputValue.trim() && !selectedImage}
+        />
       </Card>
 
       {/* Image Preview Dialog */}

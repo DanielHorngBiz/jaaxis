@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { format, isToday, isYesterday, isSameDay } from "date-fns";
-import { Star, Pause, Play, Archive, Send, Paperclip, MessageSquare, Trash2 } from "lucide-react";
+import { Star, Pause, Play, Archive, Trash2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Textarea } from "@/components/ui/textarea";
+import { ChatInput } from "../ChatInput";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +17,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
+import { MessageSquare } from "lucide-react";
 import instagramIcon from "@/assets/instagram.svg";
 import messengerIcon from "@/assets/messenger.svg";
 import jaaxisIcon from "@/assets/jaaxis.svg";
@@ -32,6 +33,13 @@ interface Message {
   archived?: boolean;
   paused?: boolean;
   platform: "all" | "starred" | "messenger" | "instagram" | "website" | "archived";
+}
+
+interface ChatMessage {
+  id: string;
+  role: 'user' | 'bot';
+  content: string;
+  timestamp: string;
 }
 
 const mockMessages: Message[] = [
@@ -109,6 +117,15 @@ export const ChatDashboardContent = () => {
   const [messages, setMessages] = useState<Message[]>(mockMessages);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(messages[0]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
+    { id: '1', role: 'user', content: 'Hi! I have a question about your product features.', timestamp: '11:22 PM' },
+    { id: '2', role: 'bot', content: 'Of course! What would you like to know?', timestamp: '1:42 PM' },
+    { id: '3', role: 'user', content: 'Does it come with a warranty and what does it cover?', timestamp: '1:45 PM' },
+    { id: '4', role: 'bot', content: 'Yes! It includes a 2-year warranty covering all manufacturing defects.', timestamp: '1:48 PM' },
+  ]);
+  const [inputValue, setInputValue] = useState("");
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
   const selectedMessageRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const [indicator, setIndicator] = useState({ top: 0, height: 0, visible: false });
@@ -191,6 +208,45 @@ export const ChatDashboardContent = () => {
     setMessages(prev => prev.filter(msg => msg.id !== selectedMessage.id));
     setSelectedMessage(null);
     setShowDeleteDialog(false);
+  };
+
+  const handleSendMessage = () => {
+    if (!inputValue.trim()) return;
+    
+    if (editingMessageId) {
+      setChatMessages(prev =>
+        prev.map(msg =>
+          msg.id === editingMessageId ? { ...msg, content: inputValue } : msg
+        )
+      );
+      setEditingMessageId(null);
+    } else {
+      const newMessage: ChatMessage = {
+        id: Date.now().toString(),
+        role: 'bot',
+        content: inputValue,
+        timestamp: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
+      };
+      setChatMessages(prev => [...prev, newMessage]);
+    }
+    setInputValue("");
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const handleEditMessage = (messageId: string, content: string) => {
+    setEditingMessageId(messageId);
+    setInputValue(content);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingMessageId(null);
+    setInputValue("");
   };
 
   const getPlatformIcon = (platform: Message["platform"]) => {
@@ -367,66 +423,65 @@ export const ChatDashboardContent = () => {
                     <span className="text-xs text-muted-foreground">Oct 24, 2025</span>
                   </div>
 
-                  <div className="flex flex-col items-start gap-2">
-                    <div className="flex items-start gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback>{selectedMessage.sender[0]}</AvatarFallback>
-                      </Avatar>
-                      <div className="bg-secondary rounded-2xl rounded-tl-sm px-4 py-2 max-w-md">
-                        <p className="text-sm">Hi! I have a question about your product features.</p>
-                      </div>
-                    </div>
-                    <span className="text-xs text-muted-foreground ml-11">11:22 PM</span>
-                  </div>
+                  {chatMessages.map((chatMsg, index) => (
+                    <div key={chatMsg.id}>
+                      {index > 0 && chatMessages[index - 1].timestamp !== chatMsg.timestamp && (
+                        <div className="flex items-center justify-center my-6">
+                          <span className="text-xs text-muted-foreground">Oct 25, 2025</span>
+                        </div>
+                      )}
 
-                  <div className="flex items-center justify-center my-6">
-                    <span className="text-xs text-muted-foreground">Oct 25, 2025</span>
-                  </div>
-
-                  <div className="flex flex-col items-end gap-2">
-                    <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 max-w-md">
-                      <p className="text-sm">Of course! What would you like to know?</p>
+                      {chatMsg.role === 'user' ? (
+                        <div className="flex flex-col items-start gap-2">
+                          <div className="flex items-start gap-3">
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback>{selectedMessage.sender[0]}</AvatarFallback>
+                            </Avatar>
+                            <div className="bg-secondary rounded-2xl rounded-tl-sm px-4 py-2 max-w-md">
+                              <p className="text-sm">{chatMsg.content}</p>
+                            </div>
+                          </div>
+                          <span className="text-xs text-muted-foreground ml-11">{chatMsg.timestamp}</span>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-end gap-2">
+                          <div 
+                            className="group flex items-center gap-2"
+                            onMouseEnter={() => setHoveredMessageId(chatMsg.id)}
+                            onMouseLeave={() => setHoveredMessageId(null)}
+                          >
+                            {hoveredMessageId === chatMsg.id && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent text-muted-foreground hover:text-foreground"
+                                onClick={() => handleEditMessage(chatMsg.id, chatMsg.content)}
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                            )}
+                            <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 max-w-md">
+                              <p className="text-sm">{chatMsg.content}</p>
+                            </div>
+                          </div>
+                          <span className="text-xs text-muted-foreground mr-2">{chatMsg.timestamp}</span>
+                        </div>
+                      )}
                     </div>
-                    <span className="text-xs text-muted-foreground mr-2">1:42 PM</span>
-                  </div>
-
-                  <div className="flex flex-col items-start gap-2">
-                    <div className="flex items-start gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback>{selectedMessage.sender[0]}</AvatarFallback>
-                      </Avatar>
-                      <div className="bg-secondary rounded-2xl rounded-tl-sm px-4 py-2 max-w-md">
-                        <p className="text-sm">Does it come with a warranty and what does it cover?</p>
-                      </div>
-                    </div>
-                    <span className="text-xs text-muted-foreground ml-11">1:45 PM</span>
-                  </div>
-
-                  <div className="flex flex-col items-end gap-2">
-                    <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2 max-w-md">
-                      <p className="text-sm">Yes! It includes a 2-year warranty covering all manufacturing defects.</p>
-                    </div>
-                    <span className="text-xs text-muted-foreground mr-2">1:48 PM</span>
-                  </div>
+                  ))}
                 </div>
               </ScrollArea>
 
-              {/* Input Area */}
-              <div className="p-4 border-t bg-card">
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" className="shrink-0">
-                    <Paperclip className="h-5 w-5" />
-                  </Button>
-                  <Textarea 
-                    placeholder="Type a message..." 
-                    className="flex-1 min-h-[40px] resize-none"
-                    rows={1}
-                  />
-                  <Button size="icon" className="shrink-0">
-                    <Send className="h-5 w-5" />
-                  </Button>
-                </div>
-              </div>
+              <ChatInput
+                value={inputValue}
+                onChange={setInputValue}
+                onSend={handleSendMessage}
+                onKeyPress={handleKeyPress}
+                editingMessageId={editingMessageId}
+                onCancelEdit={handleCancelEdit}
+                disabled={!inputValue.trim()}
+                showImageUpload={false}
+              />
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center text-muted-foreground">
