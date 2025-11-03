@@ -203,15 +203,15 @@ const PreviewTab = () => {
         {/* Chat Input */}
         <div className="bg-white border-t p-4">
           {editingMessageId && (
-            <div className="mb-3 flex items-center justify-between">
-              <h4 className="font-semibold text-foreground">Edit message</h4>
+            <div className="mb-2 flex items-center justify-between">
+              <h4 className="text-sm font-medium text-foreground">Edit message</h4>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-full bg-secondary"
+                className="h-6 w-6 rounded-full bg-secondary"
                 onClick={handleCancelEdit}
               >
-                <X className="h-4 w-4" />
+                <X className="h-3.5 w-3.5" />
               </Button>
             </div>
           )}
