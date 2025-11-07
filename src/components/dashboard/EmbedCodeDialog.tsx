@@ -199,7 +199,7 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
           {/* Add Domain Section */}
           <div className="space-y-3">
             <Label className="text-sm text-muted-foreground">
-              Add your website domain so we can whitelist it:
+              Whitelist Domain
             </Label>
             <div className="flex gap-2">
               <Input
@@ -258,7 +258,7 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
             <>
               <div className="space-y-3">
                 <Label className="text-sm text-muted-foreground">
-                  Hide widget on specific pages (optional):
+                  Hide on Specific Pages
                 </Label>
                 <div className="flex gap-2">
                   <Input
