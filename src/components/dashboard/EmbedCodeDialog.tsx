@@ -175,7 +175,9 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
         <div className="space-y-6">
           {/* Instructions */}
           <p className="text-sm text-muted-foreground">
-            Paste this script where you want the chatbot to appear.
+            {type === "widget" 
+              ? "Paste this script into your website just before the closing </body> tag."
+              : "Paste this script where you want the chatbot to appear."}
           </p>
 
           {/* Code Display */}
