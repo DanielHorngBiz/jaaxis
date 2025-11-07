@@ -185,14 +185,15 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
               readOnly
               className="font-mono text-xs resize-none h-32"
             />
-            <Button
-              onClick={handleCopyCode}
-              size="lg"
-              className="w-full"
-            >
-              <Copy className="w-4 h-4 mr-2" />
-              Copy
-            </Button>
+            <div className="flex justify-end">
+              <Button
+                onClick={handleCopyCode}
+                size="lg"
+              >
+                <Copy className="w-4 h-4 mr-2" />
+                Copy
+              </Button>
+            </div>
           </div>
 
           {/* Add Domain Section */}
