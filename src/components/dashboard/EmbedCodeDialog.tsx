@@ -282,12 +282,7 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
                         key={index}
                         className="flex items-center justify-between px-4 py-2 rounded-lg border bg-card"
                       >
-                        <div>
-                          <p className="font-medium">{page}</p>
-                          <p className="text-sm text-muted-foreground">
-                            Widget will be hidden on this page
-                          </p>
-                        </div>
+                        <p className="font-medium">{page}</p>
                         <Button
                           variant="ghost"
                           size="icon"
