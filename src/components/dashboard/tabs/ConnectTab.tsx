@@ -8,12 +8,15 @@ import { useState } from "react";
 import { Toggle } from "@/components/ui/toggle";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import EmbedCodeDialog from "@/components/dashboard/EmbedCodeDialog";
 const ConnectTab = () => {
   const [storeType, setStoreType] = useState<"shopify" | "woocommerce">("shopify");
   const [step, setStep] = useState(1);
   const [accessLevel, setAccessLevel] = useState<"read" | "readwrite">("read");
   const [isStoreConnected, setIsStoreConnected] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [embedDialogOpen, setEmbedDialogOpen] = useState(false);
+  const [embedType, setEmbedType] = useState<"widget" | "iframe">("widget");
 
   // Form state
   const [storeUrl, setStoreUrl] = useState("");
@@ -102,6 +105,12 @@ const ConnectTab = () => {
     setStep(2);
     setIsDialogOpen(true);
   };
+
+  const openEmbedDialog = (type: "widget" | "iframe") => {
+    setEmbedType(type);
+    setEmbedDialogOpen(true);
+  };
+
   return <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Chat Widget */}
@@ -112,7 +121,7 @@ const ConnectTab = () => {
             </div>
             <h3 className="font-semibold text-lg mb-2">Chat Widget</h3>
             <p className="text-sm text-muted-foreground mb-6 flex-1">Embed a collapsible chat widget on your website</p>
-            <Button variant="outline" className="w-full">Get Code</Button>
+            <Button variant="outline" className="w-full" onClick={() => openEmbedDialog("widget")}>Get Code</Button>
           </CardContent>
         </Card>
 
@@ -124,7 +133,7 @@ const ConnectTab = () => {
             </div>
             <h3 className="font-semibold text-lg mb-2">Chat iframe</h3>
             <p className="text-sm text-muted-foreground mb-6 flex-1">Embed via iframe for flexible placement</p>
-            <Button variant="outline" className="w-full">Get Code</Button>
+            <Button variant="outline" className="w-full" onClick={() => openEmbedDialog("iframe")}>Get Code</Button>
           </CardContent>
         </Card>
 
@@ -301,6 +310,13 @@ const ConnectTab = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Embed Code Dialog */}
+      <EmbedCodeDialog 
+        open={embedDialogOpen} 
+        onOpenChange={setEmbedDialogOpen}
+        type={embedType}
+      />
     </div>;
 };
 export default ConnectTab;

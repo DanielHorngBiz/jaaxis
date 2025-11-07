@@ -8,6 +8,8 @@ interface BotConfig {
   primaryColor: string;
   chatPosition: "left" | "right";
   mobileDisplay: "show" | "hide";
+  whitelisted_domains?: string[];
+  blocked_pages?: string[];
 }
 
 interface BotConfigContextType {
@@ -22,6 +24,8 @@ const defaultConfig: BotConfig = {
   primaryColor: "#3888FF",
   chatPosition: "right",
   mobileDisplay: "show",
+  whitelisted_domains: [],
+  blocked_pages: [],
 };
 
 const BotConfigContext = createContext<BotConfigContextType | undefined>(undefined);
@@ -55,6 +59,8 @@ export const BotConfigProvider = ({ children }: { children: ReactNode }) => {
           primaryColor: data.primary_color || "#3888FF",
           chatPosition: (data.chat_position as "left" | "right") || "right",
           mobileDisplay: (data.mobile_display as "show" | "hide") || "show",
+          whitelisted_domains: data.whitelisted_domains || [],
+          blocked_pages: data.blocked_pages || [],
         });
       }
     } catch (error) {
@@ -76,6 +82,8 @@ export const BotConfigProvider = ({ children }: { children: ReactNode }) => {
             primary_color: updates.primaryColor !== undefined ? updates.primaryColor : undefined,
             chat_position: updates.chatPosition !== undefined ? updates.chatPosition : undefined,
             mobile_display: updates.mobileDisplay !== undefined ? updates.mobileDisplay : undefined,
+            whitelisted_domains: updates.whitelisted_domains !== undefined ? updates.whitelisted_domains : undefined,
+            blocked_pages: updates.blocked_pages !== undefined ? updates.blocked_pages : undefined,
           })
           .eq("id", chatbotId);
       } catch (error) {
