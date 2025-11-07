@@ -232,7 +232,7 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
                     key={index}
                     className="flex items-center justify-between px-4 py-2 rounded-lg border bg-card"
                   >
-                    <p className="font-medium">{domain}</p>
+                    <p className="font-medium text-sm">{domain}</p>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -282,7 +282,7 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
                         key={index}
                         className="flex items-center justify-between px-4 py-2 rounded-lg border bg-card"
                       >
-                        <p className="font-medium">{page}</p>
+                        <p className="font-medium text-sm">{page}</p>
                         <Button
                           variant="ghost"
                           size="icon"
