@@ -180,21 +180,19 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
 
           {/* Code Display */}
           <div className="space-y-3">
-            <div className="relative">
-              <Textarea
-                value={embedCode}
-                readOnly
-                className="font-mono text-xs resize-none h-32 pr-12"
-              />
-              <Button
-                onClick={handleCopyCode}
-                size="lg"
-                className="absolute bottom-3 right-3"
-              >
-                <Copy className="w-4 h-4 mr-2" />
-                Copy Code
-              </Button>
-            </div>
+            <Textarea
+              value={embedCode}
+              readOnly
+              className="font-mono text-xs resize-none h-32"
+            />
+            <Button
+              onClick={handleCopyCode}
+              size="lg"
+              className="w-full"
+            >
+              <Copy className="w-4 h-4 mr-2" />
+              Copy
+            </Button>
           </div>
 
           {/* Add Domain Section */}
