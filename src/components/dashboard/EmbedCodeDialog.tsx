@@ -188,10 +188,9 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
             <div className="flex justify-end">
               <Button
                 onClick={handleCopyCode}
-                size="lg"
+                size="icon"
               >
-                <Copy className="w-4 h-4 mr-2" />
-                Copy
+                <Copy className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -211,10 +210,10 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
               <Button
                 onClick={handleAddDomain}
                 disabled={isAdding || !domainInput.trim()}
+                size="icon"
                 className="shrink-0"
               >
-                <Plus className="w-4 h-4 mr-2" />
-                Add
+                <Plus className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -270,10 +269,10 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
                   <Button
                     onClick={handleAddPage}
                     disabled={isAdding || !pageInput.trim()}
+                    size="icon"
                     className="shrink-0"
                   >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add
+                    <Plus className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
