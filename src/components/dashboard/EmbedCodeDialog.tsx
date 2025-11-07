@@ -230,7 +230,7 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
                 {whitelistedDomains.map((domain, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-4 rounded-lg border bg-card"
+                    className="flex items-center justify-between px-4 py-2 rounded-lg border bg-card"
                   >
                     <p className="font-medium">{domain}</p>
                     <Button
@@ -280,7 +280,7 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
                     {blockedPages.map((page, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-4 rounded-lg border bg-card"
+                        className="flex items-center justify-between px-4 py-2 rounded-lg border bg-card"
                       >
                         <div>
                           <p className="font-medium">{page}</p>
