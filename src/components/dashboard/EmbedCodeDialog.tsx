@@ -198,7 +198,7 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
 
           {/* Add Domain Section */}
           <div className="space-y-3">
-            <Label className="text-sm text-muted-foreground">
+            <Label className="text-sm font-medium">
               Whitelist Domain
             </Label>
             <div className="flex gap-2">
@@ -257,7 +257,7 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
           {type === "widget" && (
             <>
               <div className="space-y-3">
-                <Label className="text-sm text-muted-foreground">
+                <Label className="text-sm font-medium">
                   Hide on Specific Pages
                 </Label>
                 <div className="flex gap-2">
