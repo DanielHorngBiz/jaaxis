@@ -225,7 +225,7 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
           {/* Whitelisted Domains */}
           {whitelistedDomains.length > 0 && (
             <div className="space-y-3">
-              <h3 className="font-semibold">Whitelisted Domains</h3>
+              <h3 className="text-sm font-medium">Whitelisted Domains</h3>
               <div className="space-y-2">
                 {whitelistedDomains.map((domain, index) => (
                   <div
@@ -275,7 +275,7 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
               {/* Hidden Pages List */}
               {blockedPages.length > 0 && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold">Hidden Pages</h3>
+                  <h3 className="text-sm font-medium">Hidden Pages</h3>
                   <div className="space-y-2">
                     {blockedPages.map((page, index) => (
                       <div
