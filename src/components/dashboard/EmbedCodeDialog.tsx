@@ -232,16 +232,7 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
                     key={index}
                     className="flex items-center justify-between p-4 rounded-lg border bg-card"
                   >
-                    <div>
-                      <p className="font-medium">{domain}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Added on {new Date().toLocaleDateString("en-US", {
-                          month: "2-digit",
-                          day: "2-digit",
-                          year: "numeric",
-                        })}
-                      </p>
-                    </div>
+                    <p className="font-medium">{domain}</p>
                     <Button
                       variant="ghost"
                       size="icon"
