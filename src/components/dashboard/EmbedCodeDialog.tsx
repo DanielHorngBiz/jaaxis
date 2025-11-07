@@ -169,7 +169,9 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[540px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Embed Chatbot</DialogTitle>
+          <DialogTitle className="text-2xl">
+            {type === "widget" ? "Chat Widget" : "Chat iframe"}
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
