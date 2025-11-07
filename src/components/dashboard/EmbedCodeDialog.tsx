@@ -265,7 +265,7 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
                 </Label>
                 <div className="flex gap-2">
                   <Input
-                    placeholder="/about, /contact"
+                    placeholder="https://example.com/private"
                     value={pageInput}
                     onChange={(e) => setPageInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleAddPage()}
