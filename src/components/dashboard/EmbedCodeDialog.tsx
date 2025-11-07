@@ -175,7 +175,7 @@ const EmbedCodeDialog = ({ open, onOpenChange, type }: EmbedCodeDialogProps) => 
         <div className="space-y-6">
           {/* Instructions */}
           <p className="text-sm text-muted-foreground">
-            Copy and paste this code into your website just before the closing &lt;/body&gt; tag.
+            Paste this script where you want the chatbot to appear.
           </p>
 
           {/* Code Display */}
