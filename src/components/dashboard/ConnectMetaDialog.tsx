@@ -63,7 +63,7 @@ const ConnectMetaDialog = ({ open, onOpenChange }: ConnectMetaDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] p-0 gap-0">
+      <DialogContent className="sm:max-w-[540px] p-0 gap-0">
         <DialogHeader className="px-8 pt-6 pb-4">
           <DialogTitle className="text-xl font-semibold">
             Connect Meta Platforms
@@ -141,22 +141,13 @@ const ConnectMetaDialog = ({ open, onOpenChange }: ConnectMetaDialogProps) => {
               {selectedPages.length} page{selectedPages.length !== 1 ? "s" : ""}{" "}
               selected
             </p>
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                className="h-11"
-                onClick={() => onOpenChange(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="h-11"
-                onClick={handleConnect}
-                disabled={selectedPages.length === 0}
-              >
-                Connect Selected
-              </Button>
-            </div>
+            <Button
+              className="h-11"
+              onClick={handleConnect}
+              disabled={selectedPages.length === 0}
+            >
+              Connect Selected
+            </Button>
           </div>
         </div>
       </DialogContent>
