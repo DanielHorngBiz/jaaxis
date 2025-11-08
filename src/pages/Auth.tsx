@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,8 +6,9 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, LogIn, UserPlus } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
 import logo from "@/assets/jaxxis-logo.png";
 
 // Validation schemas
@@ -137,6 +138,29 @@ const Auth = () => {
     }
   };
 
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+
+  useEffect(() => {
+    const updateIndicator = () => {
+      if (tabsContainerRef.current) {
+        const activeButton = tabsContainerRef.current.querySelector(
+          `[data-state="active"]`
+        ) as HTMLElement;
+        if (activeButton) {
+          setIndicatorStyle({
+            left: activeButton.offsetLeft,
+            width: activeButton.offsetWidth,
+          });
+        }
+      }
+    };
+
+    updateIndicator();
+    window.addEventListener("resize", updateIndicator);
+    return () => window.removeEventListener("resize", updateIndicator);
+  }, [isLogin]);
+
   return (
     <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-gradient-hero relative">
       {/* Back button */}
@@ -155,11 +179,55 @@ const Auth = () => {
             <img src={logo} alt="Jaaxis" className="h-12 animate-fade-in" />
           </div>
 
-          {/* Title */}
-          <div className="text-center mb-8 animate-fade-in">
-            <h1 className="text-3xl font-bold text-foreground">
-              {isLogin ? "Welcome back" : "Create your account"}
-            </h1>
+          {/* Tabs */}
+          <div className="relative mb-8" ref={tabsContainerRef}>
+            <div className="flex gap-6 border-b border-border/40">
+              <button
+                onClick={() => {
+                  setIsLogin(true);
+                  setFirstName("");
+                  setLastName("");
+                  setEmail("");
+                  setPassword("");
+                }}
+                data-state={isLogin ? "active" : "inactive"}
+                className={cn(
+                  "flex items-center gap-2 px-1 py-3 text-sm font-medium transition-colors relative",
+                  isLogin
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <LogIn className="w-4 h-4" />
+                Log In
+              </button>
+              <button
+                onClick={() => {
+                  setIsLogin(false);
+                  setFirstName("");
+                  setLastName("");
+                  setEmail("");
+                  setPassword("");
+                }}
+                data-state={!isLogin ? "active" : "inactive"}
+                className={cn(
+                  "flex items-center gap-2 px-1 py-3 text-sm font-medium transition-colors relative",
+                  !isLogin
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <UserPlus className="w-4 h-4" />
+                Sign Up
+              </button>
+            </div>
+            <div
+              className="absolute bottom-0 h-0.5 bg-primary transition-all duration-300 ease-out"
+              style={{
+                left: `${indicatorStyle.left}px`,
+                width: `${indicatorStyle.width}px`,
+              }}
+            />
           </div>
 
           {/* Form */}
@@ -315,28 +383,6 @@ const Auth = () => {
             </svg>
             Continue with Google
           </Button>
-
-          {/* Toggle */}
-          <div className="mt-8 text-center">
-            <button
-              type="button"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setFirstName("");
-                setLastName("");
-                setEmail("");
-                setPassword("");
-              }}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium group"
-            >
-              {isLogin
-                ? "Don't have an account? "
-                : "Already have an account? "}
-              <span className="text-primary group-hover:underline">
-                {isLogin ? "Sign up" : "Log in"}
-              </span>
-            </button>
-          </div>
         </div>
       </div>
     </div>
