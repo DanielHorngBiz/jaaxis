@@ -45,18 +45,14 @@ interface ConnectMetaDialogProps {
 }
 
 const ConnectMetaDialog = ({ open, onOpenChange }: ConnectMetaDialogProps) => {
-  const [selectedPages, setSelectedPages] = useState<string[]>([]);
+  const [selectedPage, setSelectedPage] = useState<string | null>(null);
 
   const togglePageSelection = (pageId: string) => {
-    setSelectedPages((prev) =>
-      prev.includes(pageId)
-        ? prev.filter((id) => id !== pageId)
-        : [...prev, pageId]
-    );
+    setSelectedPage((prev) => (prev === pageId ? null : pageId));
   };
 
   const handleConnect = () => {
-    console.log("Connecting pages:", selectedPages);
+    console.log("Connecting page:", selectedPage);
     // TODO: Implement actual connection logic
     onOpenChange(false);
   };
@@ -80,7 +76,7 @@ const ConnectMetaDialog = ({ open, onOpenChange }: ConnectMetaDialogProps) => {
                 key={page.id}
                 onClick={() => togglePageSelection(page.id)}
                 className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                  selectedPages.includes(page.id)
+                  selectedPage === page.id
                     ? "border-primary bg-primary/5"
                     : "border-border hover:border-primary/50"
                 }`}
@@ -120,12 +116,12 @@ const ConnectMetaDialog = ({ open, onOpenChange }: ConnectMetaDialogProps) => {
                   {/* Selection Indicator */}
                   <div
                     className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                      selectedPages.includes(page.id)
+                      selectedPage === page.id
                         ? "border-primary bg-primary"
                         : "border-border"
                     }`}
                   >
-                    {selectedPages.includes(page.id) && (
+                    {selectedPage === page.id && (
                       <Check className="w-3 h-3 text-primary-foreground" />
                     )}
                   </div>
@@ -136,17 +132,13 @@ const ConnectMetaDialog = ({ open, onOpenChange }: ConnectMetaDialogProps) => {
         </ScrollArea>
 
         <div className="px-8 py-4 border-t bg-muted/30">
-          <div className="flex gap-3 justify-between items-center">
-            <p className="text-sm text-muted-foreground">
-              {selectedPages.length} page{selectedPages.length !== 1 ? "s" : ""}{" "}
-              selected
-            </p>
+          <div className="flex justify-end">
             <Button
               className="h-11"
               onClick={handleConnect}
-              disabled={selectedPages.length === 0}
+              disabled={!selectedPage}
             >
-              Connect Selected
+              Connect
             </Button>
           </div>
         </div>
