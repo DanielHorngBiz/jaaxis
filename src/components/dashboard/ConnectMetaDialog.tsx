@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 interface MetaPage {
   id: string;
   fbPageName: string;
-  igHandle: string;
+  igHandle?: string;
 }
 
 // Mock data for 5 FB/IG page pairs
@@ -20,7 +20,7 @@ const mockMetaPages: MetaPage[] = [
   {
     id: "2",
     fbPageName: "Digital Marketing Pro",
-    igHandle: "@digitalmarketingpro",
+    // No IG account
   },
   {
     id: "3",
@@ -30,7 +30,7 @@ const mockMetaPages: MetaPage[] = [
   {
     id: "4",
     fbPageName: "E-commerce Experts",
-    igHandle: "@ecommerceexperts",
+    // No IG account
   },
   {
     id: "5",
@@ -98,14 +98,23 @@ const ConnectMetaDialog = ({ open, onOpenChange }: ConnectMetaDialogProps) => {
                     </div>
 
                     {/* Instagram as sub-item */}
-                    <div className="flex items-center gap-3 ml-1 pl-12">
-                      <div className="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center flex-shrink-0">
-                        <Instagram className="w-5 h-5 text-pink-600" />
+                    {page.igHandle ? (
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center flex-shrink-0">
+                          <Instagram className="w-5 h-5 text-pink-600" />
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {page.igHandle}
+                        </p>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {page.igHandle}
-                      </p>
-                    </div>
+                    ) : (
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 flex-shrink-0" />
+                        <p className="text-sm text-muted-foreground italic">
+                          No Instagram Business account connected
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Selection Indicator */}
