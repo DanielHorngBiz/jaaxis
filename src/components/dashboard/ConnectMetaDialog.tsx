@@ -75,7 +75,7 @@ const ConnectMetaDialog = ({ open, onOpenChange }: ConnectMetaDialogProps) => {
               <button
                 key={page.id}
                 onClick={() => togglePageSelection(page.id)}
-                className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+                className={`w-full p-3 rounded-lg border-2 transition-all text-left ${
                   selectedPage === page.id
                     ? "border-primary bg-primary/5"
                     : "border-border hover:border-primary/50"
@@ -85,10 +85,10 @@ const ConnectMetaDialog = ({ open, onOpenChange }: ConnectMetaDialogProps) => {
                   <div className="flex-1 space-y-2">
                     {/* Facebook Page */}
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-blue-600/10 flex items-center justify-center flex-shrink-0">
-                        <Facebook className="w-5 h-5 text-blue-600" />
+                      <div className="w-8 h-8 rounded-lg bg-blue-600/10 flex items-center justify-center flex-shrink-0">
+                        <Facebook className="w-4 h-4 text-blue-600" />
                       </div>
-                      <p className="font-semibold text-base">
+                      <p className="font-semibold text-sm">
                         {page.fbPageName}
                       </p>
                     </div>
@@ -96,8 +96,8 @@ const ConnectMetaDialog = ({ open, onOpenChange }: ConnectMetaDialogProps) => {
                     {/* Instagram as sub-item */}
                     {page.igHandle ? (
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center flex-shrink-0">
-                          <Instagram className="w-5 h-5 text-pink-600" />
+                        <div className="w-8 h-8 rounded-lg bg-pink-500/10 flex items-center justify-center flex-shrink-0">
+                          <Instagram className="w-4 h-4 text-pink-600" />
                         </div>
                         <p className="text-sm text-muted-foreground">
                           {page.igHandle}
@@ -105,7 +105,7 @@ const ConnectMetaDialog = ({ open, onOpenChange }: ConnectMetaDialogProps) => {
                       </div>
                     ) : (
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 flex-shrink-0" />
+                        <div className="w-8 h-8 flex-shrink-0" />
                         <p className="text-sm text-muted-foreground italic">
                           No Instagram Business account connected
                         </p>
