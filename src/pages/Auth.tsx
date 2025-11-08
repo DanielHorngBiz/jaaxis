@@ -228,13 +228,6 @@ const Auth = () => {
             />
           </div>
 
-          {/* Title */}
-          <div className="text-center mb-8 animate-fade-in">
-            <h1 className="text-3xl font-bold text-foreground">
-              {isLogin ? "Welcome back" : "Create your account"}
-            </h1>
-          </div>
-
           {/* Form */}
           <form onSubmit={isLogin ? handleLogin : handleSignup} className="space-y-5 animate-fade-in">
             {!isLogin && (
