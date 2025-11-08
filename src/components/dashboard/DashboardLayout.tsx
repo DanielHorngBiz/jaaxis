@@ -54,7 +54,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     
     const { data, error } = await supabase
       .from('chatbots')
-      .select('id, name, slug, avatar_url')
+      .select('id, name, slug, avatar_url, primary_color')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
@@ -138,16 +138,16 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               }`}
               title={isCollapsed ? bot.name : undefined}
             >
-              <div className={`${isCollapsed ? 'w-9 h-9' : 'w-9 h-9'} rounded-full overflow-hidden shadow-sm flex-shrink-0`}>
-                <img
-                  src={bot.avatar_url || defaultAvatar}
-                  alt={bot.name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.currentTarget as HTMLImageElement;
-                    if (target.src !== defaultAvatar) target.src = defaultAvatar;
-                  }}
-                />
+              <div className={`${isCollapsed ? 'w-9 h-9' : 'w-9 h-9'} rounded-full shadow-sm flex-shrink-0 flex items-center justify-center text-sm font-bold text-white`} style={{ backgroundColor: bot.primary_color || '#FF9800' }}>
+                {bot.avatar_url ? (
+                  <img
+                    src={bot.avatar_url}
+                    alt={bot.name}
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  bot.name.trim().charAt(0).toUpperCase() || "B"
+                )}
               </div>
               {!isCollapsed && <span className="text-sm font-medium truncate">{bot.name}</span>}
             </div>

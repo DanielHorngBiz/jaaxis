@@ -397,15 +397,17 @@ const SettingsTab = () => {
           <div>
             <Label className="mb-4 block">Logo</Label>
             <div className="flex items-center gap-4">
-              {brandLogo && (
-                <div className="w-24 h-24 rounded-full overflow-hidden shadow-sm">
+              <div className="w-24 h-24 rounded-full shadow-sm flex items-center justify-center text-3xl font-bold text-white" style={{ backgroundColor: selectedColor }}>
+                {brandLogo ? (
                   <img
                     src={brandLogo}
                     alt="Brand Logo"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover rounded-full"
                   />
-                </div>
-              )}
+                ) : (
+                  config.botName.trim().charAt(0).toUpperCase() || "B"
+                )}
+              </div>
               <div className="flex gap-2">
                 <input
                   type="file"
