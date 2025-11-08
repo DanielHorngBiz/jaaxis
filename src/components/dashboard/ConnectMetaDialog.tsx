@@ -7,13 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 interface MetaPage {
   id: string;
   fbPageName: string;
-  fbPageId: string;
-  igPageName: string;
-  igPageId: string;
-  followers: {
-    facebook: number;
-    instagram: number;
-  };
+  igHandle: string;
 }
 
 // Mock data for 5 FB/IG page pairs
@@ -21,57 +15,27 @@ const mockMetaPages: MetaPage[] = [
   {
     id: "1",
     fbPageName: "Tech Solutions Hub",
-    fbPageId: "fb_123456789",
-    igPageName: "@techsolutionshub",
-    igPageId: "ig_987654321",
-    followers: {
-      facebook: 15400,
-      instagram: 23800,
-    },
+    igHandle: "@techsolutionshub",
   },
   {
     id: "2",
     fbPageName: "Digital Marketing Pro",
-    fbPageId: "fb_234567890",
-    igPageName: "@digitalmarketingpro",
-    igPageId: "ig_876543210",
-    followers: {
-      facebook: 32100,
-      instagram: 45200,
-    },
+    igHandle: "@digitalmarketingpro",
   },
   {
     id: "3",
     fbPageName: "Creative Studio",
-    fbPageId: "fb_345678901",
-    igPageName: "@creativestudio",
-    igPageId: "ig_765432109",
-    followers: {
-      facebook: 8900,
-      instagram: 12500,
-    },
+    igHandle: "@creativestudio",
   },
   {
     id: "4",
     fbPageName: "E-commerce Experts",
-    fbPageId: "fb_456789012",
-    igPageName: "@ecommerceexperts",
-    igPageId: "ig_654321098",
-    followers: {
-      facebook: 27600,
-      instagram: 38900,
-    },
+    igHandle: "@ecommerceexperts",
   },
   {
     id: "5",
     fbPageName: "Brand Builders",
-    fbPageId: "fb_567890123",
-    igPageName: "@brandbuilders",
-    igPageId: "ig_543210987",
-    followers: {
-      facebook: 19200,
-      instagram: 28400,
-    },
+    igHandle: "@brandbuilders",
   },
 ];
 
@@ -95,13 +59,6 @@ const ConnectMetaDialog = ({ open, onOpenChange }: ConnectMetaDialogProps) => {
     console.log("Connecting pages:", selectedPages);
     // TODO: Implement actual connection logic
     onOpenChange(false);
-  };
-
-  const formatFollowers = (count: number) => {
-    if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}K`;
-    }
-    return count.toString();
   };
 
   return (
@@ -129,35 +86,23 @@ const ConnectMetaDialog = ({ open, onOpenChange }: ConnectMetaDialogProps) => {
                 }`}
               >
                 <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 space-y-3">
+                  <div className="flex-1 space-y-2">
                     {/* Facebook Page */}
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-blue-600/10 flex items-center justify-center flex-shrink-0">
                         <Facebook className="w-5 h-5 text-blue-600" />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">
-                          {page.fbPageName}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatFollowers(page.followers.facebook)} followers
-                        </p>
-                      </div>
+                      <p className="font-semibold text-base">
+                        {page.fbPageName}
+                      </p>
                     </div>
 
-                    {/* Instagram Page */}
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center flex-shrink-0">
-                        <Instagram className="w-5 h-5 text-pink-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">
-                          {page.igPageName}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatFollowers(page.followers.instagram)} followers
-                        </p>
-                      </div>
+                    {/* Instagram as sub-item */}
+                    <div className="flex items-center gap-3 ml-1 pl-12">
+                      <Instagram className="w-4 h-4 text-pink-600" />
+                      <p className="text-sm text-muted-foreground">
+                        Instagram: {page.igHandle}
+                      </p>
                     </div>
                   </div>
 
