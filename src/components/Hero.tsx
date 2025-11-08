@@ -1,48 +1,37 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useEffect, useRef } from "react";
-
 const Hero = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
-
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            video.play().catch(() => {
-              // Ignore autoplay errors
-            });
-          } else {
-            video.pause();
-          }
-        });
-      },
-      { threshold: 0.8 }
-    );
-
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {
+            // Ignore autoplay errors
+          });
+        } else {
+          video.pause();
+        }
+      });
+    }, {
+      threshold: 0.8
+    });
     observer.observe(video);
-
     return () => {
       observer.disconnect();
     };
   }, []);
-
-  return (
-    <section id="home" className="relative pt-32 pb-24 px-6 lg:px-8 overflow-hidden">
+  return <section id="home" className="relative pt-32 pb-24 px-6 lg:px-8 overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
       
       <div className="max-w-5xl mx-auto relative">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/50 backdrop-blur-sm">
-            <Sparkles className="h-3.5 w-3.5 text-primary" />
-            <span className="text-xs font-medium text-foreground">Introducing AI-Powered Support</span>
-          </div>
+          
 
           {/* Headline */}
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground leading-[1.1] tracking-tight">
@@ -87,23 +76,16 @@ const Hero = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
 
             {/* Demo Video */}
-            <div className="relative w-full" style={{ paddingBottom: '75%' }}>
-              <video
-                ref={videoRef}
-                src="https://jaaxis.com/wp-content/uploads/2025/06/GIF-5.webm"
-                loop
-                muted
-                playsInline
-                preload="metadata"
-                className="absolute inset-0 w-full h-full object-cover"
-                {...({ fetchpriority: "high" } as any)}
-              />
+            <div className="relative w-full" style={{
+            paddingBottom: '75%'
+          }}>
+              <video ref={videoRef} src="https://jaaxis.com/wp-content/uploads/2025/06/GIF-5.webm" loop muted playsInline preload="metadata" className="absolute inset-0 w-full h-full object-cover" {...{
+              fetchpriority: "high"
+            } as any} />
             </div>
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default Hero;
