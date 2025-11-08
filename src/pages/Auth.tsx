@@ -192,7 +192,7 @@ const Auth = () => {
                 }}
                 data-state={isLogin ? "active" : "inactive"}
                 className={cn(
-                  "flex-1 py-3 text-base font-bold transition-colors relative",
+                  "flex-1 py-3 text-base font-medium transition-colors relative",
                   isLogin
                     ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground"
@@ -210,7 +210,7 @@ const Auth = () => {
                 }}
                 data-state={!isLogin ? "active" : "inactive"}
                 className={cn(
-                  "flex-1 py-3 text-base font-bold transition-colors relative",
+                  "flex-1 py-3 text-base font-medium transition-colors relative",
                   !isLogin
                     ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground"
