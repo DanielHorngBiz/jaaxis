@@ -29,10 +29,7 @@ const Hero = () => {
       <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
       
       <div className="max-w-5xl mx-auto relative">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          {/* Badge */}
-          
-
+        <div className="max-w-4xl mx-auto text-center space-y-8 pt-8">
           {/* Headline */}
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground leading-[1.1] tracking-tight">
             AI Customer Support
