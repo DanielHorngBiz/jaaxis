@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
-import { ArrowLeft, Eye, EyeOff, LogIn, UserPlus } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import logo from "@/assets/jaxxis-logo.png";
@@ -180,8 +180,8 @@ const Auth = () => {
           </div>
 
           {/* Tabs */}
-          <div className="relative mb-8" ref={tabsContainerRef}>
-            <div className="flex gap-6 border-b border-border/40">
+          <div className="relative mb-6" ref={tabsContainerRef}>
+            <div className="flex border-b border-border/40">
               <button
                 onClick={() => {
                   setIsLogin(true);
@@ -192,13 +192,12 @@ const Auth = () => {
                 }}
                 data-state={isLogin ? "active" : "inactive"}
                 className={cn(
-                  "flex items-center gap-2 px-1 py-3 text-sm font-medium transition-colors relative",
+                  "flex-1 py-3 text-base font-bold transition-colors relative",
                   isLogin
                     ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <LogIn className="w-4 h-4" />
                 Log In
               </button>
               <button
@@ -211,13 +210,12 @@ const Auth = () => {
                 }}
                 data-state={!isLogin ? "active" : "inactive"}
                 className={cn(
-                  "flex items-center gap-2 px-1 py-3 text-sm font-medium transition-colors relative",
+                  "flex-1 py-3 text-base font-bold transition-colors relative",
                   !isLogin
                     ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <UserPlus className="w-4 h-4" />
                 Sign Up
               </button>
             </div>
@@ -228,6 +226,13 @@ const Auth = () => {
                 width: `${indicatorStyle.width}px`,
               }}
             />
+          </div>
+
+          {/* Title */}
+          <div className="text-center mb-8 animate-fade-in">
+            <h1 className="text-3xl font-bold text-foreground">
+              {isLogin ? "Welcome back" : "Create your account"}
+            </h1>
           </div>
 
           {/* Form */}
