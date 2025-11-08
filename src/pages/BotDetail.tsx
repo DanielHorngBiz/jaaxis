@@ -46,6 +46,7 @@ const BotDetailContent = () => {
       <TabbedPageLayout
         title={config.botName}
         avatarSrc={config.brandLogo}
+        avatarColor={config.primaryColor}
         tabs={tabs}
         activeTab={currentTab}
         hideTabs={showChatDashboard}

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
+
 interface Tab {
   id: string;
   label: string;
@@ -12,6 +12,7 @@ interface TabbedPageLayoutProps {
   title: string;
   icon?: LucideIcon;
   avatarSrc?: string;
+  avatarColor?: string;
   tabs: Tab[];
   activeTab: string;
   onTabChange: (tabId: string) => void;
@@ -25,6 +26,7 @@ export const TabbedPageLayout = ({
   title,
   icon: Icon,
   avatarSrc,
+  avatarColor = '#FF9800',
   tabs,
   activeTab,
   onTabChange,
@@ -63,17 +65,17 @@ export const TabbedPageLayout = ({
         <div className="px-6 pt-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              {avatarSrc ? (
-                <div className="w-10 h-10 rounded-full overflow-hidden">
-                  <img
-                    src={avatarSrc}
-                    alt={title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      const target = e.currentTarget as HTMLImageElement;
-                      if (target.src !== defaultAvatar) target.src = defaultAvatar;
-                    }}
-                  />
+              {avatarSrc || !Icon ? (
+                <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold text-white" style={{ backgroundColor: avatarColor }}>
+                  {avatarSrc ? (
+                    <img
+                      src={avatarSrc}
+                      alt={title}
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    title.trim().charAt(0).toUpperCase() || "B"
+                  )}
                 </div>
               ) : Icon ? (
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">

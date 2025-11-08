@@ -27,7 +27,7 @@ const Dashboard = () => {
     
     const { data, error } = await supabase
       .from('chatbots')
-      .select('id, name, slug, avatar_url, created_at')
+      .select('id, name, slug, avatar_url, primary_color, created_at')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
@@ -55,16 +55,16 @@ const Dashboard = () => {
                 <Card className="p-6 hover:shadow-lg hover:shadow-primary/5 transition-all border-border hover:border-primary/20">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-full overflow-hidden shadow-sm flex-shrink-0">
-                        <img
-                          src={bot.avatar_url || defaultAvatar}
-                          alt={bot.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.currentTarget as HTMLImageElement;
-                            if (target.src !== defaultAvatar) target.src = defaultAvatar;
-                          }}
-                        />
+                      <div className="w-14 h-14 rounded-full shadow-sm flex-shrink-0 flex items-center justify-center text-xl font-bold text-white" style={{ backgroundColor: bot.primary_color || '#FF9800' }}>
+                        {bot.avatar_url ? (
+                          <img
+                            src={bot.avatar_url}
+                            alt={bot.name}
+                            className="w-full h-full object-cover rounded-full"
+                          />
+                        ) : (
+                          bot.name.trim().charAt(0).toUpperCase() || "B"
+                        )}
                       </div>
                       <div>
                         <h3 className="font-semibold text-lg mb-1">{bot.name}</h3>
