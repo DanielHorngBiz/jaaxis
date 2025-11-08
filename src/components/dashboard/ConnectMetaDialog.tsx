@@ -99,9 +99,11 @@ const ConnectMetaDialog = ({ open, onOpenChange }: ConnectMetaDialogProps) => {
 
                     {/* Instagram as sub-item */}
                     <div className="flex items-center gap-3 ml-1 pl-12">
-                      <Instagram className="w-4 h-4 text-pink-600" />
+                      <div className="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center flex-shrink-0">
+                        <Instagram className="w-5 h-5 text-pink-600" />
+                      </div>
                       <p className="text-sm text-muted-foreground">
-                        Instagram: {page.igHandle}
+                        {page.igHandle}
                       </p>
                     </div>
                   </div>
