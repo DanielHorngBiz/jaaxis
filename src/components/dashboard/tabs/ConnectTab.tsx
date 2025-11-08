@@ -9,6 +9,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import EmbedCodeDialog from "@/components/dashboard/EmbedCodeDialog";
+import ConnectMetaDialog from "@/components/dashboard/ConnectMetaDialog";
 const ConnectTab = () => {
   const [storeType, setStoreType] = useState<"shopify" | "woocommerce">("shopify");
   const [step, setStep] = useState(1);
@@ -17,6 +18,7 @@ const ConnectTab = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [embedDialogOpen, setEmbedDialogOpen] = useState(false);
   const [embedType, setEmbedType] = useState<"widget" | "iframe">("widget");
+  const [metaDialogOpen, setMetaDialogOpen] = useState(false);
 
   // Form state
   const [storeUrl, setStoreUrl] = useState("");
@@ -150,7 +152,7 @@ const ConnectTab = () => {
             </div>
             <h3 className="font-semibold text-lg mb-2">Connect Meta Platforms</h3>
             <p className="text-sm text-muted-foreground mb-6 flex-1">Connect to Messenger and Instagram</p>
-            <Button variant="outline" className="w-full">Connect</Button>
+            <Button variant="outline" className="w-full" onClick={() => setMetaDialogOpen(true)}>Connect</Button>
           </CardContent>
         </Card>
 
@@ -316,6 +318,12 @@ const ConnectTab = () => {
         open={embedDialogOpen} 
         onOpenChange={setEmbedDialogOpen}
         type={embedType}
+      />
+
+      {/* Connect Meta Dialog */}
+      <ConnectMetaDialog 
+        open={metaDialogOpen} 
+        onOpenChange={setMetaDialogOpen}
       />
     </div>;
 };
