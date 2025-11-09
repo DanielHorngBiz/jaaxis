@@ -21,6 +21,7 @@ const ConnectTab = () => {
   const [metaDialogOpen, setMetaDialogOpen] = useState(false);
   const [isMetaConnected, setIsMetaConnected] = useState(false);
   const [connectedMetaPage, setConnectedMetaPage] = useState<{ id: string; fbPageName: string; igHandle?: string } | null>(null);
+  const [metaManageMode, setMetaManageMode] = useState(false);
 
   // Form state
   const [storeUrl, setStoreUrl] = useState("");
@@ -153,14 +154,14 @@ const ConnectTab = () => {
                   <Instagram className="w-7 h-7 text-pink-600" />
                 </div>
               </div>
-              {isMetaConnected && <Button variant="ghost" size="icon" className="h-10 w-10 -mt-1 -mr-1" onClick={() => setMetaDialogOpen(true)}>
+              {isMetaConnected && <Button variant="ghost" size="icon" className="h-10 w-10 -mt-1 -mr-1" onClick={() => { setMetaManageMode(true); setMetaDialogOpen(true); }}>
                   <Settings className="w-8 h-8" />
                 </Button>}
             </div>
             <h3 className="font-semibold text-lg mb-2">Connect Meta Platforms</h3>
             <p className="text-sm text-muted-foreground mb-6 flex-1">Connect to Messenger and Instagram</p>
-            {!isMetaConnected && <Button variant="outline" className="w-full" onClick={() => setMetaDialogOpen(true)}>Connect</Button>}
-            {isMetaConnected && <Button variant="secondary" className="w-full" onClick={() => setIsMetaConnected(false)}>
+            {!isMetaConnected && <Button variant="outline" className="w-full" onClick={() => { setMetaManageMode(false); setMetaDialogOpen(true); }}>Connect</Button>}
+            {isMetaConnected && <Button variant="secondary" className="w-full" onClick={() => { setIsMetaConnected(false); setConnectedMetaPage(null); }}>
                 Disconnect
               </Button>}
           </CardContent>
