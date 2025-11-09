@@ -81,8 +81,13 @@ const ConnectMetaDialog = ({
     onDisconnectInstagram?.();
   };
 
-  // Show management view only if dialog is open AND we have a connected page AND we're in manage mode
-  if (open && connectedPage && manageMode) {
+  // Don't render anything if dialog is not open
+  if (!open) return null;
+
+  // Determine which view to show based on manage mode and connected page
+  const showManageView = !!connectedPage && manageMode;
+
+  if (showManageView) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-[540px] p-0 gap-0">
