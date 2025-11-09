@@ -347,6 +347,7 @@ const ConnectTab = () => {
             // Last item - disconnect everything and close dialog
             setIsMetaConnected(false);
             setConnectedMetaPage(null);
+            setMetaManageMode(false); // Reset manage mode
             setMetaDialogOpen(false);
           } else if (connectedMetaPage) {
             // Keep dialog open, just remove Facebook
@@ -358,6 +359,7 @@ const ConnectTab = () => {
             // Last item - disconnect everything and close dialog
             setIsMetaConnected(false);
             setConnectedMetaPage(null);
+            setMetaManageMode(false); // Reset manage mode
             setMetaDialogOpen(false);
           } else if (connectedMetaPage) {
             // Keep dialog open, just remove Instagram
