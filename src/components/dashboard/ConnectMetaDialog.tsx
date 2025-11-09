@@ -43,6 +43,7 @@ interface ConnectMetaDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   connectedPage?: MetaPage | null;
+  manageMode?: boolean;
   onConnect?: (page: MetaPage) => void;
   onDisconnectFacebook?: () => void;
   onDisconnectInstagram?: () => void;
@@ -52,6 +53,7 @@ const ConnectMetaDialog = ({
   open, 
   onOpenChange, 
   connectedPage,
+  manageMode = false,
   onConnect,
   onDisconnectFacebook,
   onDisconnectInstagram 
@@ -79,8 +81,8 @@ const ConnectMetaDialog = ({
     onDisconnectInstagram?.();
   };
 
-  // Show different UI based on whether we're connecting or managing existing connection
-  if (connectedPage) {
+  // Show management view only if we have a connected page AND we're in manage mode
+  if (connectedPage && manageMode) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-[540px] p-0 gap-0">

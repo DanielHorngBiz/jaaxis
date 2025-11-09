@@ -336,9 +336,11 @@ const ConnectTab = () => {
         open={metaDialogOpen} 
         onOpenChange={setMetaDialogOpen}
         connectedPage={connectedMetaPage}
+        manageMode={metaManageMode}
         onConnect={(page) => {
           setIsMetaConnected(true);
           setConnectedMetaPage(page);
+          setMetaManageMode(false); // Reset manage mode after connecting
         }}
         onDisconnectFacebook={() => {
           if (connectedMetaPage && !connectedMetaPage.igHandle) {
