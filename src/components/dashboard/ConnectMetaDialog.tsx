@@ -42,10 +42,20 @@ const mockMetaPages: MetaPage[] = [
 interface ConnectMetaDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConnect?: () => void;
+  connectedPage?: MetaPage | null;
+  onConnect?: (page: MetaPage) => void;
+  onDisconnectFacebook?: () => void;
+  onDisconnectInstagram?: () => void;
 }
 
-const ConnectMetaDialog = ({ open, onOpenChange, onConnect }: ConnectMetaDialogProps) => {
+const ConnectMetaDialog = ({ 
+  open, 
+  onOpenChange, 
+  connectedPage,
+  onConnect,
+  onDisconnectFacebook,
+  onDisconnectInstagram 
+}: ConnectMetaDialogProps) => {
   const [selectedPage, setSelectedPage] = useState<string | null>(null);
 
   const togglePageSelection = (pageId: string) => {
@@ -53,10 +63,105 @@ const ConnectMetaDialog = ({ open, onOpenChange, onConnect }: ConnectMetaDialogP
   };
 
   const handleConnect = () => {
-    console.log("Connecting page:", selectedPage);
-    onConnect?.();
+    const page = mockMetaPages.find(p => p.id === selectedPage);
+    if (page) {
+      console.log("Connecting page:", page);
+      onConnect?.(page);
+    }
     onOpenChange(false);
   };
+
+  const handleDisconnectFacebook = () => {
+    onDisconnectFacebook?.();
+    onOpenChange(false);
+  };
+
+  const handleDisconnectInstagram = () => {
+    onDisconnectInstagram?.();
+    onOpenChange(false);
+  };
+
+  // Show different UI based on whether we're connecting or managing existing connection
+  if (connectedPage) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[540px] p-0 gap-0">
+          <DialogHeader className="px-8 pt-6 pb-4">
+            <DialogTitle className="text-xl font-semibold">
+              Manage Connected Platforms
+            </DialogTitle>
+            <p className="text-sm text-muted-foreground mt-2">
+              Disconnect individual platforms if needed
+            </p>
+          </DialogHeader>
+
+          <div className="px-8 py-6 space-y-4">
+            {connectedPage.fbPageName && (
+              <div className="p-4 rounded-lg border-2 border-border">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-blue-600/10 flex items-center justify-center">
+                      <Facebook className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm">
+                        {connectedPage.fbPageName}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Facebook Page</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleDisconnectFacebook}
+                  >
+                    Disconnect
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {connectedPage.igHandle && (
+              <div className="p-4 rounded-lg border-2 border-border">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center">
+                      <Instagram className="w-5 h-5 text-pink-600" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm">
+                        {connectedPage.igHandle}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Instagram Account</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleDisconnectInstagram}
+                  >
+                    Disconnect
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="px-8 py-4 border-t bg-muted/30">
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                className="h-11"
+                onClick={() => onOpenChange(false)}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

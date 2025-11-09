@@ -20,6 +20,7 @@ const ConnectTab = () => {
   const [embedType, setEmbedType] = useState<"widget" | "iframe">("widget");
   const [metaDialogOpen, setMetaDialogOpen] = useState(false);
   const [isMetaConnected, setIsMetaConnected] = useState(false);
+  const [connectedMetaPage, setConnectedMetaPage] = useState<{ id: string; fbPageName: string; igHandle?: string } | null>(null);
 
   // Form state
   const [storeUrl, setStoreUrl] = useState("");
@@ -333,7 +334,27 @@ const ConnectTab = () => {
       <ConnectMetaDialog 
         open={metaDialogOpen} 
         onOpenChange={setMetaDialogOpen}
-        onConnect={() => setIsMetaConnected(true)}
+        connectedPage={connectedMetaPage}
+        onConnect={(page) => {
+          setIsMetaConnected(true);
+          setConnectedMetaPage(page);
+        }}
+        onDisconnectFacebook={() => {
+          if (connectedMetaPage && !connectedMetaPage.igHandle) {
+            setIsMetaConnected(false);
+            setConnectedMetaPage(null);
+          } else if (connectedMetaPage) {
+            setConnectedMetaPage({ ...connectedMetaPage, fbPageName: "" });
+          }
+        }}
+        onDisconnectInstagram={() => {
+          if (connectedMetaPage && !connectedMetaPage.fbPageName) {
+            setIsMetaConnected(false);
+            setConnectedMetaPage(null);
+          } else if (connectedMetaPage) {
+            setConnectedMetaPage({ ...connectedMetaPage, igHandle: undefined });
+          }
+        }}
       />
     </div>;
 };
