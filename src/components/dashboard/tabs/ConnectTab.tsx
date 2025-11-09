@@ -19,6 +19,7 @@ const ConnectTab = () => {
   const [embedDialogOpen, setEmbedDialogOpen] = useState(false);
   const [embedType, setEmbedType] = useState<"widget" | "iframe">("widget");
   const [metaDialogOpen, setMetaDialogOpen] = useState(false);
+  const [isMetaConnected, setIsMetaConnected] = useState(false);
 
   // Form state
   const [storeUrl, setStoreUrl] = useState("");
@@ -142,17 +143,25 @@ const ConnectTab = () => {
         {/* Connect Meta Platforms */}
         <Card>
           <CardContent className="p-6 flex flex-col">
-            <div className="flex gap-2 mb-4">
-              <div className="w-14 h-14 rounded-xl bg-blue-600/10 flex items-center justify-center">
-                <Facebook className="w-7 h-7 text-blue-600" />
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex gap-2">
+                <div className="w-14 h-14 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                  <Facebook className="w-7 h-7 text-blue-600" />
+                </div>
+                <div className="w-14 h-14 rounded-xl bg-pink-500/10 flex items-center justify-center">
+                  <Instagram className="w-7 h-7 text-pink-600" />
+                </div>
               </div>
-              <div className="w-14 h-14 rounded-xl bg-pink-500/10 flex items-center justify-center">
-                <Instagram className="w-7 h-7 text-pink-600" />
-              </div>
+              {isMetaConnected && <Button variant="ghost" size="icon" className="h-10 w-10 -mt-1 -mr-1" onClick={() => setMetaDialogOpen(true)}>
+                  <Settings className="w-8 h-8" />
+                </Button>}
             </div>
             <h3 className="font-semibold text-lg mb-2">Connect Meta Platforms</h3>
             <p className="text-sm text-muted-foreground mb-6 flex-1">Connect to Messenger and Instagram</p>
-            <Button variant="outline" className="w-full" onClick={() => setMetaDialogOpen(true)}>Connect</Button>
+            {!isMetaConnected && <Button variant="outline" className="w-full" onClick={() => setMetaDialogOpen(true)}>Connect</Button>}
+            {isMetaConnected && <Button variant="secondary" className="w-full" onClick={() => setIsMetaConnected(false)}>
+                Disconnect
+              </Button>}
           </CardContent>
         </Card>
 
@@ -324,6 +333,7 @@ const ConnectTab = () => {
       <ConnectMetaDialog 
         open={metaDialogOpen} 
         onOpenChange={setMetaDialogOpen}
+        onConnect={() => setIsMetaConnected(true)}
       />
     </div>;
 };

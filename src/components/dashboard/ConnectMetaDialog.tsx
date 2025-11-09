@@ -42,9 +42,10 @@ const mockMetaPages: MetaPage[] = [
 interface ConnectMetaDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onConnect?: () => void;
 }
 
-const ConnectMetaDialog = ({ open, onOpenChange }: ConnectMetaDialogProps) => {
+const ConnectMetaDialog = ({ open, onOpenChange, onConnect }: ConnectMetaDialogProps) => {
   const [selectedPage, setSelectedPage] = useState<string | null>(null);
 
   const togglePageSelection = (pageId: string) => {
@@ -53,7 +54,7 @@ const ConnectMetaDialog = ({ open, onOpenChange }: ConnectMetaDialogProps) => {
 
   const handleConnect = () => {
     console.log("Connecting page:", selectedPage);
-    // TODO: Implement actual connection logic
+    onConnect?.();
     onOpenChange(false);
   };
 
