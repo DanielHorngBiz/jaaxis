@@ -73,12 +73,10 @@ const ConnectMetaDialog = ({
 
   const handleDisconnectFacebook = () => {
     onDisconnectFacebook?.();
-    onOpenChange(false);
   };
 
   const handleDisconnectInstagram = () => {
     onDisconnectInstagram?.();
-    onOpenChange(false);
   };
 
   // Show different UI based on whether we're connecting or managing existing connection
@@ -147,17 +145,6 @@ const ConnectMetaDialog = ({
             )}
           </div>
 
-          <div className="px-8 py-4 border-t bg-muted/30">
-            <div className="flex justify-end">
-              <Button
-                variant="outline"
-                className="h-11"
-                onClick={() => onOpenChange(false)}
-              >
-                Close
-              </Button>
-            </div>
-          </div>
         </DialogContent>
       </Dialog>
     );

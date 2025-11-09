@@ -342,17 +342,23 @@ const ConnectTab = () => {
         }}
         onDisconnectFacebook={() => {
           if (connectedMetaPage && !connectedMetaPage.igHandle) {
+            // Last item - disconnect everything and close dialog
             setIsMetaConnected(false);
             setConnectedMetaPage(null);
+            setMetaDialogOpen(false);
           } else if (connectedMetaPage) {
+            // Keep dialog open, just remove Facebook
             setConnectedMetaPage({ ...connectedMetaPage, fbPageName: "" });
           }
         }}
         onDisconnectInstagram={() => {
           if (connectedMetaPage && !connectedMetaPage.fbPageName) {
+            // Last item - disconnect everything and close dialog
             setIsMetaConnected(false);
             setConnectedMetaPage(null);
+            setMetaDialogOpen(false);
           } else if (connectedMetaPage) {
+            // Keep dialog open, just remove Instagram
             setConnectedMetaPage({ ...connectedMetaPage, igHandle: undefined });
           }
         }}
