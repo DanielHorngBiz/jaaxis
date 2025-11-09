@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Facebook, Instagram, Check } from "lucide-react";
 import { useState } from "react";
@@ -81,8 +81,8 @@ const ConnectMetaDialog = ({
     onDisconnectInstagram?.();
   };
 
-  // Show management view only if we have a connected page AND we're in manage mode
-  if (connectedPage && manageMode) {
+  // Show management view only if dialog is open AND we have a connected page AND we're in manage mode
+  if (open && connectedPage && manageMode) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-[540px] p-0 gap-0">
@@ -90,9 +90,9 @@ const ConnectMetaDialog = ({
             <DialogTitle className="text-xl font-semibold">
               Manage Connected Platforms
             </DialogTitle>
-            <p className="text-sm text-muted-foreground mt-2">
+            <DialogDescription className="text-sm mt-2">
               Disconnect individual platforms if needed
-            </p>
+            </DialogDescription>
           </DialogHeader>
 
           <div className="px-8 py-6 space-y-4">
@@ -159,9 +159,9 @@ const ConnectMetaDialog = ({
           <DialogTitle className="text-xl font-semibold">
             Connect Meta Platforms
           </DialogTitle>
-          <p className="text-sm text-muted-foreground mt-2">
+          <DialogDescription className="text-sm mt-2">
             Select the Facebook and Instagram pages you want to connect
-          </p>
+          </DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="max-h-[500px] px-8 py-4">
