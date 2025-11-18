@@ -241,7 +241,7 @@ const Auth = () => {
                     onChange={(e) => setFirstName(e.target.value)}
                     required
                     disabled={isLoading}
-                    className="mt-1.5 transition-all focus:scale-[1.02]"
+                    className="mt-1.5"
                   />
                 </div>
                 <div>
@@ -253,7 +253,7 @@ const Auth = () => {
                     onChange={(e) => setLastName(e.target.value)}
                     required
                     disabled={isLoading}
-                    className="mt-1.5 transition-all focus:scale-[1.02]"
+                    className="mt-1.5"
                   />
                 </div>
               </div>
@@ -268,7 +268,7 @@ const Auth = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
-                className="mt-1.5 transition-all focus:scale-[1.02]"
+                className="mt-1.5"
                 placeholder="you@example.com"
               />
             </div>
@@ -283,7 +283,7 @@ const Auth = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="pr-10 transition-all focus:scale-[1.02]"
+                  className="pr-10"
                   placeholder={isLogin ? "Enter your password" : "Min. 6 characters"}
                 />
                 <button
