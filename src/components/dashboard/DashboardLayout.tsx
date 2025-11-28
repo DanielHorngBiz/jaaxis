@@ -154,7 +154,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           ))}
         </div>
 
-        <div className="p-4 border-t border-border">
+        <div className="p-3 border-t border-border">
           <Popover>
             <PopoverTrigger asChild>
               {isCollapsed ? (
