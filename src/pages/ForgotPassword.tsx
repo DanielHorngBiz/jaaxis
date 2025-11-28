@@ -74,11 +74,8 @@ const ForgotPassword = () => {
 
           {!isSuccess ? (
             <>
-              <div className="text-center mb-6">
-                <h1 className="text-2xl font-bold text-foreground mb-2">Reset password</h1>
-                <p className="text-sm text-muted-foreground">
-                  Enter your email and we'll send you a reset link
-                </p>
+              <div className="mb-6 border-b border-border/40 pb-3">
+                <h1 className="text-base font-medium text-foreground text-center">Reset password</h1>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
