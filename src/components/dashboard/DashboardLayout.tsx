@@ -133,7 +133,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 }
                 // If already on this bot's settings page, do nothing
               }}
-              className={`flex items-center ${isCollapsed ? 'justify-center p-2' : 'gap-3 p-3'} rounded-lg transition-all hover:bg-secondary/80 cursor-pointer ${
+              className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} p-3 rounded-lg transition-all hover:bg-secondary/80 cursor-pointer ${
                 location.pathname.includes(bot.slug) ? "bg-secondary shadow-sm" : ""
               }`}
               title={isCollapsed ? bot.name : undefined}
