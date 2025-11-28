@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -315,18 +315,12 @@ const Auth = () => {
                     Remember me
                   </Label>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    toast({
-                      title: "Password reset",
-                      description: "Check your email for a password reset link",
-                    });
-                  }}
+                <Link
+                  to="/forgot-password"
                   className="text-sm text-primary hover:underline"
                 >
                   Forgot password?
-                </button>
+                </Link>
               </div>
             )}
 
