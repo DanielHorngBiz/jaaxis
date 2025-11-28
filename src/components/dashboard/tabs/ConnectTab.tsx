@@ -20,7 +20,11 @@ const ConnectTab = () => {
   const [embedType, setEmbedType] = useState<"widget" | "iframe">("widget");
   const [metaDialogOpen, setMetaDialogOpen] = useState(false);
   const [isMetaConnected, setIsMetaConnected] = useState(false);
-  const [connectedMetaPage, setConnectedMetaPage] = useState<{ id: string; fbPageName: string; igHandle?: string } | null>(null);
+  const [connectedMetaPage, setConnectedMetaPage] = useState<{
+    id: string;
+    fbPageName: string;
+    igHandle?: string;
+  } | null>(null);
   const [metaManageMode, setMetaManageMode] = useState(false);
 
   // Form state
@@ -110,12 +114,10 @@ const ConnectTab = () => {
     setStep(2);
     setIsDialogOpen(true);
   };
-
   const openEmbedDialog = (type: "widget" | "iframe") => {
     setEmbedType(type);
     setEmbedDialogOpen(true);
   };
-
   return <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Chat Widget */}
@@ -154,14 +156,23 @@ const ConnectTab = () => {
                   <Instagram className="w-7 h-7 text-pink-600" />
                 </div>
               </div>
-              {isMetaConnected && <Button variant="ghost" size="icon" className="h-10 w-10 -mt-1 -mr-1" onClick={() => { setMetaManageMode(true); setMetaDialogOpen(true); }}>
+              {isMetaConnected && <Button variant="ghost" size="icon" className="h-10 w-10 -mt-1 -mr-1" onClick={() => {
+              setMetaManageMode(true);
+              setMetaDialogOpen(true);
+            }}>
                   <Settings className="w-8 h-8" />
                 </Button>}
             </div>
-            <h3 className="font-semibold text-lg mb-2">Connect Meta Platforms</h3>
+            <h3 className="font-semibold text-lg mb-2">Meta Platforms</h3>
             <p className="text-sm text-muted-foreground mb-6 flex-1">Connect to Messenger and Instagram</p>
-            {!isMetaConnected && <Button variant="outline" className="w-full" onClick={() => { setMetaManageMode(false); setMetaDialogOpen(true); }}>Connect</Button>}
-            {isMetaConnected && <Button variant="secondary" className="w-full" onClick={() => { setIsMetaConnected(false); setConnectedMetaPage(null); }}>
+            {!isMetaConnected && <Button variant="outline" className="w-full" onClick={() => {
+            setMetaManageMode(false);
+            setMetaDialogOpen(true);
+          }}>Connect</Button>}
+            {isMetaConnected && <Button variant="secondary" className="w-full" onClick={() => {
+            setIsMetaConnected(false);
+            setConnectedMetaPage(null);
+          }}>
                 Disconnect
               </Button>}
           </CardContent>
@@ -325,55 +336,49 @@ const ConnectTab = () => {
       </div>
 
       {/* Embed Code Dialog */}
-      <EmbedCodeDialog 
-        open={embedDialogOpen} 
-        onOpenChange={setEmbedDialogOpen}
-        type={embedType}
-      />
+      <EmbedCodeDialog open={embedDialogOpen} onOpenChange={setEmbedDialogOpen} type={embedType} />
 
       {/* Connect Meta Dialog */}
-      <ConnectMetaDialog 
-        open={metaDialogOpen} 
-        onOpenChange={setMetaDialogOpen}
-        connectedPage={connectedMetaPage}
-        manageMode={metaManageMode}
-        onConnect={(page) => {
+      <ConnectMetaDialog open={metaDialogOpen} onOpenChange={setMetaDialogOpen} connectedPage={connectedMetaPage} manageMode={metaManageMode} onConnect={page => {
+      setMetaManageMode(false);
+      setMetaDialogOpen(false);
+      setTimeout(() => {
+        setIsMetaConnected(true);
+        setConnectedMetaPage(page);
+      }, 0);
+    }} onDisconnectFacebook={() => {
+      if (connectedMetaPage && !connectedMetaPage.igHandle) {
+        // Last item - close dialog first, then reset state
+        setMetaDialogOpen(false);
+        setTimeout(() => {
+          setIsMetaConnected(false);
+          setConnectedMetaPage(null);
           setMetaManageMode(false);
-          setMetaDialogOpen(false);
-          setTimeout(() => {
-            setIsMetaConnected(true);
-            setConnectedMetaPage(page);
-          }, 0);
-        }}
-        onDisconnectFacebook={() => {
-          if (connectedMetaPage && !connectedMetaPage.igHandle) {
-            // Last item - close dialog first, then reset state
-            setMetaDialogOpen(false);
-            setTimeout(() => {
-              setIsMetaConnected(false);
-              setConnectedMetaPage(null);
-              setMetaManageMode(false);
-            }, 0);
-          } else if (connectedMetaPage) {
-            // Keep dialog open, just remove Facebook
-            setConnectedMetaPage({ ...connectedMetaPage, fbPageName: "" });
-          }
-        }}
-        onDisconnectInstagram={() => {
-          if (connectedMetaPage && !connectedMetaPage.fbPageName) {
-            // Last item - close dialog first, then reset state
-            setMetaDialogOpen(false);
-            setTimeout(() => {
-              setIsMetaConnected(false);
-              setConnectedMetaPage(null);
-              setMetaManageMode(false);
-            }, 0);
-          } else if (connectedMetaPage) {
-            // Keep dialog open, just remove Instagram
-            setConnectedMetaPage({ ...connectedMetaPage, igHandle: undefined });
-          }
-        }}
-      />
+        }, 0);
+      } else if (connectedMetaPage) {
+        // Keep dialog open, just remove Facebook
+        setConnectedMetaPage({
+          ...connectedMetaPage,
+          fbPageName: ""
+        });
+      }
+    }} onDisconnectInstagram={() => {
+      if (connectedMetaPage && !connectedMetaPage.fbPageName) {
+        // Last item - close dialog first, then reset state
+        setMetaDialogOpen(false);
+        setTimeout(() => {
+          setIsMetaConnected(false);
+          setConnectedMetaPage(null);
+          setMetaManageMode(false);
+        }, 0);
+      } else if (connectedMetaPage) {
+        // Keep dialog open, just remove Instagram
+        setConnectedMetaPage({
+          ...connectedMetaPage,
+          igHandle: undefined
+        });
+      }
+    }} />
     </div>;
 };
 export default ConnectTab;
