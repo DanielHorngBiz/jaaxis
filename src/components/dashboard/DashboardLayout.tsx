@@ -108,7 +108,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
         <div className="px-4 mb-6">
           <Button 
-            className={`${isCollapsed ? 'w-9 h-9 p-0' : 'w-full'} gap-2 shadow-sm`} 
+            className={`${isCollapsed ? 'w-9 p-0' : 'w-full'} h-9 gap-2 shadow-sm`} 
             size={isCollapsed ? "icon" : "sm"}
             onClick={() => setCreateDialogOpen(true)}
           >
