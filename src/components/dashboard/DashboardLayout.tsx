@@ -158,7 +158,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <Popover>
             <PopoverTrigger asChild>
               {isCollapsed ? (
-                <button className="w-full flex justify-center hover:bg-secondary/50 p-2 rounded-lg transition-colors">
+                <button className="w-full flex justify-center items-center hover:bg-secondary/50 p-2 rounded-lg transition-colors min-h-[60px]">
                   {profile?.avatar_url ? (
                     <div className="w-9 h-9 rounded-full overflow-hidden shadow-sm flex-shrink-0">
                       <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
@@ -170,7 +170,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   )}
                 </button>
               ) : (
-                <button className="w-full flex items-center gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors">
+                <button className="w-full flex items-center gap-3 p-3 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors min-h-[60px]">
                   {profile?.avatar_url ? (
                     <div className="w-9 h-9 rounded-full overflow-hidden shadow-sm flex-shrink-0">
                       <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
