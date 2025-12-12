@@ -39,8 +39,11 @@ const Landing = () => {
       mobileMenu?.classList.toggle('hidden');
     });
 
-    // GSAP ScrollTrigger for Features
+    // GSAP ScrollTrigger for Features - only on desktop
     const initGSAP = () => {
+      // Skip on mobile
+      if (window.innerWidth < 1024) return;
+      
       if (typeof window !== 'undefined' && (window as any).gsap && (window as any).ScrollTrigger) {
         const gsap = (window as any).gsap;
         const ScrollTrigger = (window as any).ScrollTrigger;
@@ -51,17 +54,27 @@ const Landing = () => {
 
         const featureCards = featuresSection.querySelectorAll('.feature-card');
         const featureVideos = featuresSection.querySelectorAll('.feature-video');
+        const step = window.innerHeight * 1.2;
+        const totalScrollDistance = featureCards.length * step;
+
+        // Set first video and card as active initially
+        featureCards[0]?.classList.add('feature-active');
+        featureVideos[0]?.classList.add('opacity-100');
+        (featureVideos[0] as HTMLVideoElement)?.play?.();
 
         ScrollTrigger.create({
           trigger: featuresSection,
           start: "top top",
-          end: `+=${featureCards.length * 100}%`,
+          end: `+=${totalScrollDistance + window.innerHeight * 0.5}`,
           pin: true,
-          scrub: 1,
+          pinSpacing: true,
+          scrub: 0.5,
+          anticipatePin: 1,
           onUpdate: (self: any) => {
             const progress = self.progress;
+            const exactPosition = progress * featureCards.length;
             const activeIndex = Math.min(
-              Math.floor(progress * featureCards.length),
+              Math.floor(exactPosition),
               featureCards.length - 1
             );
 
@@ -76,13 +89,18 @@ const Landing = () => {
             });
 
             featureVideos.forEach((video: Element, i: number) => {
+              const videoEl = video as HTMLVideoElement;
               if (i === activeIndex) {
                 video.classList.remove('opacity-0');
                 video.classList.add('opacity-100');
-                (video as HTMLVideoElement).play?.();
+                if (videoEl.paused) {
+                  videoEl.currentTime = 0;
+                  videoEl.play?.().catch(() => {});
+                }
               } else {
                 video.classList.add('opacity-0');
                 video.classList.remove('opacity-100');
+                videoEl.pause?.();
               }
             });
           }
@@ -97,13 +115,23 @@ const Landing = () => {
       gsapScript.onload = () => {
         const stScript = document.createElement('script');
         stScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js';
-        stScript.onload = initGSAP;
+        stScript.onload = () => {
+          // Small delay to ensure DOM is ready
+          setTimeout(initGSAP, 100);
+        };
         document.head.appendChild(stScript);
       };
       document.head.appendChild(gsapScript);
     } else {
-      initGSAP();
+      setTimeout(initGSAP, 100);
     }
+
+    // Cleanup
+    return () => {
+      if ((window as any).ScrollTrigger) {
+        (window as any).ScrollTrigger.getAll().forEach((t: any) => t.kill());
+      }
+    };
   }, []);
 
   return (
@@ -463,8 +491,7 @@ const Landing = () => {
           overflow: hidden;
           border: 1px solid var(--wp-border);
           background: var(--wp-foreground);
-          position: sticky;
-          top: 100px;
+          position: relative;
           box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
         }
         
@@ -475,10 +502,16 @@ const Landing = () => {
           transition: opacity 0.5s;
         }
         
+        .feature-video:not(:first-child) {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+        }
+        
         .feature-video.opacity-0 {
           opacity: 0;
-          position: absolute;
-          inset: 0;
+          pointer-events: none;
         }
         
         .feature-video.opacity-100 {
