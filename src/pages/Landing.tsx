@@ -518,7 +518,6 @@ const Landing = () => {
           stroke-width: 3px;
           stroke-linecap: round;
           opacity: 0.8;
-          vector-effect: non-scaling-stroke;
         }
         
         /* Collapsible description */
@@ -970,7 +969,7 @@ const Landing = () => {
             <div className="wp-features-list">
               <div className="feature-card feature-active" data-progress="0">
                 <svg className="feature-progress-svg" preserveAspectRatio="none">
-                  <rect className="feature-progress-rect" x="1.5" y="1.5" rx="12" ry="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" style={{ width: 'calc(100% - 3px)', height: 'calc(100% - 3px)' }} />
+                  <rect className="feature-progress-rect" x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="12" ry="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" />
                 </svg>
                 <h3>Launch in Minutes</h3>
                 <div className="feature-description">
@@ -981,7 +980,7 @@ const Landing = () => {
               </div>
               <div className="feature-card" data-progress="0">
                 <svg className="feature-progress-svg" preserveAspectRatio="none">
-                  <rect className="feature-progress-rect" x="1.5" y="1.5" rx="12" ry="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" style={{ width: 'calc(100% - 3px)', height: 'calc(100% - 3px)' }} />
+                  <rect className="feature-progress-rect" x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="12" ry="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" />
                 </svg>
                 <h3>Smart Store Integration</h3>
                 <div className="feature-description">
@@ -992,7 +991,7 @@ const Landing = () => {
               </div>
               <div className="feature-card" data-progress="0">
                 <svg className="feature-progress-svg" preserveAspectRatio="none">
-                  <rect className="feature-progress-rect" x="1.5" y="1.5" rx="12" ry="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" style={{ width: 'calc(100% - 3px)', height: 'calc(100% - 3px)' }} />
+                  <rect className="feature-progress-rect" x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="12" ry="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" />
                 </svg>
                 <h3>Learn From Every Chat</h3>
                 <div className="feature-description">
@@ -1003,7 +1002,7 @@ const Landing = () => {
               </div>
               <div className="feature-card" data-progress="0">
                 <svg className="feature-progress-svg" preserveAspectRatio="none">
-                  <rect className="feature-progress-rect" x="1.5" y="1.5" rx="12" ry="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" style={{ width: 'calc(100% - 3px)', height: 'calc(100% - 3px)' }} />
+                  <rect className="feature-progress-rect" x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="12" ry="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" />
                 </svg>
                 <h3>Seamless Human Handoff</h3>
                 <div className="feature-description">
