@@ -180,7 +180,7 @@ const Landing = () => {
         }
         
         .wp-nav-links a:hover {
-          color: #7c3aed;
+          color: #3B82F6;
         }
         
         .wp-nav-buttons {
@@ -210,14 +210,14 @@ const Landing = () => {
         }
         
         .wp-btn-primary {
-          background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+          background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%);
           color: white;
           border: none;
         }
         
         .wp-btn-primary:hover {
           transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
         }
         
         .wp-mobile-menu-btn {
@@ -250,10 +250,10 @@ const Landing = () => {
           align-items: center;
           gap: 8px;
           padding: 6px 14px;
-          background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+          background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(96, 165, 250, 0.1) 100%);
           border-radius: 100px;
           font-size: 13px;
-          color: #7c3aed;
+          color: #3B82F6;
           font-weight: 500;
           margin-bottom: 24px;
         }
@@ -267,7 +267,7 @@ const Landing = () => {
         }
         
         .wp-hero h1 span {
-          background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+          background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -394,8 +394,8 @@ const Landing = () => {
         
         .feature-card:hover,
         .feature-card.feature-active {
-          border-color: #7c3aed;
-          box-shadow: 0 4px 20px rgba(124, 58, 237, 0.15);
+          border-color: #3B82F6;
+          box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
         }
         
         .feature-card.feature-inactive {
@@ -491,8 +491,8 @@ const Landing = () => {
         }
         
         .wp-pricing-card.popular {
-          border-color: #7c3aed;
-          box-shadow: 0 0 0 1px #7c3aed;
+          border-color: #3B82F6;
+          box-shadow: 0 0 0 1px #3B82F6;
         }
         
         .wp-popular-badge {
@@ -500,7 +500,7 @@ const Landing = () => {
           top: -12px;
           left: 50%;
           transform: translateX(-50%);
-          background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+          background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%);
           color: white;
           padding: 6px 16px;
           border-radius: 100px;
@@ -550,7 +550,7 @@ const Landing = () => {
         
         .wp-pricing-features li::before {
           content: "✓";
-          color: #7c3aed;
+          color: #3B82F6;
           font-weight: 600;
         }
         
@@ -609,7 +609,7 @@ const Landing = () => {
         
         .faq-icon {
           font-size: 24px;
-          color: #7c3aed;
+          color: #3B82F6;
           font-weight: 300;
         }
         
@@ -672,7 +672,7 @@ const Landing = () => {
         }
         
         .wp-footer-links a:hover {
-          color: #7c3aed;
+          color: #3B82F6;
         }
         
         .wp-footer-bottom {
@@ -699,7 +699,7 @@ const Landing = () => {
         }
         
         .wp-footer-social a:hover {
-          color: #7c3aed;
+          color: #3B82F6;
         }
         
         @media (max-width: 768px) {
