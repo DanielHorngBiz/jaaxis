@@ -77,14 +77,26 @@ const Landing = () => {
               Math.floor(exactPosition),
               featureCards.length - 1
             );
+            // Calculate progress within current feature (0-400 for strokeDashoffset)
+            const progressWithinFeature = (exactPosition - activeIndex) * 400;
 
             featureCards.forEach((card: Element, i: number) => {
+              const progressRect = card.querySelector('.feature-progress-rect') as SVGRectElement;
+              
               if (i === activeIndex) {
                 card.classList.add('feature-active');
                 card.classList.remove('feature-inactive');
+                // Update progress bar - strokeDashoffset goes from 400 to 0
+                if (progressRect) {
+                  progressRect.style.strokeDashoffset = String(400 - progressWithinFeature);
+                }
               } else {
                 card.classList.remove('feature-active');
                 card.classList.add('feature-inactive');
+                // Reset progress bar for inactive cards
+                if (progressRect) {
+                  progressRect.style.strokeDashoffset = '400';
+                }
               }
             });
 
@@ -460,9 +472,9 @@ const Landing = () => {
           background: var(--wp-card);
           cursor: pointer;
           transition: all 0.3s;
+          position: relative;
         }
         
-        .feature-card:hover,
         .feature-card.feature-active {
           border-color: var(--wp-primary);
           background: rgba(var(--wp-primary-rgb), 0.05);
@@ -476,14 +488,59 @@ const Landing = () => {
         .feature-card h3 {
           font-size: 18px;
           font-weight: 700;
-          margin-bottom: 12px;
           color: var(--wp-foreground);
+          transition: color 0.3s;
         }
         
-        .feature-card p {
+        .feature-card.feature-inactive h3 {
+          color: rgba(26, 26, 46, 0.7);
+        }
+        
+        /* Progress border SVG */
+        .feature-progress-svg {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          opacity: 0;
+          transition: opacity 0.3s;
+        }
+        
+        .feature-card.feature-active .feature-progress-svg {
+          opacity: 1;
+        }
+        
+        .feature-progress-rect {
+          fill: none;
+          stroke: var(--wp-primary);
+          stroke-width: 3;
+          stroke-linecap: round;
+          opacity: 0.8;
+        }
+        
+        /* Collapsible description */
+        .feature-description {
+          display: grid;
+          grid-template-rows: 0fr;
+          transition: grid-template-rows 0.3s ease, margin-top 0.3s ease;
+          margin-top: 0;
+        }
+        
+        .feature-card.feature-active .feature-description {
+          grid-template-rows: 1fr;
+          margin-top: 12px;
+        }
+        
+        .feature-description-inner {
+          overflow: hidden;
+        }
+        
+        .feature-description p {
           font-size: 14px;
           color: var(--wp-muted);
           line-height: 1.6;
+          margin: 0;
         }
         
         .wp-features-video-container {
@@ -909,21 +966,49 @@ const Landing = () => {
           </div>
           <div className="wp-features-grid">
             <div className="wp-features-list">
-              <div className="feature-card feature-active">
+              <div className="feature-card feature-active" data-progress="0">
+                <svg className="feature-progress-svg" preserveAspectRatio="none">
+                  <rect className="feature-progress-rect" x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" />
+                </svg>
                 <h3>Launch in Minutes</h3>
-                <p>Turn your docs into an AI agent and deploy across web, Messenger, and Instagram instantly.</p>
+                <div className="feature-description">
+                  <div className="feature-description-inner">
+                    <p>Turn your docs into an AI agent and deploy across web, Messenger, and Instagram instantly.</p>
+                  </div>
+                </div>
               </div>
-              <div className="feature-card">
+              <div className="feature-card" data-progress="0">
+                <svg className="feature-progress-svg" preserveAspectRatio="none">
+                  <rect className="feature-progress-rect" x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" />
+                </svg>
                 <h3>Smart Store Integration</h3>
-                <p>Connect with Shopify and WooCommerce so your AI handles orders, refunds, and support automatically.</p>
+                <div className="feature-description">
+                  <div className="feature-description-inner">
+                    <p>Connect with Shopify and WooCommerce so your AI handles orders, refunds, and support automatically.</p>
+                  </div>
+                </div>
               </div>
-              <div className="feature-card">
+              <div className="feature-card" data-progress="0">
+                <svg className="feature-progress-svg" preserveAspectRatio="none">
+                  <rect className="feature-progress-rect" x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" />
+                </svg>
                 <h3>Learn From Every Chat</h3>
-                <p>Edit past conversations to improve responses. No training required, changes apply instantly.</p>
+                <div className="feature-description">
+                  <div className="feature-description-inner">
+                    <p>Edit past conversations to improve responses. No training required, changes apply instantly.</p>
+                  </div>
+                </div>
               </div>
-              <div className="feature-card">
+              <div className="feature-card" data-progress="0">
+                <svg className="feature-progress-svg" preserveAspectRatio="none">
+                  <rect className="feature-progress-rect" x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" />
+                </svg>
                 <h3>Seamless Human Handoff</h3>
-                <p>Set custom rules to route complex cases to your team while capturing customer details automatically.</p>
+                <div className="feature-description">
+                  <div className="feature-description-inner">
+                    <p>Set custom rules to route complex cases to your team while capturing customer details automatically.</p>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="wp-features-video-container">
