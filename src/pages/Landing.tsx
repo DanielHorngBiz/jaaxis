@@ -514,8 +514,8 @@ const Landing = () => {
         .feature-progress-rect {
           fill: none;
           stroke: var(--wp-primary);
-          stroke-width: 3;
-          stroke-linecap: round;
+          stroke-width: 2;
+          stroke-linejoin: round;
           opacity: 0.8;
         }
         
@@ -967,8 +967,8 @@ const Landing = () => {
           <div className="wp-features-grid">
             <div className="wp-features-list">
               <div className="feature-card feature-active" data-progress="0">
-                <svg className="feature-progress-svg" preserveAspectRatio="none">
-                  <rect className="feature-progress-rect" x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" />
+                <svg className="feature-progress-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <rect className="feature-progress-rect" x="1" y="1" width="98" height="98" rx="12" ry="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" />
                 </svg>
                 <h3>Launch in Minutes</h3>
                 <div className="feature-description">
@@ -978,8 +978,8 @@ const Landing = () => {
                 </div>
               </div>
               <div className="feature-card" data-progress="0">
-                <svg className="feature-progress-svg" preserveAspectRatio="none">
-                  <rect className="feature-progress-rect" x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" />
+                <svg className="feature-progress-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <rect className="feature-progress-rect" x="1" y="1" width="98" height="98" rx="12" ry="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" />
                 </svg>
                 <h3>Smart Store Integration</h3>
                 <div className="feature-description">
@@ -989,8 +989,8 @@ const Landing = () => {
                 </div>
               </div>
               <div className="feature-card" data-progress="0">
-                <svg className="feature-progress-svg" preserveAspectRatio="none">
-                  <rect className="feature-progress-rect" x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" />
+                <svg className="feature-progress-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <rect className="feature-progress-rect" x="1" y="1" width="98" height="98" rx="12" ry="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" />
                 </svg>
                 <h3>Learn From Every Chat</h3>
                 <div className="feature-description">
@@ -1000,8 +1000,8 @@ const Landing = () => {
                 </div>
               </div>
               <div className="feature-card" data-progress="0">
-                <svg className="feature-progress-svg" preserveAspectRatio="none">
-                  <rect className="feature-progress-rect" x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" />
+                <svg className="feature-progress-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <rect className="feature-progress-rect" x="1" y="1" width="98" height="98" rx="12" ry="12" pathLength="400" strokeDasharray="400" strokeDashoffset="400" />
                 </svg>
                 <h3>Seamless Human Handoff</h3>
                 <div className="feature-description">
