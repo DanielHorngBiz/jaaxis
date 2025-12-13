@@ -8,13 +8,13 @@ const Footer = () => {
         <div className="flex flex-col gap-8 sm:gap-10 lg:gap-12">
           {/* Top section - Logo and Navigation */}
           <div className="flex flex-col md:flex-row justify-between gap-8 md:gap-12">
-            {/* Logo - centered on mobile */}
-            <div className="flex flex-col items-center md:items-start">
+            {/* Logo */}
+            <div>
               <img src={logo} alt="Jaaxis" className="h-7 sm:h-8" />
             </div>
 
             {/* Navigation columns */}
-            <div className="grid grid-cols-3 gap-8 sm:gap-10 md:gap-12 lg:gap-16 text-center md:text-left">
+            <div className="grid grid-cols-3 gap-8 sm:gap-10 md:gap-12 lg:gap-16">
               <div>
                 <h3 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base text-foreground">Product</h3>
                 <ul className="space-y-2 sm:space-y-3">
@@ -76,12 +76,12 @@ const Footer = () => {
           </div>
 
           {/* Bottom section - Copyright, Language & Social */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-border">
-            <p className="text-muted-foreground text-xs sm:text-sm order-2 sm:order-1">
+          <div className="flex flex-col-reverse sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 border-t border-border">
+            <p className="text-muted-foreground text-xs sm:text-sm">
               © 2025 All Rights Reserved.
             </p>
             
-            <div className="flex items-center gap-4 order-1 sm:order-2">
+            <div className="flex items-center gap-4">
               <select className="bg-background border border-border rounded-md px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm text-foreground">
                 <option>English</option>
               </select>
