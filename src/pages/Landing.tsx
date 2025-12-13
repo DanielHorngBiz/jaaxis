@@ -932,12 +932,12 @@ const Landing = () => {
           opacity: 1;
         }
         
-        .wp-footer-social a {
+        .wp-footer-social a:not(.wp-lang-option) {
           color: var(--wp-primary);
           transition: opacity 0.2s;
         }
         
-        .wp-footer-social a:hover {
+        .wp-footer-social a:not(.wp-lang-option):hover {
           opacity: 0.8;
         }
         
