@@ -180,8 +180,8 @@ const Features = () => {
 
 
   return (
-    <section ref={sectionRef} id="features" className="relative bg-background pb-16 sm:pb-24 md:pb-48 lg:pb-0">
-      <div className="min-h-[auto] lg:min-h-screen py-12 sm:py-16 lg:py-24 px-4 sm:px-6 lg:px-8 flex items-center mb-12 sm:mb-24 md:mb-32 lg:mb-0">
+    <section ref={sectionRef} id="features" className="relative bg-background pb-16 sm:pb-24 md:pb-48 lg:pb-0 min-h-[200vh] sm:min-h-[250vh] lg:min-h-0">
+      <div className="min-h-[auto] lg:min-h-screen py-12 sm:py-16 lg:py-24 px-4 sm:px-6 lg:px-8 flex items-start lg:items-center mb-12 sm:mb-24 md:mb-32 lg:mb-0">
       <div ref={contentRef} className="max-w-5xl mx-auto w-full">
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-12 lg:mb-16">
@@ -268,7 +268,7 @@ const Features = () => {
               </div>
 
               {/* RIGHT: Video display - All videos preloaded */}
-              <div className="relative lg:pl-16 order-first lg:order-last">
+              <div className="relative lg:pl-16 order-first lg:order-last sticky top-24 lg:static">
                 <div className="w-full rounded-lg sm:rounded-xl lg:rounded-2xl border border-border overflow-hidden shadow-lg sm:shadow-xl relative">
                   {features.map((feature, index) => (
                     <video
