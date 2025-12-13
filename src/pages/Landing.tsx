@@ -1291,13 +1291,13 @@ const Landing = () => {
                     </svg>
                   </button>
                   <div className="wp-lang-menu">
-                    <a href="/" className="wp-lang-option active">
+                    <a href="/" className="wp-lang-option active" onClick={(e) => { e.preventDefault(); window.location.href = '/'; }}>
                       <span>English</span>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="20 6 9 17 4 12"></polyline>
                       </svg>
                     </a>
-                    <a href="/zh-hant" className="wp-lang-option">
+                    <a href="/zh-hant" className="wp-lang-option" onClick={(e) => { e.preventDefault(); window.location.href = '/zh-hant'; }}>
                       <span>繁體中文</span>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="20 6 9 17 4 12"></polyline>
