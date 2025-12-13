@@ -928,6 +928,10 @@ const LandingZhHant = () => {
           color: var(--wp-primary);
         }
         
+        .wp-lang-option:not(.active):hover {
+          color: var(--wp-foreground);
+        }
+        
         .wp-lang-option svg {
           width: 16px;
           height: 16px;
