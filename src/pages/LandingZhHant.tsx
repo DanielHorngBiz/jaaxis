@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import jaaxisLogo from "@/assets/jaxxis-logo.png";
 
-const Landing = () => {
+const LandingZhHant = () => {
   const featuresRef = useRef<HTMLDivElement>(null);
   const faqRef = useRef<HTMLDivElement>(null);
 
@@ -121,33 +121,43 @@ const Landing = () => {
               if (i === activeIndex) {
                 card.classList.add('feature-active');
                 card.classList.remove('feature-inactive');
-                // Update progress bar - strokeDashoffset goes from 400 to 0
+                // Animate the progress border
                 if (progressRect) {
                   progressRect.style.strokeDashoffset = String(400 - progressWithinFeature);
                 }
-              } else {
+                // Play video
+                const video = featureVideos[i] as HTMLVideoElement;
+                if (video) {
+                  video.classList.remove('opacity-0');
+                  video.classList.add('opacity-100');
+                  video.play?.();
+                }
+              } else if (i < activeIndex) {
+                // Completed features - full border
                 card.classList.remove('feature-active');
                 card.classList.add('feature-inactive');
-                // Reset progress bar for inactive cards
+                if (progressRect) {
+                  progressRect.style.strokeDashoffset = '0';
+                }
+                const video = featureVideos[i] as HTMLVideoElement;
+                if (video) {
+                  video.classList.add('opacity-0');
+                  video.classList.remove('opacity-100');
+                  video.pause?.();
+                }
+              } else {
+                // Future features - no border
+                card.classList.remove('feature-active');
+                card.classList.remove('feature-inactive');
                 if (progressRect) {
                   progressRect.style.strokeDashoffset = '400';
                 }
-              }
-            });
-
-            featureVideos.forEach((video: Element, i: number) => {
-              const videoEl = video as HTMLVideoElement;
-              if (i === activeIndex) {
-                video.classList.remove('opacity-0');
-                video.classList.add('opacity-100');
-                if (videoEl.paused) {
-                  videoEl.currentTime = 0;
-                  videoEl.play?.().catch(() => {});
+                const video = featureVideos[i] as HTMLVideoElement;
+                if (video) {
+                  video.classList.add('opacity-0');
+                  video.classList.remove('opacity-100');
+                  video.pause?.();
                 }
-              } else {
-                video.classList.add('opacity-0');
-                video.classList.remove('opacity-100');
-                videoEl.pause?.();
               }
             });
           }
@@ -998,6 +1008,9 @@ const Landing = () => {
           background: var(--wp-background);
           border-bottom: 1px solid var(--wp-border);
           padding: 16px 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
           z-index: 999;
         }
         
@@ -1006,15 +1019,17 @@ const Landing = () => {
         }
         
         .wp-mobile-menu a {
-          display: block;
-          padding: 12px 0;
           color: var(--wp-muted);
           text-decoration: none;
           font-size: 14px;
+          padding: 12px;
+          border-radius: 6px;
+          transition: all 0.2s;
         }
         
         .wp-mobile-menu a:hover {
           color: var(--wp-foreground);
+          background: var(--wp-secondary);
         }
       `}} />
 
@@ -1023,19 +1038,19 @@ const Landing = () => {
         <header>
         <nav className="wp-navbar">
           <div className="wp-navbar-inner">
-            <a href="/">
+            <a href="/zh-hant">
               <img src={jaaxisLogo} alt="Jaaxis" className="wp-logo" />
             </a>
             
             <ul className="wp-nav-links">
-              <li><a href="#features">Features</a></li>
-              <li><a href="#pricing">Pricing</a></li>
-              <li><a href="#faq">Guide</a></li>
+              <li><a href="#features">功能特色</a></li>
+              <li><a href="#pricing">價格方案</a></li>
+              <li><a href="#faq">使用指南</a></li>
             </ul>
             
             <div className="wp-nav-buttons">
-              <a href="/auth" className="wp-btn wp-btn-ghost">Log In</a>
-              <a href="/auth" className="wp-btn wp-btn-primary">Sign Up</a>
+              <a href="/auth" className="wp-btn wp-btn-ghost">登入</a>
+              <a href="/auth" className="wp-btn wp-btn-primary">註冊</a>
             </div>
             
             <button className="wp-mobile-menu-btn" id="mobile-menu-button">
@@ -1046,11 +1061,11 @@ const Landing = () => {
           </div>
           
           <div className="wp-mobile-menu hidden" id="mobile-menu">
-            <a href="#features">Features</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#faq">Guide</a>
-            <a href="/auth">Log In</a>
-            <a href="/auth" className="wp-btn wp-btn-primary" style={{ marginTop: '12px' }}>Sign Up</a>
+            <a href="#features">功能特色</a>
+            <a href="#pricing">價格方案</a>
+            <a href="#faq">使用指南</a>
+            <a href="/auth">登入</a>
+            <a href="/auth" className="wp-btn wp-btn-primary" style={{ marginTop: '12px' }}>註冊</a>
           </div>
         </nav>
         </header>
@@ -1059,15 +1074,15 @@ const Landing = () => {
         <section className="wp-hero">
           <div className="wp-hero-inner">
             <h1>
-              AI Customer Support<br />
-              <span>That Actually Works</span>
+              AI 客服支援<br />
+              <span>真正有效的解決方案</span>
             </h1>
             <p className="wp-hero-subtitle">
-              Automate customer conversations with intelligent AI that understands context, resolves issues instantly, and scales with your business.
+              透過智能 AI 自動化客戶對話，理解上下文、即時解決問題，並隨著您的業務規模擴展。
             </p>
             <div className="wp-hero-buttons">
               <a href="#pricing" className="wp-btn wp-btn-primary wp-btn-lg">
-                Get Started Free
+                免費開始使用
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginLeft: '8px' }}>
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
@@ -1080,10 +1095,10 @@ const Landing = () => {
                   <div className="wp-avatar"></div>
                   <div className="wp-avatar"></div>
                 </div>
-                <span>Trusted by 10,000+ teams</span>
+                <span>超過 10,000+ 團隊信賴使用</span>
               </div>
               <div className="wp-dot"></div>
-              <span>★★★★★ 4.9/5 rating</span>
+              <span>★★★★★ 4.9/5 評分</span>
             </div>
           </div>
           
@@ -1097,8 +1112,8 @@ const Landing = () => {
         {/* ========== FEATURES ========== */}
         <section className="wp-features" id="features" ref={featuresRef}>
           <div className="wp-features-header">
-            <div className="wp-section-badge">Features</div>
-            <h2>Powerful Features for<br />Modern Customer Support</h2>
+            <div className="wp-section-badge">功能特色</div>
+            <h2>現代化客服的<br />強大功能</h2>
           </div>
           <div className="wp-features-grid">
             <div className="wp-features-list">
@@ -1107,10 +1122,10 @@ const Landing = () => {
                   <rect x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="12" fill="none" stroke="hsl(221, 83%, 53%)" strokeWidth="3" pathLength="400" strokeDasharray="400" strokeDashoffset="400" strokeLinecap="round" style={{ opacity: 0.8 }} />
                 </svg>
                 <div className="feature-card">
-                  <h3>Launch in Minutes</h3>
+                  <h3>分鐘內快速上線</h3>
                   <div className="feature-description">
                     <div className="feature-description-inner">
-                      <p>Turn your docs into an AI agent and deploy across web, Messenger, and Instagram instantly.</p>
+                      <p>將您的文件轉換為 AI 智能客服，即時部署至網站、Messenger 和 Instagram。</p>
                     </div>
                   </div>
                 </div>
@@ -1120,10 +1135,10 @@ const Landing = () => {
                   <rect x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="12" fill="none" stroke="hsl(221, 83%, 53%)" strokeWidth="3" pathLength="400" strokeDasharray="400" strokeDashoffset="400" strokeLinecap="round" style={{ opacity: 0.8 }} />
                 </svg>
                 <div className="feature-card">
-                  <h3>Smart Store Integration</h3>
+                  <h3>智慧電商整合</h3>
                   <div className="feature-description">
                     <div className="feature-description-inner">
-                      <p>Connect with Shopify and WooCommerce so your AI handles orders, refunds, and support automatically.</p>
+                      <p>連接 Shopify 和 WooCommerce，讓 AI 自動處理訂單、退款和客戶支援。</p>
                     </div>
                   </div>
                 </div>
@@ -1133,10 +1148,10 @@ const Landing = () => {
                   <rect x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="12" fill="none" stroke="hsl(221, 83%, 53%)" strokeWidth="3" pathLength="400" strokeDasharray="400" strokeDashoffset="400" strokeLinecap="round" style={{ opacity: 0.8 }} />
                 </svg>
                 <div className="feature-card">
-                  <h3>Learn From Every Chat</h3>
+                  <h3>從對話中持續學習</h3>
                   <div className="feature-description">
                     <div className="feature-description-inner">
-                      <p>Edit past conversations to improve responses. No training required, changes apply instantly.</p>
+                      <p>編輯過去的對話來改善回應。無需額外訓練，修改即時生效。</p>
                     </div>
                   </div>
                 </div>
@@ -1146,10 +1161,10 @@ const Landing = () => {
                   <rect x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="12" fill="none" stroke="hsl(221, 83%, 53%)" strokeWidth="3" pathLength="400" strokeDasharray="400" strokeDashoffset="400" strokeLinecap="round" style={{ opacity: 0.8 }} />
                 </svg>
                 <div className="feature-card">
-                  <h3>Seamless Human Handoff</h3>
+                  <h3>無縫真人接手</h3>
                   <div className="feature-description">
                     <div className="feature-description-inner">
-                      <p>Set custom rules to route complex cases to your team while capturing customer details automatically.</p>
+                      <p>設定自訂規則，將複雜案例轉交給您的團隊，同時自動收集客戶資訊。</p>
                     </div>
                   </div>
                 </div>
@@ -1175,46 +1190,46 @@ const Landing = () => {
         {/* ========== PRICING ========== */}
         <section className="wp-pricing" id="pricing">
           <div className="wp-pricing-header">
-            <div className="wp-section-badge">Pricing</div>
-            <h2>Simple, transparent pricing</h2>
-            <p>Choose the plan that's right for your business. All plans include our core features.</p>
+            <div className="wp-section-badge">價格方案</div>
+            <h2>簡單透明的定價</h2>
+            <p>選擇適合您業務的方案。所有方案都包含核心功能。</p>
           </div>
           <div className="wp-pricing-grid">
             <div className="wp-pricing-card">
-              <h3>Basic</h3>
-              <div className="price">$19<span>/month</span></div>
-              <a href="/auth" className="wp-btn wp-btn-outline wp-btn-full">7-Day Free Trial</a>
+              <h3>基本版</h3>
+              <div className="price">$19<span>/月</span></div>
+              <a href="/auth" className="wp-btn wp-btn-outline wp-btn-full">7 天免費試用</a>
               <ul className="wp-pricing-features">
-                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>300 replies per month</li>
-                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>1 AI bot</li>
-                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>Unlimited knowledge</li>
-                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>Access to all integrations</li>
-                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>$10 per 100 additional replies</li>
+                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>每月 300 次回覆</li>
+                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>1 個 AI 機器人</li>
+                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>無限知識庫</li>
+                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>所有整合功能</li>
+                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>每 100 次額外回覆 $10</li>
               </ul>
             </div>
             <div className="wp-pricing-card popular">
-              <div className="wp-popular-badge">Most Popular</div>
-              <h3>Pro</h3>
-              <div className="price">$49<span>/month</span></div>
-              <a href="/auth" className="wp-btn wp-btn-primary wp-btn-full">Get Started</a>
+              <div className="wp-popular-badge">最受歡迎</div>
+              <h3>專業版</h3>
+              <div className="price">$49<span>/月</span></div>
+              <a href="/auth" className="wp-btn wp-btn-primary wp-btn-full">立即開始</a>
               <ul className="wp-pricing-features">
-                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>3000 replies per month</li>
-                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>3 AI bots</li>
-                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>Unlimited knowledge</li>
-                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>Access to all integrations</li>
-                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>$10 per 100 additional replies</li>
+                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>每月 3000 次回覆</li>
+                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>3 個 AI 機器人</li>
+                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>無限知識庫</li>
+                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>所有整合功能</li>
+                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>每 100 次額外回覆 $10</li>
               </ul>
             </div>
             <div className="wp-pricing-card">
-              <h3>Enterprise</h3>
-              <div className="price">$149<span>/month</span></div>
-              <a href="/auth" className="wp-btn wp-btn-outline wp-btn-full">Get Started</a>
+              <h3>企業版</h3>
+              <div className="price">$149<span>/月</span></div>
+              <a href="/auth" className="wp-btn wp-btn-outline wp-btn-full">立即開始</a>
               <ul className="wp-pricing-features">
-                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>15,000 replies per month</li>
-                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>5 AI bots</li>
-                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>Unlimited knowledge</li>
-                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>Access to all integrations</li>
-                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>$10 per 100 additional replies</li>
+                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>每月 15,000 次回覆</li>
+                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>5 個 AI 機器人</li>
+                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>無限知識庫</li>
+                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>所有整合功能</li>
+                <li><svg className="wp-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>每 100 次額外回覆 $10</li>
               </ul>
             </div>
           </div>
@@ -1223,54 +1238,54 @@ const Landing = () => {
         {/* ========== FAQ ========== */}
         <section className="wp-faq" id="faq" ref={faqRef}>
           <div className="wp-faq-header">
-            <div className="wp-section-badge">FAQ</div>
-            <h2>Frequently asked questions</h2>
-            <p>Everything you need to know about Jaaxis.</p>
+            <div className="wp-section-badge">常見問題</div>
+            <h2>常見問題解答</h2>
+            <p>關於 Jaaxis 您需要知道的一切。</p>
           </div>
           <div className="wp-faq-list">
             <div className="faq-item">
               <button className="faq-button">
-                <h3>What is Jaaxis?</h3>
+                <h3>什麼是 Jaaxis？</h3>
                 <span className="faq-icon">+</span>
               </button>
               <div className="faq-content" style={{ maxHeight: 0 }}>
-                <p>Jaaxis is an advanced AI-powered customer support chatbot platform that helps businesses automate customer interactions, provide instant responses, and scale their support operations efficiently.</p>
+                <p>Jaaxis 是一個先進的 AI 驅動客服聊天機器人平台，幫助企業自動化客戶互動、提供即時回應，並有效擴展客服營運規模。</p>
               </div>
             </div>
             <div className="faq-item">
               <button className="faq-button">
-                <h3>Is Jaaxis free to use?</h3>
+                <h3>Jaaxis 可以免費使用嗎？</h3>
                 <span className="faq-icon">+</span>
               </button>
               <div className="faq-content" style={{ maxHeight: 0 }}>
-                <p>We offer a free trial to get you started. After that, we have flexible pricing plans starting from $19/month for small businesses to enterprise solutions for larger organizations.</p>
+                <p>我們提供免費試用讓您開始使用。之後，我們有彈性的定價方案，從小型企業的每月 $19 到大型組織的企業解決方案。</p>
               </div>
             </div>
             <div className="faq-item">
               <button className="faq-button">
-                <h3>Do I need to install software to use Jaaxis?</h3>
+                <h3>使用 Jaaxis 需要安裝軟體嗎？</h3>
                 <span className="faq-icon">+</span>
               </button>
               <div className="faq-content" style={{ maxHeight: 0 }}>
-                <p>No installation required! Jaaxis is a cloud-based solution that works directly in your web browser. Simply embed our chatbot widget on your website or integrate with your preferred platforms.</p>
+                <p>不需要安裝！Jaaxis 是雲端解決方案，直接在您的網頁瀏覽器中運作。只需在您的網站上嵌入我們的聊天機器人小工具，或與您偏好的平台整合即可。</p>
               </div>
             </div>
             <div className="faq-item">
               <button className="faq-button">
-                <h3>How secure is my data in Jaaxis?</h3>
+                <h3>我的資料在 Jaaxis 中有多安全？</h3>
                 <span className="faq-icon">+</span>
               </button>
               <div className="faq-content" style={{ maxHeight: 0 }}>
-                <p>Security is our top priority. We use bank-grade encryption, comply with industry standards like GDPR and SOC 2, and ensure your data is protected with advanced security measures.</p>
+                <p>安全是我們的首要任務。我們使用銀行級加密，符合 GDPR 和 SOC 2 等行業標準，並以先進的安全措施確保您的資料受到保護。</p>
               </div>
             </div>
             <div className="faq-item">
               <button className="faq-button">
-                <h3>Will I own my data?</h3>
+                <h3>我會擁有自己的資料嗎？</h3>
                 <span className="faq-icon">+</span>
               </button>
               <div className="faq-content" style={{ maxHeight: 0 }}>
-                <p>Yes, absolutely! You retain full ownership of all your data, conversations, and content. We never use your data to train models for other customers.</p>
+                <p>是的，絕對是！您保留所有資料、對話和內容的完整所有權。我們永遠不會使用您的資料來訓練其他客戶的模型。</p>
               </div>
             </div>
           </div>
@@ -1282,25 +1297,25 @@ const Landing = () => {
             <div className="wp-footer-left">
               <div className="wp-footer-brand">
                 <img src={jaaxisLogo} alt="Jaaxis" className="wp-logo" style={{ height: '32px' }} />
-                <p>© 2025 All Rights Reserved.</p>
+                <p>© 2025 版權所有。</p>
               </div>
               
               <div className="wp-footer-social">
                 <div className="wp-lang-dropdown" id="lang-dropdown">
                   <button className="wp-lang-button" id="lang-button" type="button">
-                    <span id="lang-current">English</span>
+                    <span id="lang-current">繁體中文</span>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
                   </button>
                   <div className="wp-lang-menu">
-                    <div className="wp-lang-option active" data-lang-path="/">
+                    <div className="wp-lang-option" data-lang-path="/">
                       <span>English</span>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="20 6 9 17 4 12"></polyline>
                       </svg>
                     </div>
-                    <div className="wp-lang-option" data-lang-path="/zh-hant">
+                    <div className="wp-lang-option active" data-lang-path="/zh-hant">
                       <span>繁體中文</span>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="20 6 9 17 4 12"></polyline>
@@ -1331,28 +1346,28 @@ const Landing = () => {
 
             <div className="wp-footer-nav">
               <div>
-                <h3>Product</h3>
+                <h3>產品</h3>
                 <ul className="wp-footer-links">
-                  <li><a href="#pricing">Pricing</a></li>
-                  <li><a href="#features">Features</a></li>
-                  <li><a href="#">Success stories</a></li>
+                  <li><a href="#pricing">價格方案</a></li>
+                  <li><a href="#features">功能特色</a></li>
+                  <li><a href="#">成功案例</a></li>
                 </ul>
               </div>
 
               <div>
-                <h3>Resources</h3>
+                <h3>資源</h3>
                 <ul className="wp-footer-links">
-                  <li><a href="#">Contact us</a></li>
-                  <li><a href="#">Guide</a></li>
+                  <li><a href="#">聯絡我們</a></li>
+                  <li><a href="#">使用指南</a></li>
                 </ul>
               </div>
 
               <div>
-                <h3>Company</h3>
+                <h3>公司</h3>
                 <ul className="wp-footer-links">
-                  <li><a href="#">Privacy policy</a></li>
-                  <li><a href="#">Terms of service</a></li>
-                  <li><a href="#">Trust</a></li>
+                  <li><a href="#">隱私權政策</a></li>
+                  <li><a href="#">服務條款</a></li>
+                  <li><a href="#">信任與安全</a></li>
                 </ul>
               </div>
             </div>
@@ -1363,4 +1378,4 @@ const Landing = () => {
   );
 };
 
-export default Landing;
+export default LandingZhHant;
