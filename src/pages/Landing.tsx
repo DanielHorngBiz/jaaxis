@@ -1016,7 +1016,8 @@ const Landing = () => {
       `}} />
 
       <div className="wp-landing">
-        {/* ========== NAVBAR ========== */}
+        {/* ========== HEADER ========== */}
+        <header>
         <nav className="wp-navbar">
           <div className="wp-navbar-inner">
             <a href="/">
@@ -1049,6 +1050,7 @@ const Landing = () => {
             <a href="/auth" className="wp-btn wp-btn-primary" style={{ marginTop: '12px' }}>Sign Up</a>
           </div>
         </nav>
+        </header>
 
         {/* ========== HERO (Centered like original) ========== */}
         <section className="wp-hero">
