@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import { StaticRedirect } from "./components/StaticRedirect";
 import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import BotDetail from "./pages/BotDetail";
@@ -27,6 +28,8 @@ const App = () => (
           <Route path="/dashboard/bot/:botId" element={<BotDetail />} />
           <Route path="/dashboard/bot/:botId/:tab" element={<BotDetail />} />
           <Route path="/account-settings" element={<AccountSettings />} />
+          <Route path="/en" element={<StaticRedirect to="/en/index.html" />} />
+          <Route path="/zh-hant" element={<StaticRedirect to="/zh-hant/index.html" />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
