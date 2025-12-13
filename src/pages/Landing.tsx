@@ -45,13 +45,14 @@ const Landing = () => {
     const langCurrent = document.getElementById('lang-current');
     const langOptions = document.querySelectorAll('.wp-lang-option');
     
-    langButton?.addEventListener('click', (e) => {
+    const handleLangButtonClick = (e: Event) => {
       e.stopPropagation();
       langDropdown?.classList.toggle('open');
-    });
+    };
     
-    langOptions.forEach(option => {
-      option.addEventListener('click', () => {
+    const handleLangOptionClick = (option: Element) => {
+      return (e: Event) => {
+        e.stopPropagation();
         const lang = option.getAttribute('data-lang');
         if (langCurrent && lang) {
           langCurrent.textContent = lang;
@@ -59,13 +60,18 @@ const Landing = () => {
         langOptions.forEach(opt => opt.classList.remove('active'));
         option.classList.add('active');
         langDropdown?.classList.remove('open');
-      });
-    });
+      };
+    };
     
-    // Close dropdown when clicking outside
-    document.addEventListener('click', () => {
+    const handleDocumentClick = () => {
       langDropdown?.classList.remove('open');
+    };
+    
+    langButton?.addEventListener('click', handleLangButtonClick);
+    langOptions.forEach(option => {
+      option.addEventListener('click', handleLangOptionClick(option));
     });
+    document.addEventListener('click', handleDocumentClick);
 
     // GSAP ScrollTrigger for Features - only on desktop
     const initGSAP = () => {
@@ -862,6 +868,7 @@ const Landing = () => {
           color: var(--wp-foreground);
           cursor: pointer;
           transition: all 0.2s;
+          width: 110px;
         }
         
         .wp-lang-button:hover {
@@ -887,7 +894,7 @@ const Landing = () => {
           border: 1px solid var(--wp-border);
           border-radius: 8px;
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-          min-width: 140px;
+          width: 110px;
           opacity: 0;
           visibility: hidden;
           transform: translateY(8px);
