@@ -39,6 +39,34 @@ const Landing = () => {
       mobileMenu?.classList.toggle('hidden');
     });
 
+    // Language dropdown toggle
+    const langDropdown = document.getElementById('lang-dropdown');
+    const langButton = document.getElementById('lang-button');
+    const langCurrent = document.getElementById('lang-current');
+    const langOptions = document.querySelectorAll('.wp-lang-option');
+    
+    langButton?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      langDropdown?.classList.toggle('open');
+    });
+    
+    langOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const lang = option.getAttribute('data-lang');
+        if (langCurrent && lang) {
+          langCurrent.textContent = lang;
+        }
+        langOptions.forEach(opt => opt.classList.remove('active'));
+        option.classList.add('active');
+        langDropdown?.classList.remove('open');
+      });
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', () => {
+      langDropdown?.classList.remove('open');
+    });
+
     // GSAP ScrollTrigger for Features - only on desktop
     const initGSAP = () => {
       // Skip on mobile
@@ -818,13 +846,91 @@ const Landing = () => {
           gap: 16px;
         }
         
-        .wp-footer-social select {
+        .wp-lang-dropdown {
+          position: relative;
+        }
+        
+        .wp-lang-button {
+          display: flex;
+          align-items: center;
+          gap: 8px;
           background: var(--wp-background);
           border: 1px solid var(--wp-border);
-          border-radius: 6px;
-          padding: 6px 12px;
+          border-radius: 8px;
+          padding: 8px 12px;
           font-size: 14px;
           color: var(--wp-foreground);
+          cursor: pointer;
+          transition: all 0.2s;
+          min-width: 140px;
+        }
+        
+        .wp-lang-button:hover {
+          border-color: var(--wp-primary);
+          background: rgba(var(--wp-primary-rgb), 0.02);
+        }
+        
+        .wp-lang-button svg {
+          margin-left: auto;
+          transition: transform 0.2s;
+        }
+        
+        .wp-lang-dropdown.open .wp-lang-button svg {
+          transform: rotate(180deg);
+        }
+        
+        .wp-lang-menu {
+          position: absolute;
+          bottom: 100%;
+          left: 0;
+          margin-bottom: 4px;
+          background: var(--wp-background);
+          border: 1px solid var(--wp-border);
+          border-radius: 8px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+          min-width: 140px;
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(8px);
+          transition: all 0.2s;
+          z-index: 100;
+          overflow: hidden;
+        }
+        
+        .wp-lang-dropdown.open .wp-lang-menu {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+        
+        .wp-lang-option {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 12px;
+          font-size: 14px;
+          color: var(--wp-foreground);
+          cursor: pointer;
+          transition: background 0.15s;
+        }
+        
+        .wp-lang-option:hover {
+          background: var(--wp-secondary);
+        }
+        
+        .wp-lang-option.active {
+          background: rgba(var(--wp-primary-rgb), 0.08);
+          color: var(--wp-primary);
+        }
+        
+        .wp-lang-option svg {
+          width: 16px;
+          height: 16px;
+          opacity: 0;
+        }
+        
+        .wp-lang-option.active svg {
+          opacity: 1;
         }
         
         .wp-footer-social a {
@@ -1170,9 +1276,28 @@ const Landing = () => {
               </div>
               
               <div className="wp-footer-social">
-                <select>
-                  <option>English</option>
-                </select>
+                <div className="wp-lang-dropdown" id="lang-dropdown">
+                  <button className="wp-lang-button" id="lang-button" type="button">
+                    <span id="lang-current">English</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  <div className="wp-lang-menu">
+                    <div className="wp-lang-option active" data-lang="English">
+                      <span>English</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </div>
+                    <div className="wp-lang-option" data-lang="繁體中文">
+                      <span>繁體中文</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
                 <a href="#">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
