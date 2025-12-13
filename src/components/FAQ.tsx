@@ -37,31 +37,31 @@ const FAQ_DATA = [
 const FAQ = () => {
 
   return (
-    <section id="faq" className="py-24 px-6 lg:px-8 bg-background">
+    <section id="faq" className="py-12 sm:py-16 lg:py-24 px-4 sm:px-6 lg:px-8 bg-background">
       <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/50 mb-4">
+        <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/50 mb-3 sm:mb-4">
             <span className="text-xs font-medium text-foreground">FAQ</span>
           </div>
-          <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-3 sm:mb-4">
             Frequently asked questions
           </h2>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-sm sm:text-base lg:text-lg text-muted-foreground">
             Everything you need to know about Jaaxis.
           </p>
         </div>
 
-        <Accordion type="single" collapsible className="space-y-3">
+        <Accordion type="single" collapsible className="space-y-2 sm:space-y-3">
           {FAQ_DATA.map((faq, index) => (
             <AccordionItem
               key={index}
               value={`item-${index}`}
-              className="border border-border rounded-lg px-6 bg-card hover:border-primary/20 transition-colors"
+              className="border border-border rounded-lg px-4 sm:px-6 bg-card hover:border-primary/20 transition-colors"
             >
-              <AccordionTrigger className="text-left text-base font-medium text-foreground hover:no-underline py-5">
+              <AccordionTrigger className="text-left text-sm sm:text-base font-medium text-foreground hover:no-underline py-4 sm:py-5">
                 {faq.question}
               </AccordionTrigger>
-              <AccordionContent className="text-sm text-muted-foreground pb-5">
+              <AccordionContent className="text-xs sm:text-sm text-muted-foreground pb-4 sm:pb-5">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>

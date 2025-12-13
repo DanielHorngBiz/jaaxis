@@ -24,27 +24,27 @@ const Hero = () => {
       observer.disconnect();
     };
   }, []);
-  return <section id="home" className="relative pt-32 pb-24 px-6 lg:px-8 overflow-hidden">
+  return <section id="home" className="relative pt-20 sm:pt-28 lg:pt-32 pb-12 sm:pb-16 lg:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
       
       <div className="max-w-5xl mx-auto relative">
-        <div className="max-w-4xl mx-auto text-center space-y-8 pt-8">
+        <div className="max-w-4xl mx-auto text-center space-y-5 sm:space-y-6 lg:space-y-8 pt-4 sm:pt-6 lg:pt-8">
           {/* Headline */}
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground leading-[1.1] tracking-tight">
+          <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold text-foreground leading-[1.1] tracking-tight">
             AI Customer Support
             <br />
             <span className="text-primary">That Actually Works</span>
           </h1>
 
           {/* Subheadline */}
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 sm:px-0">
             Automate customer conversations with intelligent AI that understands context, resolves issues instantly, and scales with your business.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex justify-center pt-4">
-            <Button size="lg" className="group h-11 px-6" asChild>
+          <div className="flex justify-center pt-2 sm:pt-4">
+            <Button size="lg" className="group h-10 sm:h-11 px-5 sm:px-6 text-sm sm:text-base" asChild>
               <a href="#pricing">
                 Get Started Free
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
@@ -53,12 +53,12 @@ const Hero = () => {
           </div>
 
           {/* Social Proof */}
-          <div className="flex flex-wrap items-center justify-center gap-6 pt-8 text-sm text-muted-foreground">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 pt-4 sm:pt-8 text-xs sm:text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
-                <div className="w-7 h-7 rounded-full bg-primary/10 border-2 border-background" />
-                <div className="w-7 h-7 rounded-full bg-primary/20 border-2 border-background" />
-                <div className="w-7 h-7 rounded-full bg-primary/30 border-2 border-background" />
+                <div className="w-6 sm:w-7 h-6 sm:h-7 rounded-full bg-primary/10 border-2 border-background" />
+                <div className="w-6 sm:w-7 h-6 sm:h-7 rounded-full bg-primary/20 border-2 border-background" />
+                <div className="w-6 sm:w-7 h-6 sm:h-7 rounded-full bg-primary/30 border-2 border-background" />
               </div>
               <span>Trusted by 10,000+ teams</span>
             </div>
@@ -68,8 +68,8 @@ const Hero = () => {
         </div>
 
         {/* Dashboard Preview */}
-        <div className="max-w-5xl mx-auto mt-20">
-          <div className="relative rounded-xl border border-border bg-card shadow-2xl overflow-hidden">
+        <div className="max-w-5xl mx-auto mt-10 sm:mt-16 lg:mt-20">
+          <div className="relative rounded-lg sm:rounded-xl border border-border bg-card shadow-xl sm:shadow-2xl overflow-hidden mx-2 sm:mx-0">
             <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
 
             {/* Demo Video */}
