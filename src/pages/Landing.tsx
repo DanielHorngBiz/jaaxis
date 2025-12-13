@@ -39,39 +39,38 @@ const Landing = () => {
       mobileMenu?.classList.toggle('hidden');
     });
 
-    // Language dropdown toggle
-    const langDropdown = document.getElementById('lang-dropdown');
-    const langButton = document.getElementById('lang-button');
-    const langCurrent = document.getElementById('lang-current');
-    const langOptions = document.querySelectorAll('.wp-lang-option');
-    
-    const handleLangButtonClick = (e: Event) => {
-      e.stopPropagation();
-      langDropdown?.classList.toggle('open');
-    };
-    
-    const handleLangOptionClick = (option: Element) => {
-      return (e: Event) => {
-        e.stopPropagation();
+    // Language dropdown toggle - using event delegation
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const langDropdown = document.getElementById('lang-dropdown');
+      const langButton = document.getElementById('lang-button');
+      const langCurrent = document.getElementById('lang-current');
+      
+      // Check if clicked on button or its children
+      if (langButton?.contains(target)) {
+        e.preventDefault();
+        langDropdown?.classList.toggle('open');
+        return;
+      }
+      
+      // Check if clicked on an option
+      const option = target.closest('.wp-lang-option');
+      if (option && langDropdown?.contains(option)) {
         const lang = option.getAttribute('data-lang');
         if (langCurrent && lang) {
           langCurrent.textContent = lang;
         }
-        langOptions.forEach(opt => opt.classList.remove('active'));
+        document.querySelectorAll('.wp-lang-option').forEach(opt => opt.classList.remove('active'));
         option.classList.add('active');
         langDropdown?.classList.remove('open');
-      };
-    };
-    
-    const handleDocumentClick = () => {
-      langDropdown?.classList.remove('open');
-    };
-    
-    langButton?.addEventListener('click', handleLangButtonClick);
-    langOptions.forEach(option => {
-      option.addEventListener('click', handleLangOptionClick(option));
+        return;
+      }
+      
+      // Click outside - close dropdown
+      if (!langDropdown?.contains(target)) {
+        langDropdown?.classList.remove('open');
+      }
     });
-    document.addEventListener('click', handleDocumentClick);
 
     // GSAP ScrollTrigger for Features - only on desktop
     const initGSAP = () => {
