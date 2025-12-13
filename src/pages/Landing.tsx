@@ -44,11 +44,17 @@ const Landing = () => {
       const target = e.target as HTMLElement;
       const langDropdown = document.getElementById('lang-dropdown');
       const langButton = document.getElementById('lang-button');
+      const langMenu = langDropdown?.querySelector('.wp-lang-menu');
       
       // Toggle dropdown when clicking button
       if (langButton?.contains(target)) {
         e.preventDefault();
         langDropdown?.classList.toggle('open');
+        return;
+      }
+      
+      // Let anchor links in the menu navigate naturally (don't interfere)
+      if (langMenu?.contains(target)) {
         return;
       }
       
