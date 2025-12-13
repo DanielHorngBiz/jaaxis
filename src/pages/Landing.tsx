@@ -39,8 +39,8 @@ const Landing = () => {
       mobileMenu?.classList.toggle('hidden');
     });
 
-    // Language dropdown toggle - using event delegation
-    document.addEventListener('click', (e) => {
+    // Language dropdown toggle - using event delegation with proper cleanup
+    const handleLangDropdownClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const langDropdown = document.getElementById('lang-dropdown');
       const langButton = document.getElementById('lang-button');
@@ -49,13 +49,16 @@ const Landing = () => {
       // Check if clicked on button or its children
       if (langButton?.contains(target)) {
         e.preventDefault();
+        e.stopPropagation();
         langDropdown?.classList.toggle('open');
         return;
       }
       
       // Check if clicked on an option
-      const option = target.closest('.wp-lang-option');
+      const option = target.closest('.wp-lang-option') as HTMLElement;
       if (option && langDropdown?.contains(option)) {
+        e.preventDefault();
+        e.stopPropagation();
         const lang = option.getAttribute('data-lang');
         if (langCurrent && lang) {
           langCurrent.textContent = lang;
@@ -70,7 +73,9 @@ const Landing = () => {
       if (!langDropdown?.contains(target)) {
         langDropdown?.classList.remove('open');
       }
-    });
+    };
+    
+    document.addEventListener('click', handleLangDropdownClick);
 
     // GSAP ScrollTrigger for Features - only on desktop
     const initGSAP = () => {
@@ -173,6 +178,7 @@ const Landing = () => {
 
     // Cleanup
     return () => {
+      document.removeEventListener('click', handleLangDropdownClick);
       if ((window as any).ScrollTrigger) {
         (window as any).ScrollTrigger.getAll().forEach((t: any) => t.kill());
       }
