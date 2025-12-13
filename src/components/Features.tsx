@@ -52,7 +52,7 @@ const Features = () => {
     const mediaQuery = window.matchMedia("(min-width: 1024px)");
     
     if (!mediaQuery.matches) {
-      // Mobile: simple scroll-based progress with slower animation
+      // Mobile: simple scroll-based progress
       const handleScroll = () => {
         const section = sectionRef.current;
         if (!section) return;
@@ -62,12 +62,9 @@ const Features = () => {
         const totalScrollable = sectionHeight - viewportHeight;
         const scrolledIntoSection = Math.min(Math.max(-rect.top, 0), totalScrollable);
         const ratio = totalScrollable > 0 ? scrolledIntoSection / totalScrollable : 0;
-        
-        // Slower progress: use 800 instead of 1600, so progress bar fills slower
-        const totalProgress = ratio * 800;
-        const newActiveFeature = Math.min(Math.floor(totalProgress / 200), 3);
-        const progressWithinFeature = (totalProgress % 200) * 2; // Scale back to 0-400 for the SVG
-        
+        const totalProgress = ratio * 1600;
+        const newActiveFeature = Math.min(Math.floor(totalProgress / 400), 3);
+        const progressWithinFeature = totalProgress % 400;
         setFeatureState({
           activeFeature: newActiveFeature,
           scrollProgress: progressWithinFeature,
