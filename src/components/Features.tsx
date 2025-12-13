@@ -180,15 +180,15 @@ const Features = () => {
 
 
   return (
-    <section ref={sectionRef} id="features" className="relative bg-background pb-32 md:pb-48 lg:pb-0">
-      <div className="min-h-screen py-24 px-6 lg:px-8 flex items-center mb-24 md:mb-32 lg:mb-0">
+    <section ref={sectionRef} id="features" className="relative bg-background pb-16 sm:pb-24 md:pb-48 lg:pb-0">
+      <div className="min-h-[auto] lg:min-h-screen py-12 sm:py-16 lg:py-24 px-4 sm:px-6 lg:px-8 flex items-center mb-12 sm:mb-24 md:mb-32 lg:mb-0">
       <div ref={contentRef} className="max-w-5xl mx-auto w-full">
           {/* Header */}
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/50 mb-4">
+          <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-12 lg:mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/50 mb-3 sm:mb-4">
               <span className="text-xs font-medium text-foreground">Features</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-foreground mb-4 sm:mb-6 leading-tight">
               Powerful Features for
               <br />
               Modern Customer Support
@@ -198,10 +198,10 @@ const Features = () => {
           {/* Features Grid - Desktop: Side by side with pinning, Mobile: Stacked */}
           <div className="relative">
             {/* TWO COLUMNS */}
-            <div ref={gridRef} className="grid lg:grid-cols-[1fr_2fr] gap-12 lg:gap-16">
+            <div ref={gridRef} className="grid lg:grid-cols-[1fr_2fr] gap-6 sm:gap-8 lg:gap-16">
               
               {/* LEFT: All feature cards */}
-              <div className="h-fit space-y-4">
+              <div className="h-fit space-y-3 sm:space-y-4">
                 {features.map((feature, index) => {
                   const isActive = featureState.activeFeature === index;
                   
@@ -234,7 +234,7 @@ const Features = () => {
                       
                       {/* Feature Card */}
                       <div
-                        className={`w-full p-6 rounded-xl border transition-all duration-300 relative ${
+                        className={`w-full p-4 sm:p-5 lg:p-6 rounded-lg sm:rounded-xl border transition-all duration-300 relative ${
                           isActive
                             ? "border-primary bg-primary/5 shadow-lg"
                             : "border-border bg-card opacity-50"
@@ -242,7 +242,7 @@ const Features = () => {
                       >
                         <div className="w-full">
                           <h3
-                            className={`text-xl font-bold transition-colors ${
+                            className={`text-base sm:text-lg lg:text-xl font-bold transition-colors ${
                               isActive ? "text-foreground" : "text-foreground/70"
                             }`}
                           >
@@ -251,11 +251,11 @@ const Features = () => {
                           {/* Description with smooth expand/collapse */}
                           <div 
                             className={`grid transition-all duration-300 ${
-                              isActive ? 'grid-rows-[1fr] mt-3' : 'grid-rows-[0fr]'
+                              isActive ? 'grid-rows-[1fr] mt-2 sm:mt-3' : 'grid-rows-[0fr]'
                             }`}
                           >
                             <div className="overflow-hidden">
-                              <p className="text-base leading-relaxed text-muted-foreground">
+                              <p className="text-sm sm:text-base leading-relaxed text-muted-foreground">
                                 {feature.description}
                               </p>
                             </div>
@@ -268,8 +268,8 @@ const Features = () => {
               </div>
 
               {/* RIGHT: Video display - All videos preloaded */}
-              <div className="relative lg:pl-16">
-                <div className="w-full rounded-2xl border border-border overflow-hidden shadow-xl relative">
+              <div className="relative lg:pl-16 order-first lg:order-last">
+                <div className="w-full rounded-lg sm:rounded-xl lg:rounded-2xl border border-border overflow-hidden shadow-lg sm:shadow-xl relative">
                   {features.map((feature, index) => (
                     <video
                       key={index}
