@@ -853,16 +853,15 @@ const Landing = () => {
         .wp-lang-button {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 6px;
           background: var(--wp-background);
           border: 1px solid var(--wp-border);
           border-radius: 8px;
-          padding: 8px 12px;
+          padding: 6px 10px;
           font-size: 14px;
           color: var(--wp-foreground);
           cursor: pointer;
           transition: all 0.2s;
-          min-width: 140px;
         }
         
         .wp-lang-button:hover {
