@@ -776,34 +776,84 @@ const Landing = () => {
         
         /* ========== FOOTER STYLES ========== */
         .wp-footer {
-          background: hsl(240, 10%, 10%);
-          color: white;
-          padding: 80px 24px 40px;
+          border-top: 1px solid var(--wp-border);
+          padding: 64px 24px;
+          background: hsl(var(--secondary) / 0.3);
         }
         
-        .wp-footer-grid {
-          display: grid;
-          grid-template-columns: 2fr 1fr 1fr 1fr;
-          gap: 60px;
+        .wp-footer-inner {
           max-width: 1024px;
-          margin: 0 auto 60px;
+          margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+          gap: 48px;
+        }
+        
+        @media (min-width: 768px) {
+          .wp-footer-inner {
+            flex-direction: row;
+            justify-content: space-between;
+          }
+        }
+        
+        .wp-footer-left {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        
+        .wp-footer-brand {
+          margin-bottom: 24px;
         }
         
         .wp-footer-brand p {
-          color: hsl(240, 5%, 65%);
+          color: var(--wp-muted);
           font-size: 14px;
-          margin-top: 16px;
-          max-width: 280px;
-          line-height: 1.6;
+          margin-top: 24px;
         }
         
-        .wp-footer h4 {
+        .wp-footer-social {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+        
+        .wp-footer-social select {
+          background: var(--wp-background);
+          border: 1px solid var(--wp-border);
+          border-radius: 6px;
+          padding: 6px 12px;
+          font-size: 14px;
+          color: var(--wp-foreground);
+        }
+        
+        .wp-footer-social a {
+          color: var(--wp-primary);
+          transition: opacity 0.2s;
+        }
+        
+        .wp-footer-social a:hover {
+          opacity: 0.8;
+        }
+        
+        .wp-footer-nav {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 48px;
+        }
+        
+        @media (min-width: 768px) {
+          .wp-footer-nav {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 64px;
+          }
+        }
+        
+        .wp-footer h3 {
           font-size: 14px;
           font-weight: 600;
-          margin-bottom: 20px;
-          color: hsl(240, 5%, 65%);
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
+          margin-bottom: 16px;
+          color: var(--wp-foreground);
         }
         
         .wp-footer-links {
@@ -815,37 +865,14 @@ const Landing = () => {
         }
         
         .wp-footer-links a {
-          color: hsl(240, 5%, 85%);
+          color: var(--wp-muted);
           text-decoration: none;
           font-size: 14px;
           transition: color 0.2s;
         }
         
         .wp-footer-links a:hover {
-          color: var(--wp-primary);
-        }
-        
-        .wp-footer-bottom {
-          border-top: 1px solid hsl(240, 5%, 20%);
-          padding-top: 32px;
-          max-width: 1024px;
-          margin: 0 auto;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-        
-        .wp-footer-bottom p {
-          color: hsl(240, 5%, 45%);
-          font-size: 14px;
-        }
-        
-        @media (max-width: 768px) {
-          .wp-footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
-        }
-        
-        @media (max-width: 480px) {
-          .wp-footer-grid { grid-template-columns: 1fr; }
+          color: var(--wp-foreground);
         }
         
         /* ========== MOBILE MENU ========== */
@@ -1135,38 +1162,65 @@ const Landing = () => {
 
         {/* ========== FOOTER ========== */}
         <footer className="wp-footer">
-          <div className="wp-footer-grid">
-            <div className="wp-footer-brand">
-              <img src={jaaxisLogo} alt="Jaaxis" className="wp-logo" style={{ filter: 'brightness(0) invert(1)' }} />
-              <p>Transform your customer support with AI-powered chatbots that understand your business.</p>
+          <div className="wp-footer-inner">
+            <div className="wp-footer-left">
+              <div className="wp-footer-brand">
+                <img src={jaaxisLogo} alt="Jaaxis" className="wp-logo" style={{ height: '32px' }} />
+                <p>© 2025 All Rights Reserved.</p>
+              </div>
+              
+              <div className="wp-footer-social">
+                <select>
+                  <option>English</option>
+                </select>
+                <a href="#">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                  </svg>
+                </a>
+                <a href="#">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                  </svg>
+                </a>
+                <a href="#">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
+                    <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>
+                  </svg>
+                </a>
+              </div>
             </div>
-            <div>
-              <h4>Product</h4>
-              <ul className="wp-footer-links">
-                <li><a href="#features">Features</a></li>
-                <li><a href="#pricing">Pricing</a></li>
-                <li><a href="#">Integrations</a></li>
-              </ul>
+
+            <div className="wp-footer-nav">
+              <div>
+                <h3>Product</h3>
+                <ul className="wp-footer-links">
+                  <li><a href="#pricing">Pricing</a></li>
+                  <li><a href="#features">Features</a></li>
+                  <li><a href="#">Success stories</a></li>
+                </ul>
+              </div>
+
+              <div>
+                <h3>Resources</h3>
+                <ul className="wp-footer-links">
+                  <li><a href="#">Contact us</a></li>
+                  <li><a href="#">Guide</a></li>
+                </ul>
+              </div>
+
+              <div>
+                <h3>Company</h3>
+                <ul className="wp-footer-links">
+                  <li><a href="#">Privacy policy</a></li>
+                  <li><a href="#">Terms of service</a></li>
+                  <li><a href="#">Trust</a></li>
+                </ul>
+              </div>
             </div>
-            <div>
-              <h4>Company</h4>
-              <ul className="wp-footer-links">
-                <li><a href="#">About</a></li>
-                <li><a href="#">Blog</a></li>
-                <li><a href="#">Careers</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4>Legal</h4>
-              <ul className="wp-footer-links">
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Service</a></li>
-                <li><a href="#">Contact</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="wp-footer-bottom">
-            <p>© 2024 Jaaxis. All rights reserved.</p>
           </div>
         </footer>
       </div>
