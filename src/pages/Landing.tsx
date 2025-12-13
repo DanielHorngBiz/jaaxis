@@ -39,34 +39,20 @@ const Landing = () => {
       mobileMenu?.classList.toggle('hidden');
     });
 
-    // Language dropdown toggle - navigate to different language pages
+    // Language dropdown toggle
     const handleLangDropdownClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const langDropdown = document.getElementById('lang-dropdown');
       const langButton = document.getElementById('lang-button');
       
-      // Check if clicked on button or its children
+      // Toggle dropdown when clicking button
       if (langButton?.contains(target)) {
         e.preventDefault();
-        e.stopPropagation();
         langDropdown?.classList.toggle('open');
         return;
       }
       
-      // Check if clicked on an option - navigate to the corresponding page
-      const option = target.closest('.wp-lang-option') as HTMLElement;
-      if (option && langDropdown?.contains(option)) {
-        e.preventDefault();
-        e.stopPropagation();
-        const langPath = option.getAttribute('data-lang-path');
-        if (langPath) {
-          window.location.href = langPath;
-        }
-        langDropdown?.classList.remove('open');
-        return;
-      }
-      
-      // Click outside - close dropdown
+      // Close dropdown when clicking outside
       if (!langDropdown?.contains(target)) {
         langDropdown?.classList.remove('open');
       }
@@ -920,6 +906,7 @@ const Landing = () => {
           color: var(--wp-foreground);
           cursor: pointer;
           transition: background 0.15s;
+          text-decoration: none;
         }
         
         .wp-lang-option:hover {
@@ -1294,18 +1281,18 @@ const Landing = () => {
                     </svg>
                   </button>
                   <div className="wp-lang-menu">
-                    <div className="wp-lang-option active" data-lang-path="/">
+                    <a href="/" className="wp-lang-option active">
                       <span>English</span>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="20 6 9 17 4 12"></polyline>
                       </svg>
-                    </div>
-                    <div className="wp-lang-option" data-lang-path="/zh-hant">
+                    </a>
+                    <a href="/zh-hant" className="wp-lang-option">
                       <span>繁體中文</span>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="20 6 9 17 4 12"></polyline>
                       </svg>
-                    </div>
+                    </a>
                   </div>
                 </div>
                 <a href="#">
