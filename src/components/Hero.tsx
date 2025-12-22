@@ -39,7 +39,9 @@ const Hero = () => {
 
           {/* Subheadline */}
           <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 sm:px-0">
-            Our AI handles order inquiries, returns, and product questions 24/7 — so you can focus on growing your store.
+            Our AI handles order inquiries, returns, and product questions 24/7.
+            <br />
+            So you can focus on growing your store.
           </p>
 
           {/* CTA Buttons */}
