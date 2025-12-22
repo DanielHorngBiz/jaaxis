@@ -279,6 +279,15 @@
       padding: 96px 24px;
       min-height: 100vh;
       background: var(--wp-background);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .wp-features-content {
+      width: 100%;
+      max-width: 1200px;
     }
     
     .wp-section-badge {
@@ -932,11 +941,12 @@
 
     <!-- ========== FEATURES ========== -->
     <section class="wp-features" id="features">
-      <div class="wp-features-header">
-        <div class="wp-section-badge">核心功能</div>
-        <h2>為現代企業打造的<br>智慧客服系統</h2>
-      </div>
-      <div class="wp-features-grid">
+      <div class="wp-features-content">
+        <div class="wp-features-header">
+          <div class="wp-section-badge">核心功能</div>
+          <h2>為現代企業打造的<br>智慧客服系統</h2>
+        </div>
+        <div class="wp-features-grid">
         <div class="wp-features-list">
           <div class="feature-card-wrapper feature-active" data-progress="0">
             <svg class="feature-progress-svg" preserveAspectRatio="none">
@@ -1004,6 +1014,7 @@
           <video class="feature-video opacity-0" muted loop playsinline>
             <source src="https://jaaxis.com/wp-content/uploads/2025/06/GIF-04-V2.webm" type="video/webm">
           </video>
+        </div>
         </div>
       </div>
     </section>
