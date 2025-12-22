@@ -34,12 +34,12 @@ const Hero = () => {
           <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold text-foreground leading-[1.1] tracking-tight">
             AI Customer Support
             <br />
-            <span className="text-primary">That Actually Works</span>
+            <span className="text-primary">Built for E-commerce</span>
           </h1>
 
           {/* Subheadline */}
           <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 sm:px-0">
-            Automate customer conversations with intelligent AI that understands context, resolves issues instantly, and scales with your business.
+            Turn every customer conversation into a sale. Our AI handles order inquiries, returns, and product questions 24/7 — so you can focus on growing your store.
           </p>
 
           {/* CTA Buttons */}
@@ -60,10 +60,10 @@ const Hero = () => {
                 <div className="w-6 sm:w-7 h-6 sm:h-7 rounded-full bg-primary/20 border-2 border-background" />
                 <div className="w-6 sm:w-7 h-6 sm:h-7 rounded-full bg-primary/30 border-2 border-background" />
               </div>
-              <span>Trusted by 10,000+ teams</span>
+              <span>Trusted by 10,000+ online stores</span>
             </div>
             <div className="hidden sm:block w-1 h-1 rounded-full bg-border" />
-            <span>★★★★★ 4.9/5 rating</span>
+            <span>★★★★★ 4.9/5 from e-commerce merchants</span>
           </div>
         </div>
 
