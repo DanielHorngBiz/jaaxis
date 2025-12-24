@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Facebook, Instagram, Check } from "lucide-react";
+import { Facebook, Instagram, Check, Plus } from "lucide-react";
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -228,6 +228,18 @@ const ConnectMetaDialog = ({
                 </div>
               </button>
             ))}
+
+            {/* Connect More Pages Button */}
+            <button
+              onClick={() => {
+                // TODO: Implement connect more pages functionality
+                console.log("Connect more pages clicked");
+              }}
+              className="w-full p-3 rounded-lg border-2 border-dashed border-border hover:border-primary/50 transition-all text-left flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="text-sm font-medium">Connect More Pages</span>
+            </button>
           </div>
         </ScrollArea>
 
