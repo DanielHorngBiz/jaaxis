@@ -78,7 +78,7 @@ const Hero = () => {
             <div className="relative w-full" style={{
             paddingBottom: '75%'
           }}>
-              <video ref={videoRef} src="https://jaaxis.com/wp-content/uploads/2025/06/GIF-5.webm" loop muted playsInline preload="metadata" className="absolute inset-0 w-full h-full object-cover" {...{
+              <video ref={videoRef} src="https://file.jaaxis.com/wp-content/uploads/2025/06/GIF-5.webm" loop muted playsInline preload="metadata" className="absolute inset-0 w-full h-full object-cover" {...{
               fetchpriority: "high"
             } as any} />
             </div>
