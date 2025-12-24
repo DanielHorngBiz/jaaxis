@@ -29,7 +29,8 @@ const ConnectTab = () => {
 
   // Form state
   const [storeUrl, setStoreUrl] = useState("");
-  const [accessToken, setAccessToken] = useState("");
+  const [clientId, setClientId] = useState("");
+  const [clientSecret, setClientSecret] = useState("");
   const [consumerKey, setConsumerKey] = useState("");
   const [consumerSecret, setConsumerSecret] = useState("");
   const [paymentStatus, setPaymentStatus] = useState("");
@@ -52,7 +53,8 @@ const ConnectTab = () => {
         body: {
           storeType,
           storeUrl,
-          accessToken,
+          clientId,
+          clientSecret,
           consumerKey,
           consumerSecret
         }
@@ -106,7 +108,8 @@ const ConnectTab = () => {
     setFulfillmentStatus("");
     setOrderStatus("");
     setStoreUrl("");
-    setAccessToken("");
+    setClientId("");
+    setClientSecret("");
     setConsumerKey("");
     setConsumerSecret("");
   };
@@ -245,10 +248,16 @@ const ConnectTab = () => {
                         <Input id="storeUrl" type="url" placeholder="https://example.com" className="h-11" value={storeUrl} onChange={e => setStoreUrl(e.target.value)} />
                       </div>
 
-                      {storeType === "shopify" ? <div className="space-y-2">
-                          <Label htmlFor="accessToken" className="text-sm font-medium">Access Token</Label>
-                          <Input id="accessToken" type="password" placeholder="Enter your Shopify access token" className="h-11" value={accessToken} onChange={e => setAccessToken(e.target.value)} />
-                        </div> : <>
+                      {storeType === "shopify" ? <>
+                          <div className="space-y-2">
+                            <Label htmlFor="clientId" className="text-sm font-medium">Client ID</Label>
+                            <Input id="clientId" type="text" placeholder="Enter your Shopify Client ID" className="h-11" value={clientId} onChange={e => setClientId(e.target.value)} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="clientSecret" className="text-sm font-medium">Client Secret</Label>
+                            <Input id="clientSecret" type="password" placeholder="Enter your Shopify Client Secret" className="h-11" value={clientSecret} onChange={e => setClientSecret(e.target.value)} />
+                          </div>
+                        </> : <>
                           <div className="space-y-2">
                             <Label htmlFor="consumerKey" className="text-sm font-medium">Consumer Key</Label>
                             <Input id="consumerKey" type="text" placeholder="Enter your WooCommerce consumer key" className="h-11" value={consumerKey} onChange={e => setConsumerKey(e.target.value)} />
