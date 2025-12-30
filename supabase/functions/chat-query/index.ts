@@ -503,7 +503,7 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not configured');
     }
 
-    const { chatbot_id, message, conversation_history = [] } = await req.json();
+    const { chatbot_id, message, conversation_history = [], has_attachments = false } = await req.json();
 
     if (!chatbot_id || !message) {
       throw new Error('chatbot_id and message are required');
@@ -511,6 +511,7 @@ serve(async (req) => {
 
     console.log(`Processing query for chatbot: ${chatbot_id}`);
     console.log(`User message: ${message}`);
+    console.log(`Has attachments: ${has_attachments}`);
 
     // Initialize Supabase client
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
@@ -537,16 +538,57 @@ serve(async (req) => {
 
     console.log(`Store connected: ${storeConnected}, Access: ${storeAccess}, Allowed statuses: ${allowedStatuses.join(', ')}`);
 
-    // ========== LAYER 1: Query Analyzer with Tool Calling ==========
-    console.log('Running Query Analyzer (Layer 1)...');
+    // Variables to pass tool results to RAG layer
+    let toolResultsForRag: any[] = [];
+    let analyzerMessageForRag: any = null;
 
-    // Build tools array dynamically based on store connection, access level, and forwarding rules
-    const hasForwardingRules = Boolean(forwardingRules && forwardingRules.trim());
-    const availableTools = getAvailableTools(storeConnected, storeAccess, allowedStatuses, hasForwardingRules);
-    console.log(`Available tools: ${availableTools.map((t: any) => t.function.name).join(', ') || 'none'}`);
+    // ========== CHECK FOR AUTOMATIC FORWARDING (attachments) ==========
+    if (has_attachments) {
+      console.log('Attachments detected - triggering automatic forwarding...');
+      
+      // Create the forwarding result directly (bypass LLM for this decision)
+      const forwardResult = {
+        success: true,
+        result: {
+          forwarded: true,
+          message: "Your request has been forwarded to our support team. They will get back to you shortly.",
+          reason: "Message contains attachments that require human review"
+        }
+      };
+      
+      // Set up tool results for RAG layer (same format as if LLM called the tool)
+      toolResultsForRag = [{
+        tool_call_id: 'auto_forward_attachments',
+        role: 'tool',
+        content: JSON.stringify(forwardResult)
+      }];
+      
+      // Create mock analyzer message (as if LLM decided to forward)
+      analyzerMessageForRag = {
+        role: 'assistant',
+        content: null,
+        tool_calls: [{
+          id: 'auto_forward_attachments',
+          type: 'function',
+          function: {
+            name: 'forward_to_human',
+            arguments: JSON.stringify({ reason: 'Message contains attachments that require human review' })
+          }
+        }]
+      };
+      
+      console.log('Skipping Query Analyzer - auto-forwarded due to attachments');
+    } else {
+      // ========== LAYER 1: Query Analyzer with Tool Calling ==========
+      console.log('Running Query Analyzer (Layer 1)...');
 
-    // Simplified system prompt - no JSON classification needed
-    const queryAnalyzerSystemPrompt = `${persona}
+      // Build tools array dynamically based on store connection, access level, and forwarding rules
+      const hasForwardingRules = Boolean(forwardingRules && forwardingRules.trim());
+      const availableTools = getAvailableTools(storeConnected, storeAccess, allowedStatuses, hasForwardingRules);
+      console.log(`Available tools: ${availableTools.map((t: any) => t.function.name).join(', ') || 'none'}`);
+
+      // Simplified system prompt - no JSON classification needed
+      const queryAnalyzerSystemPrompt = `${persona}
 
 You are a helpful assistant. Use the available tools when needed to help the user.
 
@@ -555,76 +597,73 @@ ${forwardingRules}` : ''}
 
 If no tools are needed, respond directly to help the user.`;
 
-    const analyzerBody: any = {
-      model: 'gpt-5',
-      reasoning: { effort: 'low' },
-      messages: [
-        { role: 'system', content: queryAnalyzerSystemPrompt },
-        ...conversation_history.map((msg: any) => ({
-          role: msg.role === 'bot' ? 'assistant' : msg.role,
-          content: msg.content,
-        })),
-        { role: 'user', content: message },
-      ],
-    };
+      const analyzerBody: any = {
+        model: 'gpt-5',
+        reasoning: { effort: 'low' },
+        messages: [
+          { role: 'system', content: queryAnalyzerSystemPrompt },
+          ...conversation_history.map((msg: any) => ({
+            role: msg.role === 'bot' ? 'assistant' : msg.role,
+            content: msg.content,
+          })),
+          { role: 'user', content: message },
+        ],
+      };
 
-    // Add tools if available
-    if (availableTools.length > 0) {
-      analyzerBody.tools = availableTools;
-    }
-
-    const analyzerResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(analyzerBody),
-    });
-
-    if (!analyzerResponse.ok) {
-      const errorText = await analyzerResponse.text();
-      console.error('Query Analyzer error:', errorText);
-      throw new Error(`Query Analyzer failed: ${errorText}`);
-    }
-
-    const analyzerResult = await analyzerResponse.json();
-    const analyzerMessage = analyzerResult.choices[0]?.message;
-    const toolCalls = analyzerMessage?.tool_calls || [];
-
-    console.log('Query Analyzer response:', analyzerMessage?.content || '(tool calls only)');
-    console.log('Tool calls:', JSON.stringify(toolCalls));
-
-    // Variables to pass tool results to RAG layer
-    let toolResultsForRag: any[] = [];
-    let analyzerMessageForRag: any = null;
-
-    // Handle tool calls
-    if (toolCalls.length > 0) {
-      console.log('Processing tool calls...');
-      
-      analyzerMessageForRag = analyzerMessage;
-      
-      for (const toolCall of toolCalls) {
-        const toolName = toolCall.function.name;
-        const toolArgs = JSON.parse(toolCall.function.arguments);
-        
-        const result = await executeTool(
-          toolName, 
-          toolArgs, 
-          supabase, 
-          storeAccess, 
-          allowedStatuses
-        );
-        
-        toolResultsForRag.push({
-          tool_call_id: toolCall.id,
-          role: 'tool',
-          content: JSON.stringify(result)
-        });
+      // Add tools if available
+      if (availableTools.length > 0) {
+        analyzerBody.tools = availableTools;
       }
 
-      console.log('Tool results:', JSON.stringify(toolResultsForRag));
+      const analyzerResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(analyzerBody),
+      });
+
+      if (!analyzerResponse.ok) {
+        const errorText = await analyzerResponse.text();
+        console.error('Query Analyzer error:', errorText);
+        throw new Error(`Query Analyzer failed: ${errorText}`);
+      }
+
+      const analyzerResult = await analyzerResponse.json();
+      const analyzerMessage = analyzerResult.choices[0]?.message;
+      const toolCalls = analyzerMessage?.tool_calls || [];
+
+      console.log('Query Analyzer response:', analyzerMessage?.content || '(tool calls only)');
+      console.log('Tool calls:', JSON.stringify(toolCalls));
+
+      // Handle tool calls
+      if (toolCalls.length > 0) {
+        console.log('Processing tool calls...');
+        
+        analyzerMessageForRag = analyzerMessage;
+        
+        for (const toolCall of toolCalls) {
+          const toolName = toolCall.function.name;
+          const toolArgs = JSON.parse(toolCall.function.arguments);
+          
+          const result = await executeTool(
+            toolName, 
+            toolArgs, 
+            supabase, 
+            storeAccess, 
+            allowedStatuses
+          );
+          
+          toolResultsForRag.push({
+            tool_call_id: toolCall.id,
+            role: 'tool',
+            content: JSON.stringify(result)
+          });
+        }
+
+        console.log('Tool results:', JSON.stringify(toolResultsForRag));
+      }
     }
 
     // ========== LAYER 2: RAG Answer Generator ==========

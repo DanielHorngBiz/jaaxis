@@ -96,6 +96,7 @@ const PreviewTab = () => {
           chatbot_id: chatbotId,
           message: currentInput,
           conversation_history: conversationHistory,
+          has_attachments: selectedImages.length > 0,
         }),
       });
 
