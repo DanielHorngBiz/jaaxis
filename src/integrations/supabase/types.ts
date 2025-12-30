@@ -30,6 +30,10 @@ export type Database = {
           persona: string | null
           primary_color: string
           slug: string
+          store_access: string | null
+          store_connected: boolean | null
+          store_order_statuses: string | null
+          store_type: string | null
           updated_at: string
           user_id: string
           whitelisted_domains: string[] | null
@@ -49,6 +53,10 @@ export type Database = {
           persona?: string | null
           primary_color?: string
           slug: string
+          store_access?: string | null
+          store_connected?: boolean | null
+          store_order_statuses?: string | null
+          store_type?: string | null
           updated_at?: string
           user_id: string
           whitelisted_domains?: string[] | null
@@ -68,6 +76,10 @@ export type Database = {
           persona?: string | null
           primary_color?: string
           slug?: string
+          store_access?: string | null
+          store_connected?: boolean | null
+          store_order_statuses?: string | null
+          store_type?: string | null
           updated_at?: string
           user_id?: string
           whitelisted_domains?: string[] | null
