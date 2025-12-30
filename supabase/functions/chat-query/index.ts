@@ -7,13 +7,24 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Order management tools definition
-const orderTools = [
-  {
+// Build available order tools based on store connection and access level
+function getAvailableOrderTools(
+  storeConnected: boolean,
+  storeAccess: string,
+  allowedStatuses: string[]
+): any[] {
+  if (!storeConnected) {
+    return [];
+  }
+
+  const tools: any[] = [];
+
+  // read_order is always available when store is connected
+  tools.push({
     type: "function",
     function: {
       name: "read_order",
-      description: "Look up orders by order number, customer name, email, or phone. At least one identifier must be provided.",
+      description: "Look up orders by order number, customer name, email, or phone. At least one identifier must be provided. Use this when customers ask about their order status, order details, tracking, or want to find their order.",
       parameters: {
         type: "object",
         properties: {
@@ -37,84 +48,98 @@ const orderTools = [
         required: []
       }
     }
-  },
-  {
-    type: "function",
-    function: {
-      name: "cancel_order",
-      description: "Cancel an order and process a refund. Requires order number AND either email or phone for identity verification.",
-      parameters: {
-        type: "object",
-        properties: {
-          order_number: {
-            type: "string",
-            description: "The order number to cancel"
+  });
+
+  // Write tools only if readwrite access
+  if (storeAccess === 'readwrite') {
+    tools.push({
+      type: "function",
+      function: {
+        name: "cancel_order",
+        description: "Cancel an order and process a refund. REQUIRES: 1) order_number AND 2) either verification_email or verification_phone to verify customer identity. If the customer hasn't provided verification info, ask them for their email or phone before calling this tool. Cannot cancel orders that are already completed, refunded, or cancelled.",
+        parameters: {
+          type: "object",
+          properties: {
+            order_number: {
+              type: "string",
+              description: "The order number to cancel"
+            },
+            verification_email: {
+              type: "string",
+              description: "Customer's email to verify ownership"
+            },
+            verification_phone: {
+              type: "string",
+              description: "Customer's phone to verify ownership"
+            }
           },
-          verification_email: {
-            type: "string",
-            description: "Customer's email to verify ownership"
-          },
-          verification_phone: {
-            type: "string",
-            description: "Customer's phone to verify ownership"
-          }
-        },
-        required: ["order_number"]
+          required: ["order_number"]
+        }
       }
+    });
+
+    // Build edit_order description with allowed statuses
+    let editDescription = "Edit order details such as status, shipping address, shipping name, billing address, or billing name. Cannot edit tracking information. REQUIRES: 1) order_number, 2) either verification_email or verification_phone to verify customer identity, and 3) at least one field to update. If the customer hasn't provided verification info, ask them for their email or phone before calling this tool.";
+    
+    if (allowedStatuses.length > 0) {
+      editDescription += ` For status changes, only these statuses are allowed: ${allowedStatuses.join(', ')}.`;
     }
-  },
-  {
-    type: "function",
-    function: {
-      name: "edit_order",
-      description: "Edit order details like status, shipping address, or billing address. Requires order number AND either email or phone for identity verification. Cannot edit tracking information.",
-      parameters: {
-        type: "object",
-        properties: {
-          order_number: {
-            type: "string",
-            description: "The order number to edit"
-          },
-          verification_email: {
-            type: "string",
-            description: "Customer's email to verify ownership"
-          },
-          verification_phone: {
-            type: "string",
-            description: "Customer's phone to verify ownership"
-          },
-          updates: {
-            type: "object",
-            description: "The fields to update",
-            properties: {
-              status: {
-                type: "string",
-                description: "New order status (e.g., 'processing', 'completed')"
-              },
-              shipping_address: {
-                type: "string",
-                description: "New shipping address"
-              },
-              shipping_name: {
-                type: "string",
-                description: "New shipping recipient name"
-              },
-              billing_address: {
-                type: "string",
-                description: "New billing address"
-              },
-              billing_name: {
-                type: "string",
-                description: "New billing name"
+
+    tools.push({
+      type: "function",
+      function: {
+        name: "edit_order",
+        description: editDescription,
+        parameters: {
+          type: "object",
+          properties: {
+            order_number: {
+              type: "string",
+              description: "The order number to edit"
+            },
+            verification_email: {
+              type: "string",
+              description: "Customer's email to verify ownership"
+            },
+            verification_phone: {
+              type: "string",
+              description: "Customer's phone to verify ownership"
+            },
+            updates: {
+              type: "object",
+              description: "The fields to update",
+              properties: {
+                status: {
+                  type: "string",
+                  description: "New order status (e.g., 'processing', 'completed')"
+                },
+                shipping_address: {
+                  type: "string",
+                  description: "New shipping address"
+                },
+                shipping_name: {
+                  type: "string",
+                  description: "New shipping recipient name"
+                },
+                billing_address: {
+                  type: "string",
+                  description: "New billing address"
+                },
+                billing_name: {
+                  type: "string",
+                  description: "New billing name"
+                }
               }
             }
-          }
-        },
-        required: ["order_number", "updates"]
+          },
+          required: ["order_number", "updates"]
+        }
       }
-    }
+    });
   }
-];
+
+  return tools;
+}
 
 // Verify order ownership by matching email or phone
 function verifyOrderOwnership(
@@ -459,51 +484,27 @@ serve(async (req) => {
     // ========== LAYER 1: Query Analyzer with Tool Calling ==========
     console.log('Running Query Analyzer (Layer 1)...');
 
-    // Build tools array based on access level
-    let availableTools: any[] = [];
-    let toolsDescription = '';
-    
-    if (storeConnected) {
-      // Read tool is always available
-      availableTools.push(orderTools[0]); // read_order
-      toolsDescription = '\n\nYou have access to order management tools:\n- read_order: Look up orders by order number, name, email, or phone (at least one required)\n';
-      
-      if (storeAccess === 'readwrite') {
-        availableTools.push(orderTools[1]); // cancel_order
-        availableTools.push(orderTools[2]); // edit_order
-        toolsDescription += '- cancel_order: Cancel an order (requires order number + email or phone for verification)\n';
-        toolsDescription += '- edit_order: Edit order details (requires order number + email or phone for verification)\n';
-        
-        if (allowedStatuses.length > 0) {
-          toolsDescription += `\nFor status changes, you can only set these statuses: ${allowedStatuses.join(', ')}\n`;
-        }
-      }
-    }
+    // Build tools array dynamically based on store connection and access level
+    const availableTools = getAvailableOrderTools(storeConnected, storeAccess, allowedStatuses);
+    console.log(`Available tools: ${availableTools.map(t => t.function.name).join(', ') || 'none'}`);
 
     const queryAnalyzerSystemPrompt = `${persona}
-${toolsDescription}
-You are a query analyzer. Your job is to classify the user's query into one of these categories:
-- "forward": If the query matches forwarding rules and should be handled by a human
-- "tool_required": If the user is asking about orders and you should use a tool
-- "general": If this is a general question that can be answered using the knowledge base
+
+You are a query analyzer. Classify the user's query:
+- "forward": Query matches forwarding rules and should be handled by a human
+- "tool_required": User is asking about orders (use available tools)
+- "general": General question for the knowledge base
 
 ${forwardingRules ? `FORWARDING RULES:
 ${forwardingRules}
 
-If the user's message matches any of these forwarding rules, respond with the classification "forward" and provide a friendly message explaining that the conversation is being forwarded to a human.` : ''}
-
-${storeConnected ? `ORDER QUERIES:
-If the user is asking about order status, order details, wants to cancel an order, or modify an order, classify as "tool_required" and use the appropriate tool.
-
-IDENTITY VERIFICATION:
-- For read_order: Ask for order number, name, email, OR phone - at least one is required
-- For cancel_order and edit_order: ALWAYS ask the customer for their email or phone to verify identity before calling the tool. This is required for security.` : ''}
+If the user's message matches any forwarding rule, respond with classification "forward" and a friendly message.` : ''}
 
 Respond in JSON format:
 {
   "classification": "forward" | "tool_required" | "general",
-  "response": "Only include this if classification is 'forward' - the message to show the user",
-  "reasoning": "Brief explanation of why you classified it this way"
+  "response": "Only if classification is 'forward'",
+  "reasoning": "Brief explanation"
 }`;
 
     const analyzerBody: any = {
