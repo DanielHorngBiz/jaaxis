@@ -24,7 +24,7 @@ function getAvailableOrderTools(
     type: "function",
     function: {
       name: "read_order",
-      description: "Look up orders by order number, customer name, email, or phone. At least one identifier must be provided. Use this when customers ask about their order status, order details, tracking, or want to find their order.",
+      description: "Look up orders by order number, customer name, email, or phone. At least one identifier must be provided.",
       parameters: {
         type: "object",
         properties: {
@@ -45,7 +45,13 @@ function getAvailableOrderTools(
             description: "Customer's phone number"
           }
         },
-        required: []
+        anyOf: [
+          { required: ["order_number"] },
+          { required: ["customer_name"] },
+          { required: ["customer_email"] },
+          { required: ["customer_phone"] }
+        ],
+        additionalProperties: false
       }
     }
   });
@@ -56,7 +62,7 @@ function getAvailableOrderTools(
       type: "function",
       function: {
         name: "cancel_order",
-        description: "Cancel an order and process a refund. REQUIRES: 1) order_number AND 2) either verification_email or verification_phone to verify customer identity. If the customer hasn't provided verification info, ask them for their email or phone before calling this tool. Cannot cancel orders that are already completed, refunded, or cancelled.",
+        description: "Cancel an order and process a refund. Cannot cancel orders that are already completed, refunded, or cancelled. If the customer hasn't provided verification info, ask them for their email or phone before calling this tool.",
         parameters: {
           type: "object",
           properties: {
@@ -73,13 +79,18 @@ function getAvailableOrderTools(
               description: "Customer's phone to verify ownership"
             }
           },
-          required: ["order_number"]
+          required: ["order_number"],
+          anyOf: [
+            { required: ["verification_email"] },
+            { required: ["verification_phone"] }
+          ],
+          additionalProperties: false
         }
       }
     });
 
     // Build edit_order description with allowed statuses
-    let editDescription = "Edit order details such as status, shipping address, shipping name, billing address, or billing name. Cannot edit tracking information. REQUIRES: 1) order_number, 2) either verification_email or verification_phone to verify customer identity, and 3) at least one field to update. If the customer hasn't provided verification info, ask them for their email or phone before calling this tool.";
+    let editDescription = "Edit order details such as status, shipping address, shipping name, billing address, or billing name. Cannot edit tracking information. If the customer hasn't provided verification info, ask them for their email or phone before calling this tool.";
     
     if (allowedStatuses.length > 0) {
       editDescription += ` For status changes, only these statuses are allowed: ${allowedStatuses.join(', ')}.`;
@@ -111,7 +122,7 @@ function getAvailableOrderTools(
               properties: {
                 status: {
                   type: "string",
-                  description: "New order status (e.g., 'processing', 'completed')"
+                  description: "New order status"
                 },
                 shipping_address: {
                   type: "string",
@@ -129,10 +140,16 @@ function getAvailableOrderTools(
                   type: "string",
                   description: "New billing name"
                 }
-              }
+              },
+              additionalProperties: false
             }
           },
-          required: ["order_number", "updates"]
+          required: ["order_number", "updates"],
+          anyOf: [
+            { required: ["verification_email"] },
+            { required: ["verification_phone"] }
+          ],
+          additionalProperties: false
         }
       }
     });
