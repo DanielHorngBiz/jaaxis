@@ -609,7 +609,7 @@ If no tools are needed, respond directly to help the user.`;
       const analyzerBody: any = {
         model: 'gpt-5',
         reasoning: { effort: 'low' },
-        messages: [
+        input: [
           { role: 'system', content: queryAnalyzerSystemPrompt },
           ...conversation_history.map((msg: any) => ({
             role: msg.role === 'bot' ? 'assistant' : msg.role,
@@ -624,7 +624,7 @@ If no tools are needed, respond directly to help the user.`;
         analyzerBody.tools = availableTools;
       }
 
-      const analyzerResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      const analyzerResponse = await fetch('https://api.openai.com/v1/responses', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${OPENAI_API_KEY}`,
@@ -640,10 +640,33 @@ If no tools are needed, respond directly to help the user.`;
       }
 
       const analyzerResult = await analyzerResponse.json();
-      const analyzerMessage = analyzerResult.choices[0]?.message;
-      const toolCalls = analyzerMessage?.tool_calls || [];
+      
+      // Parse Responses API format
+      let analyzerContent = null;
+      const toolCalls: any[] = [];
 
-      console.log('Query Analyzer response:', analyzerMessage?.content || '(tool calls only)');
+      for (const item of analyzerResult.output || []) {
+        if (item.type === 'message') {
+          analyzerContent = item.content?.[0]?.text || null;
+        } else if (item.type === 'function_call') {
+          toolCalls.push({
+            id: item.call_id,
+            type: 'function',
+            function: {
+              name: item.name,
+              arguments: item.arguments
+            }
+          });
+        }
+      }
+
+      const analyzerMessage = {
+        role: 'assistant',
+        content: analyzerContent,
+        tool_calls: toolCalls.length > 0 ? toolCalls : undefined
+      };
+
+      console.log('Query Analyzer response:', analyzerContent || '(tool calls only)');
       console.log('Tool calls:', JSON.stringify(toolCalls));
 
       // Handle tool calls
@@ -727,7 +750,7 @@ CRITICAL RULES:
       // No assistant, use regular GPT-5 without RAG
       console.log('No assistant configured, using GPT-5 without RAG');
       
-      const directResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      const directResponse = await fetch('https://api.openai.com/v1/responses', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${OPENAI_API_KEY}`,
@@ -736,7 +759,7 @@ CRITICAL RULES:
         body: JSON.stringify({
           model: 'gpt-5',
           reasoning: { effort: 'low' },
-          messages: ragMessages,
+          input: ragMessages,
           tools: [ragForwardingTool],
           stream: true,
         }),
@@ -747,8 +770,41 @@ CRITICAL RULES:
         throw new Error(`GPT-5 request failed: ${errorText}`);
       }
 
-      // Return streaming response
-      return new Response(directResponse.body, {
+      // Transform Responses API SSE to Chat Completions format for client compatibility
+      const transformStream = new TransformStream({
+        transform(chunk, controller) {
+          const text = new TextDecoder().decode(chunk);
+          const lines = text.split('\n');
+          
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const data = line.slice(6);
+            if (data === '[DONE]') {
+              controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'));
+              continue;
+            }
+            
+            try {
+              const event = JSON.parse(data);
+              // Transform response.output_text.delta to chat completions format
+              if (event.type === 'response.output_text.delta') {
+                const transformed = {
+                  choices: [{
+                    delta: { content: event.delta },
+                    index: 0
+                  }]
+                };
+                controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(transformed)}\n\n`));
+              }
+            } catch (e) {
+              // Skip unparseable lines
+            }
+          }
+        }
+      });
+
+      // Return transformed streaming response
+      return new Response(directResponse.body?.pipeThrough(transformStream), {
         headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
       });
     }
