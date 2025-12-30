@@ -127,6 +127,63 @@ export type Database = {
           },
         ]
       }
+      orders: {
+        Row: {
+          billing_address: string | null
+          billing_email: string | null
+          billing_name: string
+          billing_phone: string | null
+          created_at: string
+          id: string
+          items: Json
+          metadata: Json | null
+          order_number: string
+          order_total: number
+          shipping_address: string | null
+          shipping_email: string | null
+          shipping_name: string | null
+          shipping_phone: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          updated_at: string
+        }
+        Insert: {
+          billing_address?: string | null
+          billing_email?: string | null
+          billing_name: string
+          billing_phone?: string | null
+          created_at?: string
+          id?: string
+          items?: Json
+          metadata?: Json | null
+          order_number: string
+          order_total?: number
+          shipping_address?: string | null
+          shipping_email?: string | null
+          shipping_name?: string | null
+          shipping_phone?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+        }
+        Update: {
+          billing_address?: string | null
+          billing_email?: string | null
+          billing_name?: string
+          billing_phone?: string | null
+          created_at?: string
+          id?: string
+          items?: Json
+          metadata?: Json | null
+          order_number?: string
+          order_total?: number
+          shipping_address?: string | null
+          shipping_email?: string | null
+          shipping_name?: string | null
+          shipping_phone?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -230,6 +287,14 @@ export type Database = {
       }
     }
     Enums: {
+      order_status:
+        | "pending"
+        | "processing"
+        | "on-hold"
+        | "completed"
+        | "cancelled"
+        | "refunded"
+        | "failed"
       team_role: "admin" | "manager" | "support"
     }
     CompositeTypes: {
@@ -358,6 +423,15 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      order_status: [
+        "pending",
+        "processing",
+        "on-hold",
+        "completed",
+        "cancelled",
+        "refunded",
+        "failed",
+      ],
       team_role: ["admin", "manager", "support"],
     },
   },

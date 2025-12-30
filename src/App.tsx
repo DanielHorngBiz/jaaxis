@@ -10,6 +10,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import BotDetail from "./pages/BotDetail";
 import AccountSettings from "./pages/AccountSettings";
+import Store from "./pages/Store";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/dashboard/bot/:botId" element={<BotDetail />} />
           <Route path="/dashboard/bot/:botId/:tab" element={<BotDetail />} />
           <Route path="/account-settings" element={<AccountSettings />} />
+          <Route path="/store" element={<Store />} />
           <Route path="/en" element={<StaticRedirect to="/en/index.html" />} />
           <Route path="/zh-hant" element={<StaticRedirect to="/zh-hant/index.html" />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
