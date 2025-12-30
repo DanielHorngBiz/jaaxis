@@ -10,6 +10,8 @@ interface BotConfig {
   mobileDisplay: "show" | "hide";
   whitelisted_domains?: string[];
   blocked_pages?: string[];
+  persona?: string;
+  forwardingRules?: string;
 }
 
 interface BotConfigContextType {
@@ -26,6 +28,8 @@ const defaultConfig: BotConfig = {
   mobileDisplay: "show",
   whitelisted_domains: [],
   blocked_pages: [],
+  persona: "",
+  forwardingRules: "",
 };
 
 const BotConfigContext = createContext<BotConfigContextType | undefined>(undefined);
@@ -61,6 +65,8 @@ export const BotConfigProvider = ({ children }: { children: ReactNode }) => {
           mobileDisplay: (data.mobile_display as "show" | "hide") || "show",
           whitelisted_domains: data.whitelisted_domains || [],
           blocked_pages: data.blocked_pages || [],
+          persona: data.persona || "",
+          forwardingRules: data.forwarding_rules || "",
         });
       }
     } catch (error) {
@@ -84,6 +90,8 @@ export const BotConfigProvider = ({ children }: { children: ReactNode }) => {
             mobile_display: updates.mobileDisplay !== undefined ? updates.mobileDisplay : undefined,
             whitelisted_domains: updates.whitelisted_domains !== undefined ? updates.whitelisted_domains : undefined,
             blocked_pages: updates.blocked_pages !== undefined ? updates.blocked_pages : undefined,
+            persona: updates.persona !== undefined ? updates.persona : undefined,
+            forwarding_rules: updates.forwardingRules !== undefined ? updates.forwardingRules : undefined,
           })
           .eq("id", chatbotId);
       } catch (error) {
