@@ -375,8 +375,8 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
         <div className="px-8 pt-6 pb-4">
           <div className="flex items-center justify-center gap-2">
             {steps.map((step, index) => (
-              <>
-                <div key={step.number} className="flex flex-col items-center gap-1.5">
+              <div key={step.number} className="flex items-center gap-2">
+                <div className="flex flex-col items-center gap-1.5">
                   <div
                     className={cn(
                       "w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors",
@@ -399,7 +399,7 @@ export const CreateChatbotDialog = ({ open, onOpenChange }: CreateChatbotDialogP
                 {index < steps.length - 1 && (
                   <div className="w-8 h-px bg-border mb-5" />
                 )}
-              </>
+              </div>
             ))}
           </div>
         </div>
