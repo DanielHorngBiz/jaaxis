@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Upload, Trash2, Globe, FileText, CheckCircle2, Clock, RefreshCw, ChevronDown, Pencil, Check, X } from "lucide-react";
+import { Upload, Trash2, Globe, FileText, CheckCircle2, Clock, RefreshCw, ChevronDown, Pencil, Check, X, Loader2, Zap } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,8 +24,9 @@ interface TrainedItem {
 }
 const TrainingTab = () => {
   const { toast } = useToast();
-  const { chatbotId } = useBotConfig();
+  const { chatbotId, config, updateConfig } = useBotConfig();
   const [persona, setPersona] = useState("");
+  const [forwardingRules, setForwardingRules] = useState("");
   const [qaPairs, setQaPairs] = useState<QAPair[]>([{
     id: '1',
     question: '',
@@ -42,7 +43,20 @@ const TrainingTab = () => {
   const [editingName, setEditingName] = useState<string | null>(null);
   const [editNameValue, setEditNameValue] = useState("");
   const [contentValues, setContentValues] = useState<Record<string, string>>({});
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isSavingPersona, setIsSavingPersona] = useState(false);
+  const [isSavingRules, setIsSavingRules] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load persona and forwarding rules from config
+  useEffect(() => {
+    if (config.persona) {
+      setPersona(config.persona);
+    }
+    if (config.forwardingRules) {
+      setForwardingRules(config.forwardingRules);
+    }
+  }, [config.persona, config.forwardingRules]);
 
   useEffect(() => {
     if (chatbotId) {
@@ -268,6 +282,76 @@ const TrainingTab = () => {
     }
   };
 
+  const handleSavePersona = async () => {
+    if (!chatbotId) return;
+    setIsSavingPersona(true);
+    try {
+      await updateConfig({ persona });
+      toast({
+        title: "Persona saved",
+        description: "Your chatbot's personality has been updated.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save persona.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSavingPersona(false);
+    }
+  };
+
+  const handleSaveForwardingRules = async () => {
+    if (!chatbotId) return;
+    setIsSavingRules(true);
+    try {
+      await updateConfig({ forwardingRules });
+      toast({
+        title: "Forwarding rules saved",
+        description: "Your chatbot's forwarding rules have been updated.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save forwarding rules.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSavingRules(false);
+    }
+  };
+
+  const handleSyncKnowledge = async () => {
+    if (!chatbotId) return;
+    setIsSyncing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('sync-knowledge', {
+        body: { chatbot_id: chatbotId }
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        toast({
+          title: "Knowledge synced",
+          description: `${data.files_uploaded} file(s) synced to AI successfully.`,
+        });
+      } else {
+        throw new Error(data?.error || 'Sync failed');
+      }
+    } catch (error) {
+      console.error('Sync error:', error);
+      toast({
+        title: "Sync failed",
+        description: error instanceof Error ? error.message : "Failed to sync knowledge to AI.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const handleSaveText = async () => {
     if (!textInput.trim() || !chatbotId) return;
     
@@ -455,17 +539,28 @@ const TrainingTab = () => {
               <Button variant="outline" size="sm" onClick={() => setPersona(personaTemplates.professional)}>Professional</Button>
               <Button variant="outline" size="sm" onClick={() => setPersona(personaTemplates.witty)}>Witty</Button>
             </div>
-            <Button>Save</Button>
+            <Button onClick={handleSavePersona} disabled={isSavingPersona}>
+              {isSavingPersona ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Save
+            </Button>
           </div>
         </div>
       </div>
 
       {/* Knowledge Section */}
       <div className="pb-8 border-b">
-        <h3 className="text-lg font-semibold mb-2">Knowledge</h3>
-        <p className="text-sm text-muted-foreground mb-6">
-          Tell the bot everything it needs to know about your products & services
-        </p>
+        <div className="flex items-start justify-between mb-6">
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Knowledge</h3>
+            <p className="text-sm text-muted-foreground">
+              Tell the bot everything it needs to know about your products & services
+            </p>
+          </div>
+          <Button onClick={handleSyncKnowledge} disabled={isSyncing} className="gap-2">
+            {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
+            {isSyncing ? 'Syncing...' : 'Sync to AI'}
+          </Button>
+        </div>
         <div>
           <Tabs defaultValue="text" className="w-full">
             <TabsList className="grid grid-cols-5 w-full">
@@ -675,9 +770,17 @@ const TrainingTab = () => {
           <p className="text-sm text-muted-foreground mt-1">Tell the bot when to forward to a human</p>
         </div>
         <div className="space-y-4">
-          <Textarea placeholder="Type here..." className="min-h-[120px] resize-none" />
+          <Textarea 
+            placeholder="e.g., If the user asks to speak to a human, or requests a refund, forward the conversation..." 
+            className="min-h-[120px] resize-none"
+            value={forwardingRules}
+            onChange={e => setForwardingRules(e.target.value)}
+          />
           <div className="flex justify-end">
-            <Button>Save</Button>
+            <Button onClick={handleSaveForwardingRules} disabled={isSavingRules}>
+              {isSavingRules ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Save
+            </Button>
           </div>
         </div>
       </div>

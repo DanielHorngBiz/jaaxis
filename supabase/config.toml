@@ -2,3 +2,9 @@ project_id = "ivawontyaejtxtwkcyya"
 
 [functions.fetch-store-statuses]
 verify_jwt = true
+
+[functions.sync-knowledge]
+verify_jwt = false
+
+[functions.chat-query]
+verify_jwt = false

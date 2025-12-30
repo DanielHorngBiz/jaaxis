@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Pencil } from "lucide-react";
+import { Pencil, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useBotConfig } from "@/contexts/BotConfigContext";
 import defaultAvatar from "@/assets/jaaxis-avatar.jpg";
@@ -9,6 +9,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 import { ChatInput } from "../ChatInput";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   id: string;
@@ -21,13 +23,15 @@ interface Message {
 }
 
 const PreviewTab = () => {
-  const { config } = useBotConfig();
+  const { config, chatbotId } = useBotConfig();
+  const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const handleToggleOriginal = (messageId: string) => {
@@ -48,8 +52,16 @@ const PreviewTab = () => {
     }
   }, [messages]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!inputValue.trim() && selectedImages.length === 0) return;
+    if (!chatbotId) {
+      toast({
+        title: "Error",
+        description: "Chatbot not found",
+        variant: "destructive"
+      });
+      return;
+    }
 
     // Add user message
     const userMessage: Message = {
@@ -61,19 +73,140 @@ const PreviewTab = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputValue;
     setInputValue("");
     setSelectedImages([]);
+    setIsLoading(true);
 
-    // Bot responds after a short delay
-    setTimeout(() => {
-      const botMessage: Message = {
+    try {
+      // Prepare conversation history (exclude images for now)
+      const conversationHistory = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+
+      // Call the chat-query edge function
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-query`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          chatbot_id: chatbotId,
+          message: currentInput,
+          conversation_history: conversationHistory,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to get response');
+      }
+
+      const contentType = response.headers.get('content-type');
+
+      if (contentType?.includes('text/event-stream')) {
+        // Handle streaming response
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let botMessageId = (Date.now() + 1).toString();
+        let fullContent = '';
+
+        // Create initial bot message
+        setMessages(prev => [...prev, {
+          id: botMessageId,
+          role: 'bot',
+          content: '',
+          timestamp: new Date()
+        }]);
+
+        if (reader) {
+          let buffer = '';
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            
+            // Process complete lines
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const data = line.slice(6).trim();
+                if (data === '[DONE]') continue;
+
+                try {
+                  const parsed = JSON.parse(data);
+                  
+                  // Handle different response formats
+                  // OpenAI Chat Completions format
+                  if (parsed.choices?.[0]?.delta?.content) {
+                    fullContent += parsed.choices[0].delta.content;
+                    setMessages(prev => prev.map(msg =>
+                      msg.id === botMessageId ? { ...msg, content: fullContent } : msg
+                    ));
+                  }
+                  // Assistants API format
+                  else if (parsed.event === 'thread.message.delta') {
+                    const textDelta = parsed.data?.delta?.content?.[0]?.text?.value;
+                    if (textDelta) {
+                      fullContent += textDelta;
+                      setMessages(prev => prev.map(msg =>
+                        msg.id === botMessageId ? { ...msg, content: fullContent } : msg
+                      ));
+                    }
+                  }
+                } catch (e) {
+                  // Skip non-JSON lines
+                }
+              } else if (line.startsWith('event: ')) {
+                // Handle SSE events
+                const eventType = line.slice(7).trim();
+                if (eventType === 'thread.message.delta') {
+                  // Next data line will be the delta
+                }
+              }
+            }
+          }
+        }
+      } else {
+        // Handle non-streaming JSON response
+        const data = await response.json();
+        
+        if (data.success && data.response) {
+          const botMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: 'bot',
+            content: data.response,
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, botMessage]);
+        } else if (data.error) {
+          throw new Error(data.error);
+        }
+      }
+    } catch (error) {
+      console.error('Chat error:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to get response",
+        variant: "destructive"
+      });
+      
+      // Add error message
+      const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'bot',
-        content: "Hi, this is a sample message.",
+        content: "Sorry, I encountered an error. Please try again.",
         timestamp: new Date()
       };
-      setMessages(prev => [...prev, botMessage]);
-    }, 500);
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -209,6 +342,19 @@ const PreviewTab = () => {
                 )}
               </div>
             ))}
+            {isLoading && messages[messages.length - 1]?.role === 'user' && (
+              <div className="flex justify-start">
+                <div className="flex items-start gap-3 max-w-[80%]">
+                  <Avatar className="h-8 w-8 flex-shrink-0">
+                    <AvatarImage src={config.brandLogo} />
+                    <AvatarFallback>{config.botName[0]}</AvatarFallback>
+                  </Avatar>
+                  <div className="bg-secondary text-foreground rounded-2xl rounded-tl-sm px-4 py-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </ScrollArea>
 
@@ -223,7 +369,7 @@ const PreviewTab = () => {
           editingMessageId={editingMessageId}
           onCancelEdit={handleCancelEdit}
           primaryColor={config.primaryColor}
-          disabled={!inputValue.trim() && selectedImages.length === 0}
+          disabled={isLoading || (!inputValue.trim() && selectedImages.length === 0)}
         />
       </Card>
 
