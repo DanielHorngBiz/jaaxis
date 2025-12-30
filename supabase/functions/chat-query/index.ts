@@ -20,20 +20,18 @@ function getAvailableTools(
   if (hasForwardingRules) {
     tools.push({
       type: "function",
-      function: {
-        name: "forward_to_human",
-        description: "Forward the conversation to a human agent when the user's request matches the forwarding rules or requires human assistance that you cannot provide.",
-        parameters: {
-          type: "object",
-          properties: {
-            reason: {
-              type: "string",
-              description: "Brief explanation of why this is being forwarded to a human"
-            }
-          },
-          required: ["reason"],
-          additionalProperties: false
-        }
+      name: "forward_to_human",
+      description: "Forward the conversation to a human agent when the user's request matches the forwarding rules or requires human assistance that you cannot provide.",
+      parameters: {
+        type: "object",
+        properties: {
+          reason: {
+            type: "string",
+            description: "Brief explanation of why this is being forwarded to a human"
+          }
+        },
+        required: ["reason"],
+        additionalProperties: false
       }
     });
   }
@@ -46,37 +44,35 @@ function getAvailableTools(
   // read_order is always available when store is connected
   tools.push({
     type: "function",
-    function: {
-      name: "read_order",
-      description: "Look up orders by order number, customer name, email, or phone. At least one identifier must be provided.",
-      parameters: {
-        type: "object",
-        properties: {
-          order_number: {
-            type: "string",
-            description: "The order number to look up (e.g., '#1001' or '1001')"
-          },
-          customer_name: {
-            type: "string",
-            description: "Customer's name (billing or shipping)"
-          },
-          customer_email: {
-            type: "string",
-            description: "Customer's email address"
-          },
-          customer_phone: {
-            type: "string",
-            description: "Customer's phone number"
-          }
+    name: "read_order",
+    description: "Look up orders by order number, customer name, email, or phone. At least one identifier must be provided.",
+    parameters: {
+      type: "object",
+      properties: {
+        order_number: {
+          type: "string",
+          description: "The order number to look up (e.g., '#1001' or '1001')"
         },
-        anyOf: [
-          { required: ["order_number"] },
-          { required: ["customer_name"] },
-          { required: ["customer_email"] },
-          { required: ["customer_phone"] }
-        ],
-        additionalProperties: false
-      }
+        customer_name: {
+          type: "string",
+          description: "Customer's name (billing or shipping)"
+        },
+        customer_email: {
+          type: "string",
+          description: "Customer's email address"
+        },
+        customer_phone: {
+          type: "string",
+          description: "Customer's phone number"
+        }
+      },
+      anyOf: [
+        { required: ["order_number"] },
+        { required: ["customer_name"] },
+        { required: ["customer_email"] },
+        { required: ["customer_phone"] }
+      ],
+      additionalProperties: false
     }
   });
 
@@ -84,32 +80,30 @@ function getAvailableTools(
   if (storeAccess === 'readwrite') {
     tools.push({
       type: "function",
-      function: {
-        name: "cancel_order",
-        description: "Cancel an order and process a refund. Cannot cancel orders that are already completed, refunded, or cancelled. If the customer hasn't provided verification info, ask them for their email or phone before calling this tool.",
-        parameters: {
-          type: "object",
-          properties: {
-            order_number: {
-              type: "string",
-              description: "The order number to cancel"
-            },
-            verification_email: {
-              type: "string",
-              description: "Customer's email to verify ownership"
-            },
-            verification_phone: {
-              type: "string",
-              description: "Customer's phone to verify ownership"
-            }
+      name: "cancel_order",
+      description: "Cancel an order and process a refund. Cannot cancel orders that are already completed, refunded, or cancelled. If the customer hasn't provided verification info, ask them for their email or phone before calling this tool.",
+      parameters: {
+        type: "object",
+        properties: {
+          order_number: {
+            type: "string",
+            description: "The order number to cancel"
           },
-          required: ["order_number"],
-          anyOf: [
-            { required: ["verification_email"] },
-            { required: ["verification_phone"] }
-          ],
-          additionalProperties: false
-        }
+          verification_email: {
+            type: "string",
+            description: "Customer's email to verify ownership"
+          },
+          verification_phone: {
+            type: "string",
+            description: "Customer's phone to verify ownership"
+          }
+        },
+        required: ["order_number"],
+        anyOf: [
+          { required: ["verification_email"] },
+          { required: ["verification_phone"] }
+        ],
+        additionalProperties: false
       }
     });
 
@@ -122,59 +116,57 @@ function getAvailableTools(
 
     tools.push({
       type: "function",
-      function: {
-        name: "edit_order",
-        description: editDescription,
-        parameters: {
-          type: "object",
-          properties: {
-            order_number: {
-              type: "string",
-              description: "The order number to edit"
-            },
-            verification_email: {
-              type: "string",
-              description: "Customer's email to verify ownership"
-            },
-            verification_phone: {
-              type: "string",
-              description: "Customer's phone to verify ownership"
-            },
-            updates: {
-              type: "object",
-              description: "The fields to update",
-              properties: {
-                status: {
-                  type: "string",
-                  description: "New order status"
-                },
-                shipping_address: {
-                  type: "string",
-                  description: "New shipping address"
-                },
-                shipping_name: {
-                  type: "string",
-                  description: "New shipping recipient name"
-                },
-                billing_address: {
-                  type: "string",
-                  description: "New billing address"
-                },
-                billing_name: {
-                  type: "string",
-                  description: "New billing name"
-                }
-              },
-              additionalProperties: false
-            }
+      name: "edit_order",
+      description: editDescription,
+      parameters: {
+        type: "object",
+        properties: {
+          order_number: {
+            type: "string",
+            description: "The order number to edit"
           },
-          required: ["order_number", "updates"],
-          anyOf: [
-            { required: ["verification_email"] },
-            { required: ["verification_phone"] }
-          ],
-          additionalProperties: false
-        }
+          verification_email: {
+            type: "string",
+            description: "Customer's email to verify ownership"
+          },
+          verification_phone: {
+            type: "string",
+            description: "Customer's phone to verify ownership"
+          },
+          updates: {
+            type: "object",
+            description: "The fields to update",
+            properties: {
+              status: {
+                type: "string",
+                description: "New order status"
+              },
+              shipping_address: {
+                type: "string",
+                description: "New shipping address"
+              },
+              shipping_name: {
+                type: "string",
+                description: "New shipping recipient name"
+              },
+              billing_address: {
+                type: "string",
+                description: "New billing address"
+              },
+              billing_name: {
+                type: "string",
+                description: "New billing name"
+              }
+            },
+            additionalProperties: false
+          }
+        },
+        required: ["order_number", "updates"],
+        anyOf: [
+          { required: ["verification_email"] },
+          { required: ["verification_phone"] }
+        ],
+        additionalProperties: false
       }
     });
   }
@@ -594,7 +586,7 @@ serve(async (req) => {
 
       const hasForwardingRules = true; // Always true since we have base rules
       const availableTools = getAvailableTools(storeConnected, storeAccess, allowedStatuses, hasForwardingRules);
-      console.log(`Available tools: ${availableTools.map((t: any) => t.function.name).join(', ') || 'none'}`);
+      console.log(`Available tools: ${availableTools.map((t: any) => t.name).join(', ') || 'none'}`);
 
       // Simplified system prompt - no JSON classification needed
       const queryAnalyzerSystemPrompt = `${persona}
@@ -713,20 +705,18 @@ CRITICAL RULES:
     // RAG layer forwarding tool - different description focused on KB gaps
     const ragForwardingTool = {
       type: "function",
-      function: {
-        name: "forward_to_human",
-        description: "Forward to a human agent when the user's query IS relevant to the business but you cannot find the answer in the knowledge base. Examples: pricing not in KB, specific policies not documented, account-specific questions you cannot answer.",
-        parameters: {
-          type: "object",
-          properties: {
-            reason: {
-              type: "string",
-              description: "What the user asked about that isn't available in the knowledge base"
-            }
-          },
-          required: ["reason"],
-          additionalProperties: false
-        }
+      name: "forward_to_human",
+      description: "Forward to a human agent when the user's query IS relevant to the business but you cannot find the answer in the knowledge base. Examples: pricing not in KB, specific policies not documented, account-specific questions you cannot answer.",
+      parameters: {
+        type: "object",
+        properties: {
+          reason: {
+            type: "string",
+            description: "What the user asked about that isn't available in the knowledge base"
+          }
+        },
+        required: ["reason"],
+        additionalProperties: false
       }
     };
 
