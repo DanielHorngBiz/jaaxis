@@ -7,17 +7,41 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Build available order tools based on store connection and access level
-function getAvailableOrderTools(
+// Build available tools based on store connection, access level, and forwarding rules
+function getAvailableTools(
   storeConnected: boolean,
   storeAccess: string,
-  allowedStatuses: string[]
+  allowedStatuses: string[],
+  hasForwardingRules: boolean
 ): any[] {
-  if (!storeConnected) {
-    return [];
+  const tools: any[] = [];
+
+  // Forward tool - always available if forwarding rules exist
+  if (hasForwardingRules) {
+    tools.push({
+      type: "function",
+      function: {
+        name: "forward_to_human",
+        description: "Forward the conversation to a human agent when the user's request matches the forwarding rules or requires human assistance that you cannot provide.",
+        parameters: {
+          type: "object",
+          properties: {
+            reason: {
+              type: "string",
+              description: "Brief explanation of why this is being forwarded to a human"
+            }
+          },
+          required: ["reason"],
+          additionalProperties: false
+        }
+      }
+    });
   }
 
-  const tools: any[] = [];
+  // Order tools only if store is connected
+  if (!storeConnected) {
+    return tools;
+  }
 
   // read_order is always available when store is connected
   tools.push({
@@ -187,8 +211,8 @@ function verifyOrderOwnership(
   return false;
 }
 
-// Execute order tool
-async function executeOrderTool(
+// Execute tool (order tools and forward_to_human)
+async function executeTool(
   toolName: string,
   args: any,
   supabase: any,
@@ -196,6 +220,21 @@ async function executeOrderTool(
   allowedStatuses: string[]
 ): Promise<{ success: boolean; result?: any; error?: string }> {
   console.log(`Executing tool: ${toolName} with args:`, args);
+
+  // Forward to human tool - POC: just return success, no actual forwarding
+  if (toolName === "forward_to_human") {
+    const reason = args.reason || "User request requires human assistance";
+    console.log(`Forwarding to human. Reason: ${reason}`);
+    
+    return {
+      success: true,
+      result: {
+        forwarded: true,
+        message: "Your request has been forwarded to our support team. They will get back to you shortly.",
+        reason: reason
+      }
+    };
+  }
 
   // Read order tool - flexible lookup
   if (toolName === "read_order") {
@@ -501,28 +540,20 @@ serve(async (req) => {
     // ========== LAYER 1: Query Analyzer with Tool Calling ==========
     console.log('Running Query Analyzer (Layer 1)...');
 
-    // Build tools array dynamically based on store connection and access level
-    const availableTools = getAvailableOrderTools(storeConnected, storeAccess, allowedStatuses);
-    console.log(`Available tools: ${availableTools.map(t => t.function.name).join(', ') || 'none'}`);
+    // Build tools array dynamically based on store connection, access level, and forwarding rules
+    const hasForwardingRules = Boolean(forwardingRules && forwardingRules.trim());
+    const availableTools = getAvailableTools(storeConnected, storeAccess, allowedStatuses, hasForwardingRules);
+    console.log(`Available tools: ${availableTools.map((t: any) => t.function.name).join(', ') || 'none'}`);
 
+    // Simplified system prompt - no JSON classification needed
     const queryAnalyzerSystemPrompt = `${persona}
 
-You are a query analyzer. Classify the user's query:
-- "forward": Query matches forwarding rules and should be handled by a human
-- "tool_required": User is asking about orders (use available tools)
-- "general": General question for the knowledge base
+You are a helpful assistant. Use the available tools when needed to help the user.
 
-${forwardingRules ? `FORWARDING RULES:
-${forwardingRules}
+${forwardingRules ? `FORWARDING RULES - Use the forward_to_human tool when the user's request matches any of these:
+${forwardingRules}` : ''}
 
-If the user's message matches any forwarding rule, respond with classification "forward" and a friendly message.` : ''}
-
-Respond in JSON format:
-{
-  "classification": "forward" | "tool_required" | "general",
-  "response": "Only if classification is 'forward'",
-  "reasoning": "Brief explanation"
-}`;
+If no tools are needed, respond directly to help the user.`;
 
     const analyzerBody: any = {
       model: 'gpt-5',
@@ -559,23 +590,26 @@ Respond in JSON format:
 
     const analyzerResult = await analyzerResponse.json();
     const analyzerMessage = analyzerResult.choices[0]?.message;
-    const analyzerContent = analyzerMessage?.content || '';
     const toolCalls = analyzerMessage?.tool_calls || [];
 
-    console.log('Query Analyzer response:', analyzerContent);
+    console.log('Query Analyzer response:', analyzerMessage?.content || '(tool calls only)');
     console.log('Tool calls:', JSON.stringify(toolCalls));
+
+    // Variables to pass tool results to RAG layer
+    let toolResultsForRag: any[] = [];
+    let analyzerMessageForRag: any = null;
 
     // Handle tool calls
     if (toolCalls.length > 0) {
       console.log('Processing tool calls...');
       
-      const toolResults: any[] = [];
+      analyzerMessageForRag = analyzerMessage;
       
       for (const toolCall of toolCalls) {
         const toolName = toolCall.function.name;
         const toolArgs = JSON.parse(toolCall.function.arguments);
         
-        const result = await executeOrderTool(
+        const result = await executeTool(
           toolName, 
           toolArgs, 
           supabase, 
@@ -583,84 +617,33 @@ Respond in JSON format:
           allowedStatuses
         );
         
-        toolResults.push({
+        toolResultsForRag.push({
           tool_call_id: toolCall.id,
           role: 'tool',
           content: JSON.stringify(result)
         });
       }
 
-      // Get final response with tool results
-      const finalResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-5',
-          reasoning: { effort: 'low' },
-          messages: [
-            { role: 'system', content: persona },
-            ...conversation_history.map((msg: any) => ({
-              role: msg.role === 'bot' ? 'assistant' : msg.role,
-              content: msg.content,
-            })),
-            { role: 'user', content: message },
-            analyzerMessage,
-            ...toolResults,
-          ],
-        }),
-      });
-
-      if (!finalResponse.ok) {
-        const errorText = await finalResponse.text();
-        console.error('Final response error:', errorText);
-        throw new Error(`Final response failed: ${errorText}`);
-      }
-
-      const finalResult = await finalResponse.json();
-      const finalContent = finalResult.choices[0]?.message?.content || '';
-
-      return new Response(JSON.stringify({
-        success: true,
-        response: finalContent,
-        classification: 'tool_required',
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Parse the analyzer response for classification
-    let classification = 'general';
-    let forwardResponse = '';
-
-    try {
-      const jsonMatch = analyzerContent.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        classification = parsed.classification || 'general';
-        forwardResponse = parsed.response || '';
-        console.log(`Classification: ${classification}, Reasoning: ${parsed.reasoning}`);
-      }
-    } catch (e) {
-      console.log('Could not parse analyzer response as JSON, defaulting to general');
-    }
-
-    // If forward, return immediately with the response
-    if (classification === 'forward' && forwardResponse) {
-      console.log('Query classified as forward, returning forwarding message');
-      return new Response(JSON.stringify({
-        success: true,
-        response: forwardResponse,
-        classification: 'forward',
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      console.log('Tool results:', JSON.stringify(toolResultsForRag));
     }
 
     // ========== LAYER 2: RAG Answer Generator ==========
     console.log('Running RAG Answer Generator (Layer 2)...');
+
+    // Build base messages for RAG
+    const baseMessages = [
+      { role: 'system', content: persona },
+      ...conversation_history.map((msg: any) => ({
+        role: msg.role === 'bot' ? 'assistant' : msg.role,
+        content: msg.content,
+      })),
+      { role: 'user', content: message },
+    ];
+
+    // If we have tool results, include them in the context
+    const ragMessages = toolResultsForRag.length > 0
+      ? [...baseMessages, analyzerMessageForRag, ...toolResultsForRag]
+      : baseMessages;
 
     // Check if assistant exists
     if (!chatbot.openai_assistant_id) {
@@ -676,14 +659,7 @@ Respond in JSON format:
         body: JSON.stringify({
           model: 'gpt-5',
           reasoning: { effort: 'low' },
-          messages: [
-            { role: 'system', content: persona },
-            ...conversation_history.map((msg: any) => ({
-              role: msg.role === 'bot' ? 'assistant' : msg.role,
-              content: msg.content,
-            })),
-            { role: 'user', content: message },
-          ],
+          messages: ragMessages,
           stream: true,
         }),
       });
@@ -702,6 +678,26 @@ Respond in JSON format:
     // Use Assistants API with file_search for RAG
     console.log(`Using assistant: ${chatbot.openai_assistant_id}`);
 
+    // Build additional instructions including tool results if any
+    let additionalInstructions = persona;
+    if (toolResultsForRag.length > 0) {
+      const toolContext = toolResultsForRag.map(tr => {
+        const content = JSON.parse(tr.content);
+        return `Tool result: ${JSON.stringify(content)}`;
+      }).join('\n');
+      additionalInstructions += `\n\nCONTEXT FROM TOOLS:\n${toolContext}\n\nUse the above tool results to help answer the user's question.`;
+    }
+
+    // Build thread messages - include tool context in the user message if needed
+    let userMessageContent = message;
+    if (toolResultsForRag.length > 0) {
+      const toolContext = toolResultsForRag.map(tr => {
+        const content = JSON.parse(tr.content);
+        return JSON.stringify(content, null, 2);
+      }).join('\n\n');
+      userMessageContent = `${message}\n\n[Tool Results for context]:\n${toolContext}`;
+    }
+
     // Create a thread
     const threadResponse = await fetch('https://api.openai.com/v1/threads', {
       method: 'POST',
@@ -716,7 +712,7 @@ Respond in JSON format:
             role: msg.role === 'bot' ? 'assistant' : 'user',
             content: msg.content,
           })),
-          { role: 'user', content: message },
+          { role: 'user', content: userMessageContent },
         ],
       }),
     });
@@ -739,7 +735,7 @@ Respond in JSON format:
       },
       body: JSON.stringify({
         assistant_id: chatbot.openai_assistant_id,
-        additional_instructions: persona,
+        additional_instructions: additionalInstructions,
         stream: true,
       }),
     });
