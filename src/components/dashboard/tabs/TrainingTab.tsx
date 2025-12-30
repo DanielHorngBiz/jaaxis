@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Upload, Trash2, Globe, FileText, CheckCircle2, Clock, RefreshCw, ChevronDown, Pencil, Check, X, Loader2, Zap } from "lucide-react";
+import { Upload, Trash2, Globe, FileText, CheckCircle2, Clock, RefreshCw, ChevronDown, Pencil, Check, X, Loader2 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -388,8 +388,10 @@ const TrainingTab = () => {
       setTextInput("");
       toast({
         title: "Knowledge saved",
-        description: "Text content has been added to your knowledge base.",
+        description: "Text content has been added. Syncing to AI...",
       });
+      // Auto-sync after save
+      handleSyncKnowledge();
     }
   };
 
@@ -432,8 +434,9 @@ const TrainingTab = () => {
       setQaPairs([{ id: '1', question: '', answer: '' }]);
       toast({
         title: "Knowledge saved",
-        description: `${validPairs.length} Q&A pair${validPairs.length > 1 ? 's' : ''} added to your knowledge base.`,
+        description: `${validPairs.length} Q&A pair${validPairs.length > 1 ? 's' : ''} added. Syncing to AI...`,
       });
+      handleSyncKnowledge();
     }
   };
 
@@ -478,8 +481,9 @@ const TrainingTab = () => {
     setWebsiteUrl("");
     toast({
       title: "Website scraped",
-      description: `${urls.length} website${urls.length > 1 ? 's' : ''} added to your knowledge base.`,
+      description: `${urls.length} website${urls.length > 1 ? 's' : ''} added. Syncing to AI...`,
     });
+    handleSyncKnowledge();
   };
 
   const handleSaveFiles = async () => {
@@ -521,8 +525,9 @@ const TrainingTab = () => {
     setUploadedFiles([]);
     toast({
       title: "Files uploaded",
-      description: `${fileCount} file${fileCount > 1 ? 's' : ''} added to your knowledge base.`,
+      description: `${fileCount} file${fileCount > 1 ? 's' : ''} added. Syncing to AI...`,
     });
+    handleSyncKnowledge();
   };
   return <div className="space-y-8">
       {/* Persona Section */}
@@ -549,18 +554,10 @@ const TrainingTab = () => {
 
       {/* Knowledge Section */}
       <div className="pb-8 border-b">
-        <div className="flex items-start justify-between mb-6">
-          <div>
-            <h3 className="text-lg font-semibold mb-2">Knowledge</h3>
-            <p className="text-sm text-muted-foreground">
-              Tell the bot everything it needs to know about your products & services
-            </p>
-          </div>
-          <Button onClick={handleSyncKnowledge} disabled={isSyncing} className="gap-2">
-            {isSyncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
-            {isSyncing ? 'Syncing...' : 'Sync to AI'}
-          </Button>
-        </div>
+        <h3 className="text-lg font-semibold mb-2">Knowledge</h3>
+        <p className="text-sm text-muted-foreground mb-6">
+          Tell the bot everything it needs to know about your products & services
+        </p>
         <div>
           <Tabs defaultValue="text" className="w-full">
             <TabsList className="grid grid-cols-5 w-full">
