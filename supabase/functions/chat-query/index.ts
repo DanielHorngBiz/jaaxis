@@ -13,16 +13,28 @@ const orderTools = [
     type: "function",
     function: {
       name: "read_order",
-      description: "Look up an order by order number and return all order details including status, items, billing/shipping info, and tracking.",
+      description: "Look up orders by order number, customer name, email, or phone. At least one identifier must be provided.",
       parameters: {
         type: "object",
         properties: {
           order_number: {
             type: "string",
             description: "The order number to look up (e.g., '#1001' or '1001')"
+          },
+          customer_name: {
+            type: "string",
+            description: "Customer's name (billing or shipping)"
+          },
+          customer_email: {
+            type: "string",
+            description: "Customer's email address"
+          },
+          customer_phone: {
+            type: "string",
+            description: "Customer's phone number"
           }
         },
-        required: ["order_number"]
+        required: []
       }
     }
   },
@@ -30,13 +42,21 @@ const orderTools = [
     type: "function",
     function: {
       name: "cancel_order",
-      description: "Cancel an order and process a refund. Changes the order status to 'refunded'.",
+      description: "Cancel an order and process a refund. Requires order number AND either email or phone for identity verification.",
       parameters: {
         type: "object",
         properties: {
           order_number: {
             type: "string",
             description: "The order number to cancel"
+          },
+          verification_email: {
+            type: "string",
+            description: "Customer's email to verify ownership"
+          },
+          verification_phone: {
+            type: "string",
+            description: "Customer's phone to verify ownership"
           }
         },
         required: ["order_number"]
@@ -47,13 +67,21 @@ const orderTools = [
     type: "function",
     function: {
       name: "edit_order",
-      description: "Edit order details like status, shipping address, or billing address. Cannot edit tracking information.",
+      description: "Edit order details like status, shipping address, or billing address. Requires order number AND either email or phone for identity verification. Cannot edit tracking information.",
       parameters: {
         type: "object",
         properties: {
           order_number: {
             type: "string",
             description: "The order number to edit"
+          },
+          verification_email: {
+            type: "string",
+            description: "Customer's email to verify ownership"
+          },
+          verification_phone: {
+            type: "string",
+            description: "Customer's phone to verify ownership"
           },
           updates: {
             type: "object",
@@ -88,6 +116,35 @@ const orderTools = [
   }
 ];
 
+// Verify order ownership by matching email or phone
+function verifyOrderOwnership(
+  order: any,
+  email?: string,
+  phone?: string
+): boolean {
+  if (email) {
+    const normalizedEmail = email.toLowerCase().trim();
+    if (
+      order.billing_email?.toLowerCase().trim() === normalizedEmail ||
+      order.shipping_email?.toLowerCase().trim() === normalizedEmail
+    ) {
+      return true;
+    }
+  }
+  if (phone) {
+    const normalizedPhone = phone.replace(/\D/g, ''); // Remove non-digits
+    const billingPhone = order.billing_phone?.replace(/\D/g, '') || '';
+    const shippingPhone = order.shipping_phone?.replace(/\D/g, '') || '';
+    if (
+      (billingPhone && billingPhone === normalizedPhone) ||
+      (shippingPhone && shippingPhone === normalizedPhone)
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // Execute order tool
 async function executeOrderTool(
   toolName: string,
@@ -98,30 +155,112 @@ async function executeOrderTool(
 ): Promise<{ success: boolean; result?: any; error?: string }> {
   console.log(`Executing tool: ${toolName} with args:`, args);
 
-  // Normalize order number (remove # if present)
+  // Read order tool - flexible lookup
+  if (toolName === "read_order") {
+    const orderNumber = args.order_number?.replace('#', '').trim();
+    const customerName = args.customer_name?.trim();
+    const customerEmail = args.customer_email?.toLowerCase().trim();
+    const customerPhone = args.customer_phone?.replace(/\D/g, '');
+
+    // Validate at least one identifier is provided
+    if (!orderNumber && !customerName && !customerEmail && !customerPhone) {
+      return { success: false, error: "Please provide at least one of: order number, name, email, or phone" };
+    }
+
+    let query = supabase.from('orders').select('*');
+
+    if (orderNumber) {
+      query = query.eq('order_number', `#${orderNumber}`);
+    }
+    
+    // Execute query
+    const { data: orders, error } = await query;
+
+    if (error) {
+      return { success: false, error: `Failed to search orders: ${error.message}` };
+    }
+
+    // Filter by other criteria if no order_number or need additional filtering
+    let filteredOrders = orders || [];
+    
+    if (!orderNumber && filteredOrders.length === 0) {
+      // If no order number, fetch all and filter
+      const { data: allOrders, error: allError } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(100);
+      
+      if (allError) {
+        return { success: false, error: `Failed to search orders: ${allError.message}` };
+      }
+      filteredOrders = allOrders || [];
+    }
+
+    // Apply additional filters
+    if (customerName) {
+      const nameLower = customerName.toLowerCase();
+      filteredOrders = filteredOrders.filter((o: any) =>
+        o.billing_name?.toLowerCase().includes(nameLower) ||
+        o.shipping_name?.toLowerCase().includes(nameLower)
+      );
+    }
+
+    if (customerEmail) {
+      filteredOrders = filteredOrders.filter((o: any) =>
+        o.billing_email?.toLowerCase() === customerEmail ||
+        o.shipping_email?.toLowerCase() === customerEmail
+      );
+    }
+
+    if (customerPhone) {
+      filteredOrders = filteredOrders.filter((o: any) => {
+        const billingPhone = o.billing_phone?.replace(/\D/g, '') || '';
+        const shippingPhone = o.shipping_phone?.replace(/\D/g, '') || '';
+        return billingPhone === customerPhone || shippingPhone === customerPhone;
+      });
+    }
+
+    if (filteredOrders.length === 0) {
+      return { success: false, error: "No orders found matching the provided information" };
+    }
+
+    if (filteredOrders.length === 1) {
+      return { success: true, result: filteredOrders[0] };
+    }
+
+    // Return multiple orders summary
+    return { 
+      success: true, 
+      result: {
+        message: `Found ${filteredOrders.length} orders`,
+        orders: filteredOrders.map((o: any) => ({
+          order_number: o.order_number,
+          status: o.status,
+          total: o.order_total,
+          date: o.created_at
+        }))
+      }
+    };
+  }
+
+  // For write operations, require order_number
   const orderNumber = args.order_number?.replace('#', '').trim();
   
   if (!orderNumber) {
     return { success: false, error: "Order number is required" };
   }
 
-  // Read order tool
-  if (toolName === "read_order") {
-    const { data: order, error } = await supabase
-      .from('orders')
-      .select('*')
-      .eq('order_number', `#${orderNumber}`)
-      .single();
-
-    if (error || !order) {
-      return { success: false, error: `Order #${orderNumber} not found` };
-    }
-
-    return { success: true, result: order };
-  }
-
   // Cancel order tool
   if (toolName === "cancel_order") {
+    const verificationEmail = args.verification_email;
+    const verificationPhone = args.verification_phone;
+
+    // Require verification
+    if (!verificationEmail && !verificationPhone) {
+      return { success: false, error: "For security, please provide the email or phone number associated with this order to verify ownership" };
+    }
+
     if (storeAccess !== "readwrite") {
       return { success: false, error: "I don't have permission to cancel orders. Would you like me to connect you with someone who can help?" };
     }
@@ -144,6 +283,11 @@ async function executeOrderTool(
 
     if (fetchError || !order) {
       return { success: false, error: `Order #${orderNumber} not found` };
+    }
+
+    // Verify ownership
+    if (!verifyOrderOwnership(order, verificationEmail, verificationPhone)) {
+      return { success: false, error: "The email or phone provided doesn't match our records for this order. Please double-check and try again." };
     }
 
     // Check if order can be cancelled
@@ -173,6 +317,14 @@ async function executeOrderTool(
 
   // Edit order tool
   if (toolName === "edit_order") {
+    const verificationEmail = args.verification_email;
+    const verificationPhone = args.verification_phone;
+
+    // Require verification
+    if (!verificationEmail && !verificationPhone) {
+      return { success: false, error: "For security, please provide the email or phone number associated with this order to verify ownership" };
+    }
+
     if (storeAccess !== "readwrite") {
       return { success: false, error: "I don't have permission to edit orders. Would you like me to connect you with someone who can help?" };
     }
@@ -188,6 +340,11 @@ async function executeOrderTool(
 
     if (fetchError || !order) {
       return { success: false, error: `Order #${orderNumber} not found` };
+    }
+
+    // Verify ownership
+    if (!verifyOrderOwnership(order, verificationEmail, verificationPhone)) {
+      return { success: false, error: "The email or phone provided doesn't match our records for this order. Please double-check and try again." };
     }
 
     // Build update object (excluding tracking info)
@@ -309,13 +466,13 @@ serve(async (req) => {
     if (storeConnected) {
       // Read tool is always available
       availableTools.push(orderTools[0]); // read_order
-      toolsDescription = '\n\nYou have access to order management tools:\n- read_order: Look up order details\n';
+      toolsDescription = '\n\nYou have access to order management tools:\n- read_order: Look up orders by order number, name, email, or phone (at least one required)\n';
       
       if (storeAccess === 'readwrite') {
         availableTools.push(orderTools[1]); // cancel_order
         availableTools.push(orderTools[2]); // edit_order
-        toolsDescription += '- cancel_order: Cancel an order and process refund\n';
-        toolsDescription += '- edit_order: Edit order details (status, addresses)\n';
+        toolsDescription += '- cancel_order: Cancel an order (requires order number + email or phone for verification)\n';
+        toolsDescription += '- edit_order: Edit order details (requires order number + email or phone for verification)\n';
         
         if (allowedStatuses.length > 0) {
           toolsDescription += `\nFor status changes, you can only set these statuses: ${allowedStatuses.join(', ')}\n`;
@@ -336,7 +493,11 @@ ${forwardingRules}
 If the user's message matches any of these forwarding rules, respond with the classification "forward" and provide a friendly message explaining that the conversation is being forwarded to a human.` : ''}
 
 ${storeConnected ? `ORDER QUERIES:
-If the user is asking about order status, order details, wants to cancel an order, or modify an order, classify as "tool_required" and use the appropriate tool.` : ''}
+If the user is asking about order status, order details, wants to cancel an order, or modify an order, classify as "tool_required" and use the appropriate tool.
+
+IDENTITY VERIFICATION:
+- For read_order: Ask for order number, name, email, OR phone - at least one is required
+- For cancel_order and edit_order: ALWAYS ask the customer for their email or phone to verify identity before calling the tool. This is required for security.` : ''}
 
 Respond in JSON format:
 {
