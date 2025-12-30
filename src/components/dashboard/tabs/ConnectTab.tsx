@@ -1,16 +1,18 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MessageCircle, Frame, Instagram, Facebook, Store, Settings } from "lucide-react";
-import { useState } from "react";
-import { Toggle } from "@/components/ui/toggle";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useBotConfig } from "@/contexts/BotConfigContext";
 import EmbedCodeDialog from "@/components/dashboard/EmbedCodeDialog";
 import ConnectMetaDialog from "@/components/dashboard/ConnectMetaDialog";
+
 const ConnectTab = () => {
+  const { chatbotId } = useBotConfig();
   const [storeType, setStoreType] = useState<"shopify" | "woocommerce">("shopify");
   const [step, setStep] = useState(1);
   const [accessLevel, setAccessLevel] = useState<"read" | "readwrite">("read");
@@ -26,6 +28,7 @@ const ConnectTab = () => {
     igHandle?: string;
   } | null>(null);
   const [metaManageMode, setMetaManageMode] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Form state
   const [storeUrl, setStoreUrl] = useState("");
@@ -39,17 +42,43 @@ const ConnectTab = () => {
   const [loadingPayment, setLoadingPayment] = useState(false);
   const [loadingFulfillment, setLoadingFulfillment] = useState(false);
   const [loadingOrder, setLoadingOrder] = useState(false);
-  const {
-    toast
-  } = useToast();
-  const fetchStatuses = async (statusType: 'payment' | 'fulfillment' | 'order') => {
-    // Set loading state for specific button
-    if (statusType === 'payment') setLoadingPayment(true);else if (statusType === 'fulfillment') setLoadingFulfillment(true);else setLoadingOrder(true);
+  const { toast } = useToast();
+
+  // Load existing store connection on mount
+  useEffect(() => {
+    if (chatbotId) {
+      loadStoreConnection();
+    }
+  }, [chatbotId]);
+
+  const loadStoreConnection = async () => {
     try {
-      const {
-        data,
-        error
-      } = await supabase.functions.invoke('fetch-store-statuses', {
+      const { data, error } = await supabase
+        .from("chatbots")
+        .select("store_type, store_connected, store_access, store_order_statuses")
+        .eq("id", chatbotId)
+        .single();
+
+      if (error) throw error;
+
+      if (data && data.store_connected) {
+        setIsStoreConnected(true);
+        setStoreType((data.store_type as "shopify" | "woocommerce") || "shopify");
+        setAccessLevel((data.store_access as "read" | "readwrite") || "read");
+        setOrderStatus(data.store_order_statuses || "");
+      }
+    } catch (error) {
+      console.error("Error loading store connection:", error);
+    }
+  };
+
+  const fetchStatuses = async (statusType: 'payment' | 'fulfillment' | 'order') => {
+    if (statusType === 'payment') setLoadingPayment(true);
+    else if (statusType === 'fulfillment') setLoadingFulfillment(true);
+    else setLoadingOrder(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('fetch-store-statuses', {
         body: {
           storeType,
           storeUrl,
@@ -59,7 +88,9 @@ const ConnectTab = () => {
           consumerSecret
         }
       });
+      
       if (error) throw error;
+      
       if (storeType === "shopify") {
         if (statusType === 'payment') {
           setPaymentStatus(data.paymentStatuses);
@@ -85,23 +116,114 @@ const ConnectTab = () => {
         variant: "destructive"
       });
     } finally {
-      if (statusType === 'payment') setLoadingPayment(false);else if (statusType === 'fulfillment') setLoadingFulfillment(false);else setLoadingOrder(false);
+      if (statusType === 'payment') setLoadingPayment(false);
+      else if (statusType === 'fulfillment') setLoadingFulfillment(false);
+      else setLoadingOrder(false);
     }
   };
-  const handleConnect = () => {
-    console.log("Connecting to store:", {
-      storeType,
-      accessLevel,
-      paymentStatus,
-      fulfillmentStatus,
-      orderStatus
-    });
-    setIsStoreConnected(true);
-    setIsDialogOpen(false);
-    setStep(1);
+
+  const handleConnect = async () => {
+    // For Shopify, just mock the connection (no database save)
+    if (storeType === "shopify") {
+      console.log("Mock connecting to Shopify store");
+      setIsStoreConnected(true);
+      setIsDialogOpen(false);
+      setStep(1);
+      toast({
+        title: "Connected",
+        description: "Shopify store connected (mock)"
+      });
+      return;
+    }
+
+    // For WooCommerce, save to database
+    if (!chatbotId) {
+      toast({
+        title: "Error",
+        description: "No chatbot selected",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from("chatbots")
+        .update({
+          store_type: storeType,
+          store_connected: true,
+          store_access: accessLevel,
+          store_order_statuses: accessLevel === "readwrite" ? orderStatus : null,
+        })
+        .eq("id", chatbotId);
+
+      if (error) throw error;
+
+      setIsStoreConnected(true);
+      setIsDialogOpen(false);
+      setStep(1);
+      toast({
+        title: "Connected",
+        description: "WooCommerce store connected successfully"
+      });
+    } catch (error) {
+      console.error("Error connecting store:", error);
+      toast({
+        title: "Error",
+        description: "Failed to connect store",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
-  const handleDisconnect = () => {
-    setIsStoreConnected(false);
+
+  const handleDisconnect = async () => {
+    // For Shopify, just reset local state
+    if (storeType === "shopify") {
+      setIsStoreConnected(false);
+      resetFormState();
+      toast({
+        title: "Disconnected",
+        description: "Shopify store disconnected"
+      });
+      return;
+    }
+
+    // For WooCommerce, clear from database
+    if (!chatbotId) return;
+
+    try {
+      const { error } = await supabase
+        .from("chatbots")
+        .update({
+          store_type: null,
+          store_connected: false,
+          store_access: null,
+          store_order_statuses: null,
+        })
+        .eq("id", chatbotId);
+
+      if (error) throw error;
+
+      setIsStoreConnected(false);
+      resetFormState();
+      toast({
+        title: "Disconnected",
+        description: "WooCommerce store disconnected"
+      });
+    } catch (error) {
+      console.error("Error disconnecting store:", error);
+      toast({
+        title: "Error",
+        description: "Failed to disconnect store",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const resetFormState = () => {
     setStoreType("shopify");
     setAccessLevel("read");
     setPaymentStatus("");
@@ -113,15 +235,19 @@ const ConnectTab = () => {
     setConsumerKey("");
     setConsumerSecret("");
   };
+
   const openSettingsDialog = () => {
     setStep(2);
     setIsDialogOpen(true);
   };
+
   const openEmbedDialog = (type: "widget" | "iframe") => {
     setEmbedType(type);
     setEmbedDialogOpen(true);
   };
-  return <div className="space-y-8">
+
+  return (
+    <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Chat Widget */}
         <Card>
@@ -159,25 +285,46 @@ const ConnectTab = () => {
                   <Instagram className="w-7 h-7 text-pink-600" />
                 </div>
               </div>
-              {isMetaConnected && <Button variant="ghost" size="icon" className="h-10 w-10 -mt-1 -mr-1" onClick={() => {
-              setMetaManageMode(true);
-              setMetaDialogOpen(true);
-            }}>
+              {isMetaConnected && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 -mt-1 -mr-1"
+                  onClick={() => {
+                    setMetaManageMode(true);
+                    setMetaDialogOpen(true);
+                  }}
+                >
                   <Settings className="w-8 h-8" />
-                </Button>}
+                </Button>
+              )}
             </div>
             <h3 className="font-semibold text-lg mb-2">Meta Platforms</h3>
             <p className="text-sm text-muted-foreground mb-6 flex-1">Connect to Messenger and Instagram</p>
-            {!isMetaConnected && <Button variant="outline" className="w-full" onClick={() => {
-            setMetaManageMode(false);
-            setMetaDialogOpen(true);
-          }}>Connect</Button>}
-            {isMetaConnected && <Button variant="secondary" className="w-full" onClick={() => {
-            setIsMetaConnected(false);
-            setConnectedMetaPage(null);
-          }}>
+            {!isMetaConnected && (
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  setMetaManageMode(false);
+                  setMetaDialogOpen(true);
+                }}
+              >
+                Connect
+              </Button>
+            )}
+            {isMetaConnected && (
+              <Button
+                variant="secondary"
+                className="w-full"
+                onClick={() => {
+                  setIsMetaConnected(false);
+                  setConnectedMetaPage(null);
+                }}
+              >
                 Disconnect
-              </Button>}
+              </Button>
+            )}
           </CardContent>
         </Card>
 
@@ -188,54 +335,95 @@ const ConnectTab = () => {
               <div className="w-14 h-14 rounded-xl bg-green-500/10 flex items-center justify-center">
                 <Store className="w-7 h-7 text-green-600" />
               </div>
-              {isStoreConnected && <Button variant="ghost" size="icon" className="h-10 w-10 -mt-1 -mr-1" onClick={openSettingsDialog}>
+              {isStoreConnected && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 -mt-1 -mr-1"
+                  onClick={openSettingsDialog}
+                >
                   <Settings className="w-8 h-8" />
-                </Button>}
+                </Button>
+              )}
             </div>
             <h3 className="font-semibold text-lg mb-2">Store</h3>
             <p className="text-sm text-muted-foreground mb-6 flex-1">Connect your bot to a store</p>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              {!isStoreConnected && <DialogTrigger asChild>
-                  <Button variant="outline" className="w-full" onClick={() => setStep(1)}>Connect</Button>
-                </DialogTrigger>}
+              {!isStoreConnected && (
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full" onClick={() => setStep(1)}>
+                    Connect
+                  </Button>
+                </DialogTrigger>
+              )}
               <DialogContent className="sm:max-w-[540px] p-0 gap-0">
                 {/* Step indicator at top */}
                 <div className="px-8 pt-6 pb-4">
                   <div className="flex items-center justify-center gap-2">
                     <div className="flex flex-col items-center gap-1.5">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${step === 1 ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
+                          step === 1 ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
+                        }`}
+                      >
                         1
                       </div>
-                      <span className={`text-xs font-medium transition-colors ${step === 1 ? 'text-foreground' : 'text-muted-foreground'}`}>
+                      <span
+                        className={`text-xs font-medium transition-colors ${
+                          step === 1 ? 'text-foreground' : 'text-muted-foreground'
+                        }`}
+                      >
                         Connect
                       </span>
                     </div>
                     <div className="w-8 h-px bg-border mb-5" />
                     <div className="flex flex-col items-center gap-1.5">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${step === 2 ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
+                          step === 2 ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'
+                        }`}
+                      >
                         2
                       </div>
-                      <span className={`text-xs font-medium transition-colors ${step === 2 ? 'text-foreground' : 'text-muted-foreground'}`}>
+                      <span
+                        className={`text-xs font-medium transition-colors ${
+                          step === 2 ? 'text-foreground' : 'text-muted-foreground'
+                        }`}
+                      >
                         Access
                       </span>
                     </div>
                   </div>
                 </div>
 
-                {step === 1 ? <div className="px-8 py-6 space-y-6">
-                    {/* Heading */}
-                    <h2 className="text-xl font-semibold">
-                      {step === 1 ? 'Connect Your Store' : 'Select Access Level'}
-                    </h2>
-                    
+                {step === 1 ? (
+                  <div className="px-8 py-6 space-y-6">
+                    <h2 className="text-xl font-semibold">Connect Your Store</h2>
+
                     {/* Platform Selection */}
                     <div className="space-y-3">
                       <Label className="text-sm font-medium">Platform</Label>
                       <div className="grid grid-cols-2 gap-3">
-                        <button type="button" onClick={() => setStoreType("shopify")} className={`h-11 px-4 rounded-lg border-2 transition-all text-center font-medium text-sm ${storeType === "shopify" ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}>
+                        <button
+                          type="button"
+                          onClick={() => setStoreType("shopify")}
+                          className={`h-11 px-4 rounded-lg border-2 transition-all text-center font-medium text-sm ${
+                            storeType === "shopify"
+                              ? 'border-primary bg-primary/5'
+                              : 'border-border hover:border-primary/50'
+                          }`}
+                        >
                           Shopify
                         </button>
-                        <button type="button" onClick={() => setStoreType("woocommerce")} className={`h-11 px-4 rounded-lg border-2 transition-all text-center font-medium text-sm ${storeType === "woocommerce" ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}>
+                        <button
+                          type="button"
+                          onClick={() => setStoreType("woocommerce")}
+                          className={`h-11 px-4 rounded-lg border-2 transition-all text-center font-medium text-sm ${
+                            storeType === "woocommerce"
+                              ? 'border-primary bg-primary/5'
+                              : 'border-border hover:border-primary/50'
+                          }`}
+                        >
                           WooCommerce
                         </button>
                       </div>
@@ -244,150 +432,245 @@ const ConnectTab = () => {
                     {/* Form Fields */}
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="storeUrl" className="text-sm font-medium">Store URL</Label>
-                        <Input id="storeUrl" type="url" placeholder="https://example.com" className="h-11" value={storeUrl} onChange={e => setStoreUrl(e.target.value)} />
+                        <Label htmlFor="storeUrl" className="text-sm font-medium">
+                          Store URL
+                        </Label>
+                        <Input
+                          id="storeUrl"
+                          type="url"
+                          placeholder="https://example.com"
+                          className="h-11"
+                          value={storeUrl}
+                          onChange={(e) => setStoreUrl(e.target.value)}
+                        />
                       </div>
 
-                      {storeType === "shopify" ? <>
+                      {storeType === "shopify" ? (
+                        <>
                           <div className="space-y-2">
-                            <Label htmlFor="clientId" className="text-sm font-medium">Client ID</Label>
-                            <Input id="clientId" type="text" placeholder="Enter your Shopify Client ID" className="h-11" value={clientId} onChange={e => setClientId(e.target.value)} />
+                            <Label htmlFor="clientId" className="text-sm font-medium">
+                              Client ID
+                            </Label>
+                            <Input
+                              id="clientId"
+                              type="text"
+                              placeholder="Enter your Shopify Client ID"
+                              className="h-11"
+                              value={clientId}
+                              onChange={(e) => setClientId(e.target.value)}
+                            />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="clientSecret" className="text-sm font-medium">Client Secret</Label>
-                            <Input id="clientSecret" type="password" placeholder="Enter your Shopify Client Secret" className="h-11" value={clientSecret} onChange={e => setClientSecret(e.target.value)} />
+                            <Label htmlFor="clientSecret" className="text-sm font-medium">
+                              Client Secret
+                            </Label>
+                            <Input
+                              id="clientSecret"
+                              type="password"
+                              placeholder="Enter your Shopify Client Secret"
+                              className="h-11"
+                              value={clientSecret}
+                              onChange={(e) => setClientSecret(e.target.value)}
+                            />
                           </div>
-                        </> : <>
+                        </>
+                      ) : (
+                        <>
                           <div className="space-y-2">
-                            <Label htmlFor="consumerKey" className="text-sm font-medium">Consumer Key</Label>
-                            <Input id="consumerKey" type="text" placeholder="Enter your WooCommerce consumer key" className="h-11" value={consumerKey} onChange={e => setConsumerKey(e.target.value)} />
+                            <Label htmlFor="consumerKey" className="text-sm font-medium">
+                              Consumer Key
+                            </Label>
+                            <Input
+                              id="consumerKey"
+                              type="text"
+                              placeholder="Enter your WooCommerce consumer key"
+                              className="h-11"
+                              value={consumerKey}
+                              onChange={(e) => setConsumerKey(e.target.value)}
+                            />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="consumerSecret" className="text-sm font-medium">Consumer Secret</Label>
-                            <Input id="consumerSecret" type="password" placeholder="Enter your WooCommerce consumer secret" className="h-11" value={consumerSecret} onChange={e => setConsumerSecret(e.target.value)} />
+                            <Label htmlFor="consumerSecret" className="text-sm font-medium">
+                              Consumer Secret
+                            </Label>
+                            <Input
+                              id="consumerSecret"
+                              type="password"
+                              placeholder="Enter your WooCommerce consumer secret"
+                              className="h-11"
+                              value={consumerSecret}
+                              onChange={(e) => setConsumerSecret(e.target.value)}
+                            />
                           </div>
-                        </>}
+                        </>
+                      )}
                     </div>
-                  </div> : <div className="px-8 py-6 space-y-6">
-                    {/* Heading */}
-                    <h2 className="text-xl font-semibold">
-                      {step === 1 ? 'Connect Your Store' : 'Select Access Level'}
-                    </h2>
-                    
+                  </div>
+                ) : (
+                  <div className="px-8 py-6 space-y-6">
+                    <h2 className="text-xl font-semibold">Select Access Level</h2>
+
                     {/* Access Level Selection */}
                     <div className="space-y-3">
                       <Label className="text-sm font-medium">Access Level</Label>
                       <div className="grid grid-cols-2 gap-3">
-                        <button type="button" onClick={() => setAccessLevel("read")} className={`h-11 px-4 rounded-lg border-2 transition-all text-center font-medium text-sm ${accessLevel === "read" ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}>
+                        <button
+                          type="button"
+                          onClick={() => setAccessLevel("read")}
+                          className={`h-11 px-4 rounded-lg border-2 transition-all text-center font-medium text-sm ${
+                            accessLevel === "read"
+                              ? 'border-primary bg-primary/5'
+                              : 'border-border hover:border-primary/50'
+                          }`}
+                        >
                           Read Only
                         </button>
-                        <button type="button" onClick={() => setAccessLevel("readwrite")} className={`h-11 px-4 rounded-lg border-2 transition-all text-center font-medium text-sm ${accessLevel === "readwrite" ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}>
+                        <button
+                          type="button"
+                          onClick={() => setAccessLevel("readwrite")}
+                          className={`h-11 px-4 rounded-lg border-2 transition-all text-center font-medium text-sm ${
+                            accessLevel === "readwrite"
+                              ? 'border-primary bg-primary/5'
+                              : 'border-border hover:border-primary/50'
+                          }`}
+                        >
                           Read & Write
                         </button>
                       </div>
                     </div>
 
                     {/* Status Fields - Show only for Read & Write */}
-                    {accessLevel === "readwrite" && (storeType === "shopify" ? <div className="space-y-4">
+                    {accessLevel === "readwrite" &&
+                      (storeType === "shopify" ? (
+                        <div className="space-y-4">
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
                               <Label htmlFor="paymentStatus" className="text-sm font-medium">
                                 Payment Status AI Can Write
                               </Label>
-                              <Button type="button" variant="outline" size="sm" className="h-7 text-xs px-2" onClick={() => fetchStatuses('payment')} disabled={loadingPayment}>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="h-7 text-xs px-2"
+                                onClick={() => fetchStatuses('payment')}
+                                disabled={loadingPayment}
+                              >
                                 {loadingPayment ? "Loading..." : "Get all statuses"}
                               </Button>
                             </div>
-                            <Input id="paymentStatus" type="text" placeholder="pending, authorized, paid" className="h-11" value={paymentStatus} onChange={e => setPaymentStatus(e.target.value)} />
+                            <Input
+                              id="paymentStatus"
+                              type="text"
+                              placeholder="pending, authorized, paid"
+                              className="h-11"
+                              value={paymentStatus}
+                              onChange={(e) => setPaymentStatus(e.target.value)}
+                            />
                           </div>
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
                               <Label htmlFor="fulfillmentStatus" className="text-sm font-medium">
                                 Fulfillment Status AI Can Write
                               </Label>
-                              <Button type="button" variant="outline" size="sm" className="h-7 text-xs px-2" onClick={() => fetchStatuses('fulfillment')} disabled={loadingFulfillment}>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="h-7 text-xs px-2"
+                                onClick={() => fetchStatuses('fulfillment')}
+                                disabled={loadingFulfillment}
+                              >
                                 {loadingFulfillment ? "Loading..." : "Get all statuses"}
                               </Button>
                             </div>
-                            <Input id="fulfillmentStatus" type="text" placeholder="unfulfilled, partial, fulfilled" className="h-11" value={fulfillmentStatus} onChange={e => setFulfillmentStatus(e.target.value)} />
+                            <Input
+                              id="fulfillmentStatus"
+                              type="text"
+                              placeholder="unfulfilled, partial, fulfilled"
+                              className="h-11"
+                              value={fulfillmentStatus}
+                              onChange={(e) => setFulfillmentStatus(e.target.value)}
+                            />
                           </div>
-                        </div> : <div className="space-y-2">
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
                           <div className="flex items-center justify-between">
                             <Label htmlFor="orderStatus" className="text-sm font-medium">
                               Order Status AI Can Write
                             </Label>
-                            <Button type="button" variant="outline" size="sm" className="h-7 text-xs px-2" onClick={() => fetchStatuses('order')} disabled={loadingOrder}>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="h-7 text-xs px-2"
+                              onClick={() => fetchStatuses('order')}
+                              disabled={loadingOrder}
+                            >
                               {loadingOrder ? "Loading..." : "Get all statuses"}
                             </Button>
                           </div>
-                          <Input id="orderStatus" type="text" placeholder="processing, completed, cancelled" className="h-11" value={orderStatus} onChange={e => setOrderStatus(e.target.value)} />
-                        </div>)}
-                  </div>}
+                          <Input
+                            id="orderStatus"
+                            type="text"
+                            placeholder="processing, completed, cancelled"
+                            className="h-11"
+                            value={orderStatus}
+                            onChange={(e) => setOrderStatus(e.target.value)}
+                          />
+                        </div>
+                      ))}
+                  </div>
+                )}
 
                 {/* Footer Actions */}
                 <div className="px-8 py-4 border-t bg-muted/30">
                   <div className="flex gap-3 justify-end">
-                    {step === 2 && <Button variant="outline" className="h-11" onClick={() => setStep(1)}>
+                    {step === 2 && (
+                      <Button variant="outline" className="h-11" onClick={() => setStep(1)}>
                         Back
-                      </Button>}
-                    <Button className="h-11" onClick={() => step === 1 ? setStep(2) : handleConnect()}>
-                      {step === 1 ? 'Next' : 'Connect'}
+                      </Button>
+                    )}
+                    <Button
+                      className="h-11"
+                      onClick={() => (step === 1 ? setStep(2) : handleConnect())}
+                      disabled={isSaving}
+                    >
+                      {step === 1 ? 'Next' : isSaving ? 'Connecting...' : 'Connect'}
                     </Button>
                   </div>
                 </div>
               </DialogContent>
             </Dialog>
-            {isStoreConnected && <Button variant="secondary" className="w-full" onClick={handleDisconnect}>
+            {isStoreConnected && (
+              <Button variant="secondary" className="w-full" onClick={handleDisconnect}>
                 Disconnect
-              </Button>}
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Embed Code Dialog */}
-      <EmbedCodeDialog open={embedDialogOpen} onOpenChange={setEmbedDialogOpen} type={embedType} />
+      <EmbedCodeDialog
+        open={embedDialogOpen}
+        onOpenChange={setEmbedDialogOpen}
+        type={embedType}
+      />
 
-      {/* Connect Meta Dialog */}
-      <ConnectMetaDialog open={metaDialogOpen} onOpenChange={setMetaDialogOpen} connectedPage={connectedMetaPage} manageMode={metaManageMode} onConnect={page => {
-      setMetaManageMode(false);
-      setMetaDialogOpen(false);
-      setTimeout(() => {
-        setIsMetaConnected(true);
-        setConnectedMetaPage(page);
-      }, 0);
-    }} onDisconnectFacebook={() => {
-      if (connectedMetaPage && !connectedMetaPage.igHandle) {
-        // Last item - close dialog first, then reset state
-        setMetaDialogOpen(false);
-        setTimeout(() => {
-          setIsMetaConnected(false);
-          setConnectedMetaPage(null);
-          setMetaManageMode(false);
-        }, 0);
-      } else if (connectedMetaPage) {
-        // Keep dialog open, just remove Facebook
-        setConnectedMetaPage({
-          ...connectedMetaPage,
-          fbPageName: ""
-        });
-      }
-    }} onDisconnectInstagram={() => {
-      if (connectedMetaPage && !connectedMetaPage.fbPageName) {
-        // Last item - close dialog first, then reset state
-        setMetaDialogOpen(false);
-        setTimeout(() => {
-          setIsMetaConnected(false);
-          setConnectedMetaPage(null);
-          setMetaManageMode(false);
-        }, 0);
-      } else if (connectedMetaPage) {
-        // Keep dialog open, just remove Instagram
-        setConnectedMetaPage({
-          ...connectedMetaPage,
-          igHandle: undefined
-        });
-      }
-    }} />
-    </div>;
+      <ConnectMetaDialog
+        open={metaDialogOpen}
+        onOpenChange={setMetaDialogOpen}
+        onConnect={(pageData) => {
+          setIsMetaConnected(true);
+          setConnectedMetaPage(pageData);
+          setMetaDialogOpen(false);
+        }}
+        manageMode={metaManageMode}
+        connectedPage={connectedMetaPage}
+      />
+    </div>
+  );
 };
+
 export default ConnectTab;
