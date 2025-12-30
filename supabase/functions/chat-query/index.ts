@@ -583,7 +583,16 @@ serve(async (req) => {
       console.log('Running Query Analyzer (Layer 1)...');
 
       // Build tools array dynamically based on store connection, access level, and forwarding rules
-      const hasForwardingRules = Boolean(forwardingRules && forwardingRules.trim());
+      // Base forwarding rules that are always active
+      const baseForwardingRules = `- The user explicitly asks to speak with a human, agent, representative, or real person
+- The user expresses strong frustration, anger, or confusion that the bot cannot resolve`;
+
+      // Combine base rules with custom rules
+      const allForwardingRules = forwardingRules 
+        ? `${baseForwardingRules}\n${forwardingRules}`
+        : baseForwardingRules;
+
+      const hasForwardingRules = true; // Always true since we have base rules
       const availableTools = getAvailableTools(storeConnected, storeAccess, allowedStatuses, hasForwardingRules);
       console.log(`Available tools: ${availableTools.map((t: any) => t.function.name).join(', ') || 'none'}`);
 
@@ -592,8 +601,8 @@ serve(async (req) => {
 
 You are a helpful assistant. Use the available tools when needed to help the user.
 
-${forwardingRules ? `FORWARDING RULES - Use the forward_to_human tool when the user's request matches any of these:
-${forwardingRules}` : ''}
+FORWARDING RULES - Use the forward_to_human tool when the user's request matches any of these:
+${allForwardingRules}
 
 If no tools are needed, respond directly to help the user.`;
 
@@ -669,9 +678,38 @@ If no tools are needed, respond directly to help the user.`;
     // ========== LAYER 2: RAG Answer Generator ==========
     console.log('Running RAG Answer Generator (Layer 2)...');
 
+    // RAG system prompt with strict KB-only rules
+    const ragSystemPrompt = `${persona}
+
+CRITICAL RULES:
+1. Answers must be based SOLELY on the knowledge base. Never make up facts or information.
+2. If the query is IRRELEVANT to the knowledge base, politely explain you cannot help with that topic. Do not answer.
+3. If only PARTS of the query are relevant, answer only those parts and politely decline the rest.
+4. If the query IS RELEVANT but you cannot find the answer in the knowledge base, use the forward_to_human tool.`;
+
+    // RAG layer forwarding tool - different description focused on KB gaps
+    const ragForwardingTool = {
+      type: "function",
+      function: {
+        name: "forward_to_human",
+        description: "Forward to a human agent when the user's query IS relevant to the business but you cannot find the answer in the knowledge base. Examples: pricing not in KB, specific policies not documented, account-specific questions you cannot answer.",
+        parameters: {
+          type: "object",
+          properties: {
+            reason: {
+              type: "string",
+              description: "What the user asked about that isn't available in the knowledge base"
+            }
+          },
+          required: ["reason"],
+          additionalProperties: false
+        }
+      }
+    };
+
     // Build base messages for RAG
     const baseMessages = [
-      { role: 'system', content: persona },
+      { role: 'system', content: ragSystemPrompt },
       ...conversation_history.map((msg: any) => ({
         role: msg.role === 'bot' ? 'assistant' : msg.role,
         content: msg.content,
@@ -699,6 +737,7 @@ If no tools are needed, respond directly to help the user.`;
           model: 'gpt-5',
           reasoning: { effort: 'low' },
           messages: ragMessages,
+          tools: [ragForwardingTool],
           stream: true,
         }),
       });
@@ -764,7 +803,7 @@ If no tools are needed, respond directly to help the user.`;
     const thread = await threadResponse.json();
     console.log(`Created thread: ${thread.id}`);
 
-    // Run the assistant
+    // Run the assistant with RAG forwarding tool
     const runResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs`, {
       method: 'POST',
       headers: {
@@ -774,7 +813,8 @@ If no tools are needed, respond directly to help the user.`;
       },
       body: JSON.stringify({
         assistant_id: chatbot.openai_assistant_id,
-        additional_instructions: additionalInstructions,
+        additional_instructions: ragSystemPrompt,
+        tools: [{ type: "file_search" }, ragForwardingTool],
         stream: true,
       }),
     });
