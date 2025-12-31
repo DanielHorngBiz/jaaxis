@@ -25,6 +25,7 @@ export type Database = {
           id: string
           mobile_display: string
           name: string
+          openai_vector_store_id: string | null
           persona: string | null
           primary_color: string
           slug: string
@@ -46,6 +47,7 @@ export type Database = {
           id?: string
           mobile_display?: string
           name: string
+          openai_vector_store_id?: string | null
           persona?: string | null
           primary_color?: string
           slug: string
@@ -67,6 +69,7 @@ export type Database = {
           id?: string
           mobile_display?: string
           name?: string
+          openai_vector_store_id?: string | null
           persona?: string | null
           primary_color?: string
           slug?: string

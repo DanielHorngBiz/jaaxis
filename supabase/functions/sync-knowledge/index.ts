@@ -7,91 +7,145 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Chunking configuration
-const CHUNK_SIZE = 500; // tokens (approximately words for English)
-const CHUNK_OVERLAP = 50; // tokens overlap between chunks
-const EMBEDDING_MODEL = 'text-embedding-3-small';
-const EMBEDDING_BATCH_SIZE = 100; // Max texts per embedding request
-
-// Simple word-based chunking with overlap
-function chunkText(text: string, chunkSize = CHUNK_SIZE, overlap = CHUNK_OVERLAP): string[] {
-  const words = text.split(/\s+/).filter(w => w.length > 0);
-  const chunks: string[] = [];
-  
-  if (words.length === 0) return [];
-  
-  let i = 0;
-  while (i < words.length) {
-    const chunkWords = words.slice(i, i + chunkSize);
-    const chunk = chunkWords.join(' ');
-    if (chunk.trim()) {
-      chunks.push(chunk);
-    }
-    i += chunkSize - overlap;
-    
-    // Prevent infinite loop if overlap >= chunkSize
-    if (chunkSize - overlap <= 0) break;
-  }
-  
-  return chunks;
-}
-
-// Estimate token count (rough approximation: 1 word ≈ 1.3 tokens)
-function estimateTokens(text: string): number {
-  return Math.ceil(text.split(/\s+/).length * 1.3);
-}
-
-// Generate embeddings using OpenAI text-embedding-3-small
-async function generateEmbeddings(
-  texts: string[],
-  apiKey: string
-): Promise<number[][]> {
-  if (texts.length === 0) return [];
-  
-  const response = await fetch('https://api.openai.com/v1/embeddings', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: EMBEDDING_MODEL,
-      input: texts,
-    }),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Embedding API failed: ${errorText}`);
-  }
-
-  const data = await response.json();
-  return data.data.map((d: any) => d.embedding);
-}
-
 // Format knowledge source content based on type
 function formatKnowledgeContent(source: any): string {
   switch (source.type) {
     case 'text':
       return source.content || '';
     case 'qa':
-      // Format Q&A as a natural text for better embedding
       if (source.question && source.answer) {
         return `Question: ${source.question}\nAnswer: ${source.answer}`;
       }
       return source.content || '';
     case 'website':
-      // Include URL context
       const url = source.url || '';
       const content = source.content || '';
       return url ? `Source: ${url}\n\n${content}` : content;
     case 'file':
-      // Include filename context
       const fileName = source.file_name || 'Unknown file';
       const fileContent = source.content || '';
       return `File: ${fileName}\n\n${fileContent}`;
     default:
       return source.content || '';
+  }
+}
+
+// Create a file in OpenAI from text content
+async function createOpenAIFile(
+  content: string,
+  fileName: string,
+  apiKey: string
+): Promise<string> {
+  const blob = new Blob([content], { type: 'text/plain' });
+  const formData = new FormData();
+  formData.append('file', blob, fileName);
+  formData.append('purpose', 'assistants');
+
+  const response = await fetch('https://api.openai.com/v1/files', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to create file: ${errorText}`);
+  }
+
+  const data = await response.json();
+  return data.id;
+}
+
+// Create a vector store
+async function createVectorStore(name: string, apiKey: string): Promise<string> {
+  const response = await fetch('https://api.openai.com/v1/vector_stores', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ name }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to create vector store: ${errorText}`);
+  }
+
+  const data = await response.json();
+  return data.id;
+}
+
+// Delete a vector store
+async function deleteVectorStore(vectorStoreId: string, apiKey: string): Promise<void> {
+  const response = await fetch(`https://api.openai.com/v1/vector_stores/${vectorStoreId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.warn(`Failed to delete vector store ${vectorStoreId}: ${errorText}`);
+    // Don't throw, just log warning
+  }
+}
+
+// Add files to vector store and wait for processing
+async function addFilesToVectorStore(
+  vectorStoreId: string,
+  fileIds: string[],
+  apiKey: string
+): Promise<void> {
+  if (fileIds.length === 0) return;
+
+  // Create a file batch
+  const response = await fetch(`https://api.openai.com/v1/vector_stores/${vectorStoreId}/file_batches`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ file_ids: fileIds }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to add files to vector store: ${errorText}`);
+  }
+
+  const batch = await response.json();
+  console.log(`Created file batch: ${batch.id}, status: ${batch.status}`);
+
+  // Poll for completion
+  let status = batch.status;
+  let attempts = 0;
+  const maxAttempts = 60; // 5 minutes max (5 second intervals)
+
+  while (status === 'in_progress' && attempts < maxAttempts) {
+    await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+    
+    const checkResponse = await fetch(
+      `https://api.openai.com/v1/vector_stores/${vectorStoreId}/file_batches/${batch.id}`,
+      {
+        headers: { 'Authorization': `Bearer ${apiKey}` },
+      }
+    );
+
+    if (checkResponse.ok) {
+      const checkData = await checkResponse.json();
+      status = checkData.status;
+      console.log(`Batch status: ${status}, files: ${checkData.file_counts?.completed || 0}/${checkData.file_counts?.total || 0}`);
+    }
+    
+    attempts++;
+  }
+
+  if (status !== 'completed') {
+    console.warn(`Batch processing ended with status: ${status}`);
   }
 }
 
@@ -116,13 +170,12 @@ serve(async (req) => {
 
     console.log(`Syncing knowledge for chatbot: ${chatbot_id}`);
 
-    // Initialize Supabase client with service role
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
     // Fetch chatbot data
     const { data: chatbot, error: chatbotError } = await supabase
       .from('chatbots')
-      .select('id, name')
+      .select('id, name, openai_vector_store_id')
       .eq('id', chatbot_id)
       .single();
 
@@ -143,118 +196,98 @@ serve(async (req) => {
 
     console.log(`Found ${knowledgeSources?.length || 0} knowledge sources`);
 
-    // Delete existing chunks for this chatbot
-    console.log('Deleting existing chunks...');
-    const { error: deleteError } = await supabase
-      .from('knowledge_chunks')
-      .delete()
-      .eq('chatbot_id', chatbot_id);
-
-    if (deleteError) {
-      console.error('Failed to delete existing chunks:', deleteError);
-      // Continue anyway
+    // Delete existing vector store if it exists
+    if (chatbot.openai_vector_store_id) {
+      console.log(`Deleting existing vector store: ${chatbot.openai_vector_store_id}`);
+      await deleteVectorStore(chatbot.openai_vector_store_id, OPENAI_API_KEY);
     }
 
-    // Prepare all chunks
-    interface ChunkData {
-      knowledge_source_id: string;
-      chatbot_id: string;
-      chunk_index: number;
-      content: string;
-      token_count: number;
-    }
+    // If no knowledge sources, clear the vector store ID and return
+    if (!knowledgeSources || knowledgeSources.length === 0) {
+      console.log('No knowledge sources to sync');
+      
+      await supabase
+        .from('chatbots')
+        .update({ openai_vector_store_id: null })
+        .eq('id', chatbot_id);
 
-    const allChunks: ChunkData[] = [];
-
-    if (knowledgeSources && knowledgeSources.length > 0) {
-      for (const source of knowledgeSources) {
-        const content = formatKnowledgeContent(source);
-        
-        if (!content.trim()) {
-          console.log(`Skipping empty source: ${source.id}`);
-          continue;
-        }
-
-        // Chunk the content
-        const chunks = chunkText(content);
-        console.log(`Source ${source.id} (${source.type}): ${chunks.length} chunks`);
-
-        for (let i = 0; i < chunks.length; i++) {
-          allChunks.push({
-            knowledge_source_id: source.id,
-            chatbot_id: chatbot_id,
-            chunk_index: i,
-            content: chunks[i],
-            token_count: estimateTokens(chunks[i]),
-          });
-        }
-      }
-    }
-
-    console.log(`Total chunks to process: ${allChunks.length}`);
-
-    if (allChunks.length === 0) {
-      console.log('No chunks to process');
       return new Response(JSON.stringify({
         success: true,
-        chunks_created: 0,
-        message: 'No content to sync',
+        files_created: 0,
+        message: 'No content to sync - vector store cleared',
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Generate embeddings in batches
-    console.log('Generating embeddings...');
-    const allEmbeddings: number[][] = [];
+    // Create new vector store
+    const vectorStoreName = `chatbot_${chatbot_id}_${chatbot.name || 'knowledge'}`;
+    console.log(`Creating vector store: ${vectorStoreName}`);
+    const vectorStoreId = await createVectorStore(vectorStoreName, OPENAI_API_KEY);
+    console.log(`Created vector store: ${vectorStoreId}`);
+
+    // Upload each knowledge source as a file
+    const fileIds: string[] = [];
     
-    for (let i = 0; i < allChunks.length; i += EMBEDDING_BATCH_SIZE) {
-      const batch = allChunks.slice(i, i + EMBEDDING_BATCH_SIZE);
-      const texts = batch.map(c => c.content);
+    for (const source of knowledgeSources) {
+      const content = formatKnowledgeContent(source);
       
-      console.log(`Processing batch ${Math.floor(i / EMBEDDING_BATCH_SIZE) + 1}/${Math.ceil(allChunks.length / EMBEDDING_BATCH_SIZE)}`);
-      
-      const embeddings = await generateEmbeddings(texts, OPENAI_API_KEY);
-      allEmbeddings.push(...embeddings);
-    }
-
-    console.log(`Generated ${allEmbeddings.length} embeddings`);
-
-    // Insert chunks with embeddings into database
-    console.log('Inserting chunks into database...');
-    
-    // Format embeddings as pgvector expects: [1,2,3,...]
-    const chunksWithEmbeddings = allChunks.map((chunk, index) => ({
-      ...chunk,
-      embedding: `[${allEmbeddings[index].join(',')}]`,
-    }));
-
-    // Insert in batches to avoid request size limits
-    const INSERT_BATCH_SIZE = 50;
-    let insertedCount = 0;
-
-    for (let i = 0; i < chunksWithEmbeddings.length; i += INSERT_BATCH_SIZE) {
-      const batch = chunksWithEmbeddings.slice(i, i + INSERT_BATCH_SIZE);
-      
-      const { error: insertError } = await supabase
-        .from('knowledge_chunks')
-        .insert(batch);
-
-      if (insertError) {
-        console.error(`Failed to insert batch at index ${i}:`, insertError);
-        throw new Error(`Failed to insert chunks: ${insertError.message}`);
+      if (!content.trim()) {
+        console.log(`Skipping empty source: ${source.id}`);
+        continue;
       }
+
+      // Create a descriptive filename
+      let fileName = `knowledge_${source.id}.txt`;
+      if (source.type === 'file' && source.file_name) {
+        fileName = `${source.file_name}.txt`;
+      } else if (source.type === 'website' && source.url) {
+        const urlPart = new URL(source.url).pathname.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 50);
+        fileName = `website_${urlPart || source.id}.txt`;
+      } else if (source.type === 'qa' && source.question) {
+        const qPart = source.question.slice(0, 30).replace(/[^a-zA-Z0-9]/g, '_');
+        fileName = `qa_${qPart}.txt`;
+      }
+
+      console.log(`Uploading file: ${fileName} (${content.length} chars)`);
       
-      insertedCount += batch.length;
+      try {
+        const fileId = await createOpenAIFile(content, fileName, OPENAI_API_KEY);
+        fileIds.push(fileId);
+        console.log(`Created file: ${fileId}`);
+      } catch (fileError) {
+        console.error(`Failed to upload file for source ${source.id}:`, fileError);
+        // Continue with other files
+      }
     }
 
-    console.log(`Inserted ${insertedCount} chunks successfully`);
+    console.log(`Uploaded ${fileIds.length} files`);
+
+    // Add files to vector store
+    if (fileIds.length > 0) {
+      console.log('Adding files to vector store...');
+      await addFilesToVectorStore(vectorStoreId, fileIds, OPENAI_API_KEY);
+      console.log('Files added to vector store');
+    }
+
+    // Save vector store ID to chatbot
+    const { error: updateError } = await supabase
+      .from('chatbots')
+      .update({ openai_vector_store_id: vectorStoreId })
+      .eq('id', chatbot_id);
+
+    if (updateError) {
+      console.error('Failed to save vector store ID:', updateError);
+      throw new Error(`Failed to save vector store ID: ${updateError.message}`);
+    }
+
     console.log('Sync completed successfully');
 
     return new Response(JSON.stringify({
       success: true,
-      chunks_created: insertedCount,
-      knowledge_sources_processed: knowledgeSources?.length || 0,
+      vector_store_id: vectorStoreId,
+      files_created: fileIds.length,
+      knowledge_sources_processed: knowledgeSources.length,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
