@@ -645,15 +645,24 @@ serve(async (req) => {
       const availableTools = getAvailableTools(storeConnected, storeAccess, allowedStatuses, hasForwardingRules);
       console.log(`Available tools: ${availableTools.map((t: any) => t.name).join(', ') || 'none'}`);
 
-      // Simplified system prompt - no JSON classification needed
-      const queryAnalyzerSystemPrompt = `${persona}
+      // Query Analyzer system prompt - ONLY for tool routing, NOT for answering questions
+      const queryAnalyzerSystemPrompt = `You are a query analyzer. Your ONLY job is to:
+1. Call tools when the user's request matches a tool's purpose
+2. Ask clarifying questions ONLY if you need more info to call a tool (e.g., order ID, email for verification)
 
-You are a helpful assistant. Use the available tools when needed to help the user.
-
-FORWARDING RULES - Use the forward_to_human tool when the user's request matches any of these:
+FORWARDING RULES - Use the forward_to_human tool when:
 ${allForwardingRules}
 
-If no tools are needed, respond directly to help the user.`;
+CRITICAL RULES:
+- Do NOT answer general questions about products, policies, hours, pricing, etc.
+- Do NOT provide helpful information or content
+- Do NOT respond to greetings or small talk
+- If no tool is needed, output NOTHING (empty response)
+- The ONLY text you should output is clarifying questions for tool calls like:
+  - "Could you provide your order number?"
+  - "What email address is associated with your order?"
+
+${persona ? `When asking clarifying questions, match this persona: ${persona}` : ''}`;
 
       const analyzerBody: any = {
         model: 'gpt-5',
@@ -709,20 +718,36 @@ If no tools are needed, respond directly to help the user.`;
         }
       }
 
-      const analyzerMessage = {
-        role: 'assistant',
-        content: analyzerContent,
-        tool_calls: toolCalls.length > 0 ? toolCalls : undefined
-      };
-
-      console.log('Query Analyzer response:', analyzerContent || '(tool calls only)');
+      console.log('Query Analyzer response:', analyzerContent || '(no text output)');
       console.log('Tool calls:', JSON.stringify(toolCalls));
+
+      // If Query Analyzer is asking a clarifying question (has text but no tool calls), return it directly
+      if (analyzerContent && toolCalls.length === 0) {
+        console.log('Query Analyzer: Returning clarifying question directly, skipping RAG');
+        const responseStream = new ReadableStream({
+          start(controller) {
+            const chunk = {
+              choices: [{ delta: { content: analyzerContent }, index: 0 }]
+            };
+            controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(chunk)}\n\n`));
+            controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'));
+            controller.close();
+          }
+        });
+        return new Response(responseStream, {
+          headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
+        });
+      }
 
       // Handle tool calls
       if (toolCalls.length > 0) {
         console.log('Processing tool calls...');
         
-        analyzerMessageForRag = analyzerMessage;
+        analyzerMessageForRag = {
+          role: 'assistant',
+          content: analyzerContent,
+          tool_calls: toolCalls
+        };
         
         for (const toolCall of toolCalls) {
           const toolName = toolCall.function.name;
@@ -744,6 +769,8 @@ If no tools are needed, respond directly to help the user.`;
         }
 
         console.log('Tool results:', JSON.stringify(toolResultsForRag));
+      } else {
+        console.log('Query Analyzer: No tools needed, passing to RAG layer');
       }
     }
 
