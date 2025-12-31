@@ -651,19 +651,14 @@ serve(async (req) => {
       console.log(`Available tools: ${availableTools.map((t: any) => t.name).join(', ') || 'none'}`);
 
       // Query Analyzer system prompt - ONLY for tool routing, NOT for answering questions
-      // Forwarding rules are now embedded in the forward_to_human tool description
-      const queryAnalyzerSystemPrompt = `You are a query analyzer. Your ONLY job is to:
-1. Call tools when the user's request matches a tool's purpose
-2. Ask clarifying questions ONLY if you need more info to call a tool (e.g., order ID, email for verification)
+      const queryAnalyzerSystemPrompt = `You are a query router. Your job is to call tools.
 
-CRITICAL RULES:
-- Do NOT answer general questions about products, policies, hours, pricing, etc.
-- Do NOT provide helpful information or content
-- Do NOT respond to greetings or small talk
-- If no tool is needed, output NOTHING (empty response)
-- The ONLY text you should output is clarifying questions for tool calls
+RULES:
+- Call a tool when the user's request matches its purpose
+- NEVER respond with text UNLESS asking for a missing tool parameter (e.g., order ID, email)
+- If no tool applies, do not respond at all
 
-${persona ? `When asking clarifying questions, match this persona: ${persona}` : ''}`;
+${persona ? `Tone for clarifying questions: ${persona}` : ''}`;
 
       const analyzerBody: any = {
         model: 'gpt-5',
