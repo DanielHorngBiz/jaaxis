@@ -503,12 +503,14 @@ serve(async (req) => {
     console.log(`Store connected: ${storeConnected}, Access: ${storeAccess}`);
     console.log(`Vector store ID: ${vectorStoreId || 'none'}`);
 
-    let toolResultsForRag: any[] = [];
-    let analyzerMessageForRag: any = null;
+    let toolResults: any[] = [];
+    let analyzerToolCalls: any = null;
+    let isForwardingFlow = false;
 
     // ========== CHECK FOR AUTOMATIC FORWARDING (attachments) ==========
     if (has_attachments) {
       console.log('Attachments detected - triggering automatic forwarding...');
+      isForwardingFlow = true;
       
       const forwardResult = {
         success: true,
@@ -519,13 +521,13 @@ serve(async (req) => {
         }
       };
 
-      toolResultsForRag.push({
+      toolResults.push({
         tool_call_id: 'auto_forward_attachments',
         role: 'tool',
         content: JSON.stringify(forwardResult)
       });
 
-      analyzerMessageForRag = {
+      analyzerToolCalls = {
         content: null,
         tool_calls: [{
           id: 'auto_forward_attachments',
@@ -613,10 +615,13 @@ ${persona ? `Tone for clarifying questions: ${persona}` : ''}`;
 
       // Execute tools if any
       if (toolCalls.length > 0) {
-        analyzerMessageForRag = {
+        analyzerToolCalls = {
           content: analyzerContent || null,
           tool_calls: toolCalls
         };
+
+        // Check if this is a forwarding flow (forward_to_human called)
+        isForwardingFlow = toolCalls.some(tc => tc.function.name === 'forward_to_human');
 
         for (const toolCall of toolCalls) {
           const toolName = toolCall.function.name;
@@ -630,44 +635,123 @@ ${persona ? `Tone for clarifying questions: ${persona}` : ''}`;
             allowedStatuses
           );
           
-          toolResultsForRag.push({
+          toolResults.push({
             tool_call_id: toolCall.id,
             role: 'tool',
             content: JSON.stringify(result)
           });
         }
 
-        console.log('Tool results:', JSON.stringify(toolResultsForRag));
+        console.log('Tool results:', JSON.stringify(toolResults));
       } else {
         console.log('Query Analyzer: No tools needed, passing to RAG layer');
       }
     }
 
-    // ========== LAYER 2: RAG Answer Generator ==========
-    console.log('Running RAG Answer Generator (Layer 2)...');
+    // ========== BRANCH: Forwarding vs Normal Flow ==========
+    if (isForwardingFlow) {
+      // ========== FORWARDING PATH: Skip RAG, direct to 2nd LLM ==========
+      console.log('Forwarding flow - skipping RAG, direct to 2nd LLM (Layer 3)...');
 
-    // Search knowledge using OpenAI file_search
-    let knowledgeContext = '';
-    
-    if (vectorStoreId) {
-      console.log('Searching knowledge base via file_search...');
-      const relevantChunks = await searchKnowledgeWithFileSearch(vectorStoreId, message, OPENAI_API_KEY);
-      console.log(`Found ${relevantChunks.length} relevant chunks`);
+      const chatbotName = chatbot.name || 'this business';
+      const forwardingSystemPrompt = `You are a customer support assistant for ${chatbotName}.
 
-      if (relevantChunks.length > 0) {
-        knowledgeContext = `KNOWLEDGE BASE:
-${relevantChunks.map((chunk, i) => `[${i + 1}] (score: ${chunk.score.toFixed(2)}, file: ${chunk.filename}) ${chunk.text}`).join('\n\n---\n\n')}`;
-      } else {
-        knowledgeContext = 'KNOWLEDGE BASE: No relevant information found in the knowledge base.';
+TONE: ${persona}
+
+A customer request has been forwarded to a human agent. Generate a friendly confirmation message based on the tool result provided. Keep it brief and reassuring.`;
+
+      // Build messages for 2nd LLM
+      const llmMessages: any[] = [
+        { role: 'system', content: forwardingSystemPrompt },
+        ...conversation_history.map((msg: any) => ({
+          role: msg.role === 'bot' ? 'assistant' : msg.role,
+          content: msg.content,
+        })),
+      ];
+
+      // Include tool call and result
+      if (analyzerToolCalls) {
+        llmMessages.push({
+          role: 'assistant',
+          content: analyzerToolCalls.content,
+          tool_calls: analyzerToolCalls.tool_calls
+        });
+        
+        for (const tr of toolResults) {
+          llmMessages.push({
+            role: 'tool',
+            tool_call_id: tr.tool_call_id,
+            content: tr.content
+          });
+        }
       }
-    } else {
-      console.log('No vector store configured for this chatbot');
-      knowledgeContext = 'KNOWLEDGE BASE: No knowledge base has been configured.';
-    }
 
-    // RAG system prompt
-    const chatbotName = chatbot.name || 'this business';
-    const ragSystemPrompt = `You are a customer support assistant for ${chatbotName}.
+      llmMessages.push({ role: 'user', content: message });
+
+      // Call 2nd LLM without tools (just generate confirmation)
+      console.log('Calling GPT-5 for forwarding confirmation...');
+      const llmResponse = await fetch('https://api.openai.com/v1/responses', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-5',
+          reasoning: { effort: 'low' },
+          input: llmMessages,
+          stream: false,
+        }),
+      });
+
+      if (!llmResponse.ok) {
+        const errorText = await llmResponse.text();
+        console.error('2nd LLM API error:', errorText);
+        throw new Error(`2nd LLM request failed: ${errorText}`);
+      }
+
+      const llmData = await llmResponse.json();
+      console.log('2nd LLM response:', JSON.stringify(llmData, null, 2));
+
+      const outputText = llmData.output_text || 
+        llmData.output?.find((o: any) => o.type === 'message')?.content?.[0]?.text || 
+        'Your request has been forwarded to our support team. They will get back to you shortly.';
+
+      return new Response(JSON.stringify({
+        success: true,
+        response: outputText,
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+
+    } else {
+      // ========== NORMAL PATH: RAG (Layer 2) then 2nd LLM (Layer 3) ==========
+      console.log('Normal flow - running RAG (Layer 2)...');
+
+      // Search knowledge using OpenAI file_search
+      let knowledgeContext = '';
+      
+      if (vectorStoreId) {
+        console.log('Searching knowledge base via file_search...');
+        const relevantChunks = await searchKnowledgeWithFileSearch(vectorStoreId, message, OPENAI_API_KEY);
+        console.log(`Found ${relevantChunks.length} relevant chunks`);
+
+        if (relevantChunks.length > 0) {
+          knowledgeContext = `KNOWLEDGE BASE:
+${relevantChunks.map((chunk, i) => `[${i + 1}] (score: ${chunk.score.toFixed(2)}, file: ${chunk.filename}) ${chunk.text}`).join('\n\n---\n\n')}`;
+        } else {
+          knowledgeContext = 'KNOWLEDGE BASE: No relevant information found in the knowledge base.';
+        }
+      } else {
+        console.log('No vector store configured for this chatbot');
+        knowledgeContext = 'KNOWLEDGE BASE: No knowledge base has been configured.';
+      }
+
+      // ========== 2nd LLM (Layer 3) with KB context ==========
+      console.log('Running 2nd LLM (Layer 3) with KB context...');
+
+      const chatbotName = chatbot.name || 'this business';
+      const ragSystemPrompt = `You are a customer support assistant for ${chatbotName}.
 
 TONE: ${persona}
 
@@ -681,11 +765,11 @@ RULES:
 5. If query IS RELEVANT but KB has no answer, use the forward_to_human tool
 6. If KB is empty/no matches for an IRRELEVANT query, politely decline without forwarding`;
 
-    // RAG layer forwarding tool
-    const ragForwardingTool = {
-      type: "function",
-      name: "forward_to_human",
-      description: `Forward to a human agent when the user's question IS RELEVANT to the business but the answer is NOT in the knowledge base.
+      // RAG layer forwarding tool
+      const ragForwardingTool = {
+        type: "function",
+        name: "forward_to_human",
+        description: `Forward to a human agent when the user's question IS RELEVANT to the business but the answer is NOT in the knowledge base.
 
 USE THIS TOOL WHEN:
 - User asks about pricing, policies, or details not documented in KB
@@ -695,89 +779,153 @@ USE THIS TOOL WHEN:
 DO NOT USE when:
 - Query is irrelevant to the business (just politely decline instead)
 - You can answer from the KB`,
-      parameters: {
-        type: "object",
-        properties: {
-          reason: {
-            type: "string",
-            description: "What specific information the user needs that isn't in the KB"
-          }
-        },
-        required: ["reason"],
-        additionalProperties: false
-      }
-    };
+        parameters: {
+          type: "object",
+          properties: {
+            reason: {
+              type: "string",
+              description: "What specific information the user needs that isn't in the KB"
+            }
+          },
+          required: ["reason"],
+          additionalProperties: false
+        }
+      };
 
-    // Build messages for the RAG layer
-    const ragMessages: any[] = [
-      { role: 'system', content: ragSystemPrompt },
-      ...conversation_history.map((msg: any) => ({
-        role: msg.role === 'bot' ? 'assistant' : msg.role,
-        content: msg.content,
-      })),
-    ];
+      // Build messages for 2nd LLM
+      const llmMessages: any[] = [
+        { role: 'system', content: ragSystemPrompt },
+        ...conversation_history.map((msg: any) => ({
+          role: msg.role === 'bot' ? 'assistant' : msg.role,
+          content: msg.content,
+        })),
+      ];
 
-    // Include tool results from Layer 1 if any
-    if (toolResultsForRag.length > 0 && analyzerMessageForRag) {
-      ragMessages.push({
-        role: 'assistant',
-        content: analyzerMessageForRag.content,
-        tool_calls: analyzerMessageForRag.tool_calls
-      });
-      
-      for (const tr of toolResultsForRag) {
-        ragMessages.push({
-          role: 'tool',
-          tool_call_id: tr.tool_call_id,
-          content: tr.content
+      // Include tool results from Layer 1 if any (store-related tools)
+      if (toolResults.length > 0 && analyzerToolCalls) {
+        llmMessages.push({
+          role: 'assistant',
+          content: analyzerToolCalls.content,
+          tool_calls: analyzerToolCalls.tool_calls
         });
+        
+        for (const tr of toolResults) {
+          llmMessages.push({
+            role: 'tool',
+            tool_call_id: tr.tool_call_id,
+            content: tr.content
+          });
+        }
+        
+        llmMessages.push({ 
+          role: 'user', 
+          content: `${message}\n\n[Note: Tool results above have been processed. Please incorporate them into your response.]` 
+        });
+      } else {
+        llmMessages.push({ role: 'user', content: message });
       }
-      
-      ragMessages.push({ 
-        role: 'user', 
-        content: `${message}\n\n[Note: Tool results above have been processed. Please incorporate them into your response.]` 
+
+      // Call 2nd LLM with KB context and forwarding tool
+      console.log('Calling GPT-5 for final response...');
+      const llmResponse = await fetch('https://api.openai.com/v1/responses', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-5',
+          reasoning: { effort: 'low' },
+          input: llmMessages,
+          tools: [ragForwardingTool],
+          stream: false,
+        }),
       });
-    } else {
-      ragMessages.push({ role: 'user', content: message });
+
+      if (!llmResponse.ok) {
+        const errorText = await llmResponse.text();
+        console.error('2nd LLM API error:', errorText);
+        throw new Error(`2nd LLM request failed: ${errorText}`);
+      }
+
+      const llmData = await llmResponse.json();
+      console.log('2nd LLM response:', JSON.stringify(llmData, null, 2));
+
+      // Check if 2nd LLM called forward_to_human
+      let finalOutputText = '';
+      let llmCalledForward = false;
+
+      for (const output of llmData.output || []) {
+        if (output.type === 'message') {
+          for (const content of output.content || []) {
+            if (content.type === 'output_text') {
+              finalOutputText += content.text;
+            }
+          }
+        } else if (output.type === 'function_call' && output.name === 'forward_to_human') {
+          llmCalledForward = true;
+          const forwardArgs = JSON.parse(output.arguments || '{}');
+          console.log(`2nd LLM called forward_to_human: ${forwardArgs.reason}`);
+          
+          // Execute forwarding and get result
+          const forwardResult = await executeTool('forward_to_human', forwardArgs, supabase, storeAccess, allowedStatuses);
+          
+          // Make another call to 2nd LLM to generate confirmation
+          const confirmMessages = [
+            ...llmMessages,
+            {
+              role: 'assistant',
+              content: null,
+              tool_calls: [{
+                id: output.call_id,
+                type: 'function',
+                function: {
+                  name: 'forward_to_human',
+                  arguments: output.arguments
+                }
+              }]
+            },
+            {
+              role: 'tool',
+              tool_call_id: output.call_id,
+              content: JSON.stringify(forwardResult)
+            }
+          ];
+
+          const confirmResponse = await fetch('https://api.openai.com/v1/responses', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${OPENAI_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'gpt-5',
+              reasoning: { effort: 'low' },
+              input: confirmMessages,
+              stream: false,
+            }),
+          });
+
+          if (confirmResponse.ok) {
+            const confirmData = await confirmResponse.json();
+            finalOutputText = confirmData.output_text || 
+              confirmData.output?.find((o: any) => o.type === 'message')?.content?.[0]?.text || 
+              'Your request has been forwarded to our support team.';
+          }
+        }
+      }
+
+      if (!finalOutputText && !llmCalledForward) {
+        finalOutputText = llmData.output_text || 'I apologize, but I was unable to generate a response. Please try again.';
+      }
+
+      return new Response(JSON.stringify({
+        success: true,
+        response: finalOutputText,
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
-
-    // Final response (non-streaming for simplicity)
-    console.log('Calling GPT-5 for final response...');
-    const ragResponse = await fetch('https://api.openai.com/v1/responses', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-5',
-        reasoning: { effort: 'low' },
-        input: ragMessages,
-        tools: [ragForwardingTool],
-        stream: false,
-      }),
-    });
-
-    if (!ragResponse.ok) {
-      const errorText = await ragResponse.text();
-      console.error('RAG API error:', errorText);
-      throw new Error(`RAG request failed: ${errorText}`);
-    }
-
-    const ragData = await ragResponse.json();
-    console.log('RAG response:', JSON.stringify(ragData, null, 2));
-
-    // Extract the text from the response
-    const outputText = ragData.output_text || 
-      ragData.output?.find((o: any) => o.type === 'message')?.content?.[0]?.text || 
-      'I apologize, but I was unable to generate a response. Please try again.';
-
-    return new Response(JSON.stringify({
-      success: true,
-      response: outputText,
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
 
   } catch (error) {
     console.error('Error in chat-query:', error);
