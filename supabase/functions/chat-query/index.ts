@@ -7,6 +7,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// RAG Configuration
+const EMBEDDING_MODEL = 'text-embedding-3-small';
+const TOP_K = 5; // Number of chunks to retrieve
+const SIMILARITY_THRESHOLD = 0.7; // Minimum similarity score
+
 // Build available tools based on store connection, access level, and forwarding rules
 function getAvailableTools(
   storeConnected: boolean,
@@ -481,6 +486,58 @@ async function executeTool(
   return { success: false, error: `Unknown tool: ${toolName}` };
 }
 
+// Generate embedding for a single query
+async function generateQueryEmbedding(
+  query: string,
+  apiKey: string
+): Promise<number[]> {
+  const response = await fetch('https://api.openai.com/v1/embeddings', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: EMBEDDING_MODEL,
+      input: query,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Embedding API failed: ${errorText}`);
+  }
+
+  const data = await response.json();
+  return data.data[0].embedding;
+}
+
+// Search knowledge chunks using vector similarity
+async function searchKnowledge(
+  supabase: any,
+  chatbotId: string,
+  queryEmbedding: number[],
+  topK: number = TOP_K,
+  threshold: number = SIMILARITY_THRESHOLD
+): Promise<{ content: string; similarity: number }[]> {
+  // Format embedding as pgvector expects
+  const embeddingString = `[${queryEmbedding.join(',')}]`;
+  
+  const { data, error } = await supabase.rpc('search_knowledge_chunks', {
+    p_chatbot_id: chatbotId,
+    p_query_embedding: embeddingString,
+    p_match_count: topK,
+    p_match_threshold: threshold,
+  });
+
+  if (error) {
+    console.error('Knowledge search error:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -693,14 +750,34 @@ If no tools are needed, respond directly to help the user.`;
     // ========== LAYER 2: RAG Answer Generator ==========
     console.log('Running RAG Answer Generator (Layer 2)...');
 
+    // Perform RAG: Generate query embedding and search for relevant chunks
+    console.log('Generating query embedding...');
+    const queryEmbedding = await generateQueryEmbedding(message, OPENAI_API_KEY);
+    
+    console.log('Searching knowledge base...');
+    const relevantChunks = await searchKnowledge(supabase, chatbot_id, queryEmbedding);
+    console.log(`Found ${relevantChunks.length} relevant chunks`);
+
+    // Build knowledge context from retrieved chunks
+    let knowledgeContext = '';
+    if (relevantChunks.length > 0) {
+      knowledgeContext = `KNOWLEDGE BASE:
+${relevantChunks.map((chunk, i) => `[${i + 1}] (similarity: ${chunk.similarity.toFixed(2)}) ${chunk.content}`).join('\n\n---\n\n')}`;
+    } else {
+      knowledgeContext = 'KNOWLEDGE BASE: No relevant information found in the knowledge base.';
+    }
+
     // RAG system prompt with strict KB-only rules
     const ragSystemPrompt = `${persona}
 
+${knowledgeContext}
+
 CRITICAL RULES:
-1. Answers must be based SOLELY on the knowledge base. Never make up facts or information.
-2. If the query is IRRELEVANT to the knowledge base, politely explain you cannot help with that topic. Do not answer.
+1. Answer based SOLELY on the knowledge base above. Never make up facts or information.
+2. If the query is IRRELEVANT to the knowledge base content, politely explain you can only help with topics covered in your knowledge base.
 3. If only PARTS of the query are relevant, answer only those parts and politely decline the rest.
-4. If the query IS RELEVANT but you cannot find the answer in the knowledge base, use the forward_to_human tool.`;
+4. If the query IS RELEVANT but you cannot find the answer in the knowledge base, use the forward_to_human tool.
+5. When citing information, you may reference the chunk numbers like [1], [2], etc.`;
 
     // RAG layer forwarding tool - different description focused on KB gaps
     const ragForwardingTool = {
@@ -720,158 +797,99 @@ CRITICAL RULES:
       }
     };
 
-    // Build base messages for RAG
-    const baseMessages = [
+    // Build messages for the RAG layer
+    const ragMessages: any[] = [
       { role: 'system', content: ragSystemPrompt },
       ...conversation_history.map((msg: any) => ({
         role: msg.role === 'bot' ? 'assistant' : msg.role,
         content: msg.content,
       })),
-      { role: 'user', content: message },
     ];
 
-    // If we have tool results, include them in the context
-    const ragMessages = toolResultsForRag.length > 0
-      ? [...baseMessages, analyzerMessageForRag, ...toolResultsForRag]
-      : baseMessages;
-
-    // Check if assistant exists
-    if (!chatbot.openai_assistant_id) {
-      // No assistant, use regular GPT-5 without RAG
-      console.log('No assistant configured, using GPT-5 without RAG');
+    // If we have tool results from Layer 1, include them in the context
+    if (toolResultsForRag.length > 0 && analyzerMessageForRag) {
+      // Add the analyzer's tool call
+      ragMessages.push({
+        role: 'assistant',
+        content: analyzerMessageForRag.content,
+        tool_calls: analyzerMessageForRag.tool_calls
+      });
       
-      const directResponse = await fetch('https://api.openai.com/v1/responses', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-5',
-          reasoning: { effort: 'low' },
-          input: ragMessages,
-          tools: [ragForwardingTool],
-          stream: true,
-        }),
-      });
-
-      if (!directResponse.ok) {
-        const errorText = await directResponse.text();
-        throw new Error(`GPT-5 request failed: ${errorText}`);
+      // Add tool results
+      for (const tr of toolResultsForRag) {
+        ragMessages.push({
+          role: 'tool',
+          tool_call_id: tr.tool_call_id,
+          content: tr.content
+        });
       }
-
-      // Transform Responses API SSE to Chat Completions format for client compatibility
-      const transformStream = new TransformStream({
-        transform(chunk, controller) {
-          const text = new TextDecoder().decode(chunk);
-          const lines = text.split('\n');
-          
-          for (const line of lines) {
-            if (!line.startsWith('data: ')) continue;
-            const data = line.slice(6);
-            if (data === '[DONE]') {
-              controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'));
-              continue;
-            }
-            
-            try {
-              const event = JSON.parse(data);
-              // Transform response.output_text.delta to chat completions format
-              if (event.type === 'response.output_text.delta') {
-                const transformed = {
-                  choices: [{
-                    delta: { content: event.delta },
-                    index: 0
-                  }]
-                };
-                controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(transformed)}\n\n`));
-              }
-            } catch (e) {
-              // Skip unparseable lines
-            }
-          }
-        }
+      
+      // Add user message with context about tool results
+      ragMessages.push({ 
+        role: 'user', 
+        content: `${message}\n\n[Note: Tool results above have been processed. Please incorporate them into your response.]` 
       });
-
-      // Return transformed streaming response
-      return new Response(directResponse.body?.pipeThrough(transformStream), {
-        headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
-      });
+    } else {
+      ragMessages.push({ role: 'user', content: message });
     }
 
-    // Use Assistants API with file_search for RAG
-    console.log(`Using assistant: ${chatbot.openai_assistant_id}`);
-
-    // Build additional instructions including tool results if any
-    let additionalInstructions = persona;
-    if (toolResultsForRag.length > 0) {
-      const toolContext = toolResultsForRag.map(tr => {
-        const content = JSON.parse(tr.content);
-        return `Tool result: ${JSON.stringify(content)}`;
-      }).join('\n');
-      additionalInstructions += `\n\nCONTEXT FROM TOOLS:\n${toolContext}\n\nUse the above tool results to help answer the user's question.`;
-    }
-
-    // Build thread messages - include tool context in the user message if needed
-    let userMessageContent = message;
-    if (toolResultsForRag.length > 0) {
-      const toolContext = toolResultsForRag.map(tr => {
-        const content = JSON.parse(tr.content);
-        return JSON.stringify(content, null, 2);
-      }).join('\n\n');
-      userMessageContent = `${message}\n\n[Tool Results for context]:\n${toolContext}`;
-    }
-
-    // Create a thread
-    const threadResponse = await fetch('https://api.openai.com/v1/threads', {
+    // Single API call with Responses API
+    console.log('Calling GPT-5 for final response...');
+    const ragResponse = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v2',
       },
       body: JSON.stringify({
-        messages: [
-          ...conversation_history.map((msg: any) => ({
-            role: msg.role === 'bot' ? 'assistant' : 'user',
-            content: msg.content,
-          })),
-          { role: 'user', content: userMessageContent },
-        ],
-      }),
-    });
-
-    if (!threadResponse.ok) {
-      const errorText = await threadResponse.text();
-      throw new Error(`Failed to create thread: ${errorText}`);
-    }
-
-    const thread = await threadResponse.json();
-    console.log(`Created thread: ${thread.id}`);
-
-    // Run the assistant with RAG forwarding tool
-    const runResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-        'OpenAI-Beta': 'assistants=v2',
-      },
-      body: JSON.stringify({
-        assistant_id: chatbot.openai_assistant_id,
-        additional_instructions: ragSystemPrompt,
-        tools: [{ type: "file_search" }, ragForwardingTool],
+        model: 'gpt-5',
+        reasoning: { effort: 'low' },
+        input: ragMessages,
+        tools: [ragForwardingTool],
         stream: true,
       }),
     });
 
-    if (!runResponse.ok) {
-      const errorText = await runResponse.text();
-      throw new Error(`Failed to run assistant: ${errorText}`);
+    if (!ragResponse.ok) {
+      const errorText = await ragResponse.text();
+      throw new Error(`RAG request failed: ${errorText}`);
     }
 
-    // Stream the response back
-    return new Response(runResponse.body, {
+    // Transform Responses API SSE to Chat Completions format for client compatibility
+    const transformStream = new TransformStream({
+      transform(chunk, controller) {
+        const text = new TextDecoder().decode(chunk);
+        const lines = text.split('\n');
+        
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const data = line.slice(6);
+          if (data === '[DONE]') {
+            controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'));
+            continue;
+          }
+          
+          try {
+            const event = JSON.parse(data);
+            // Transform response.output_text.delta to chat completions format
+            if (event.type === 'response.output_text.delta') {
+              const transformed = {
+                choices: [{
+                  delta: { content: event.delta },
+                  index: 0
+                }]
+              };
+              controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(transformed)}\n\n`));
+            }
+          } catch (e) {
+            // Skip unparseable lines
+          }
+        }
+      }
+    });
+
+    // Return transformed streaming response
+    return new Response(ragResponse.body?.pipeThrough(transformStream), {
       headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
     });
 
