@@ -741,7 +741,7 @@ DO NOT USE when:
       ragMessages.push({ role: 'user', content: message });
     }
 
-    // Final response with streaming
+    // Final response (non-streaming for simplicity)
     console.log('Calling GPT-5 for final response...');
     const ragResponse = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
@@ -754,49 +754,29 @@ DO NOT USE when:
         reasoning: { effort: 'low' },
         input: ragMessages,
         tools: [ragForwardingTool],
-        stream: true,
+        stream: false,
       }),
     });
 
     if (!ragResponse.ok) {
       const errorText = await ragResponse.text();
+      console.error('RAG API error:', errorText);
       throw new Error(`RAG request failed: ${errorText}`);
     }
 
-    // Transform Responses API SSE to Chat Completions format
-    const transformStream = new TransformStream({
-      transform(chunk, controller) {
-        const text = new TextDecoder().decode(chunk);
-        const lines = text.split('\n');
-        
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          const data = line.slice(6);
-          if (data === '[DONE]') {
-            controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'));
-            continue;
-          }
-          
-          try {
-            const event = JSON.parse(data);
-            if (event.type === 'response.output_text.delta') {
-              const transformed = {
-                choices: [{
-                  delta: { content: event.delta },
-                  index: 0
-                }]
-              };
-              controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(transformed)}\n\n`));
-            }
-          } catch (e) {
-            // Skip unparseable lines
-          }
-        }
-      }
-    });
+    const ragData = await ragResponse.json();
+    console.log('RAG response:', JSON.stringify(ragData, null, 2));
 
-    return new Response(ragResponse.body?.pipeThrough(transformStream), {
-      headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
+    // Extract the text from the response
+    const outputText = ragData.output_text || 
+      ragData.output?.find((o: any) => o.type === 'message')?.content?.[0]?.text || 
+      'I apologize, but I was unable to generate a response. Please try again.';
+
+    return new Response(JSON.stringify({
+      success: true,
+      response: outputText,
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
