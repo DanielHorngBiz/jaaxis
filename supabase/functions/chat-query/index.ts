@@ -17,22 +17,27 @@ function getAvailableTools(
   storeConnected: boolean,
   storeAccess: string,
   allowedStatuses: string[],
-  hasForwardingRules: boolean
+  forwardingRules: string | null  // Pass actual rules, not boolean
 ): any[] {
   const tools: any[] = [];
 
-  // Forward tool - always available if forwarding rules exist
-  if (hasForwardingRules) {
+  // Forward tool - available if forwarding rules exist, rules embedded in description
+  if (forwardingRules) {
     tools.push({
       type: "function",
       name: "forward_to_human",
-      description: "Forward the conversation to a human agent when the user's request matches the forwarding rules or requires human assistance that you cannot provide.",
+      description: `Forward the conversation to a human agent.
+
+USE THIS TOOL WHEN:
+${forwardingRules}
+
+Do NOT use for general questions - only when the above rules apply.`,
       parameters: {
         type: "object",
         properties: {
           reason: {
             type: "string",
-            description: "Brief explanation of why this is being forwarded to a human"
+            description: "Brief explanation of why this is being forwarded"
           }
         },
         required: ["reason"],
@@ -641,26 +646,22 @@ serve(async (req) => {
         ? `${baseForwardingRules}\n${forwardingRules}`
         : baseForwardingRules;
 
-      const hasForwardingRules = true; // Always true since we have base rules
-      const availableTools = getAvailableTools(storeConnected, storeAccess, allowedStatuses, hasForwardingRules);
+      // Pass actual forwarding rules to tool descriptions
+      const availableTools = getAvailableTools(storeConnected, storeAccess, allowedStatuses, allForwardingRules);
       console.log(`Available tools: ${availableTools.map((t: any) => t.name).join(', ') || 'none'}`);
 
       // Query Analyzer system prompt - ONLY for tool routing, NOT for answering questions
+      // Forwarding rules are now embedded in the forward_to_human tool description
       const queryAnalyzerSystemPrompt = `You are a query analyzer. Your ONLY job is to:
 1. Call tools when the user's request matches a tool's purpose
 2. Ask clarifying questions ONLY if you need more info to call a tool (e.g., order ID, email for verification)
-
-FORWARDING RULES - Use the forward_to_human tool when:
-${allForwardingRules}
 
 CRITICAL RULES:
 - Do NOT answer general questions about products, policies, hours, pricing, etc.
 - Do NOT provide helpful information or content
 - Do NOT respond to greetings or small talk
 - If no tool is needed, output NOTHING (empty response)
-- The ONLY text you should output is clarifying questions for tool calls like:
-  - "Could you provide your order number?"
-  - "What email address is associated with your order?"
+- The ONLY text you should output is clarifying questions for tool calls
 
 ${persona ? `When asking clarifying questions, match this persona: ${persona}` : ''}`;
 
@@ -794,29 +795,38 @@ ${relevantChunks.map((chunk, i) => `[${i + 1}] (similarity: ${chunk.similarity.t
       knowledgeContext = 'KNOWLEDGE BASE: No relevant information found in the knowledge base.';
     }
 
-    // RAG system prompt with strict KB-only rules
+    // RAG system prompt - focused on KB rules only, tool logic in tool description
     const ragSystemPrompt = `${persona}
 
 ${knowledgeContext}
 
-CRITICAL RULES:
-1. Answer based SOLELY on the knowledge base above. Never make up facts or information.
-2. If the query is IRRELEVANT to the knowledge base content, politely explain you can only help with topics covered in your knowledge base.
-3. If only PARTS of the query are relevant, answer only those parts and politely decline the rest.
-4. If the query IS RELEVANT but you cannot find the answer in the knowledge base, use the forward_to_human tool.
-5. When citing information, you may reference the chunk numbers like [1], [2], etc.`;
+RULES:
+1. Answer based SOLELY on the knowledge base above
+2. Never make up facts or information not in the KB
+3. If query is IRRELEVANT to KB topics, politely decline
+4. If only PARTS are relevant, answer those parts only
+5. You may reference chunks like [1], [2] when citing`;
 
-    // RAG layer forwarding tool - different description focused on KB gaps
+    // RAG layer forwarding tool - all usage logic in description
     const ragForwardingTool = {
       type: "function",
       name: "forward_to_human",
-      description: "Forward to a human agent when the user's query IS relevant to the business but you cannot find the answer in the knowledge base. Examples: pricing not in KB, specific policies not documented, account-specific questions you cannot answer.",
+      description: `Forward to a human agent when the user's question IS RELEVANT to the business but the answer is NOT in the knowledge base.
+
+USE THIS TOOL WHEN:
+- User asks about pricing, policies, or details not documented in KB
+- User has account-specific questions you cannot answer
+- KB exists but doesn't contain the needed information
+
+DO NOT USE when:
+- Query is irrelevant to the business (just politely decline instead)
+- You can answer from the KB`,
       parameters: {
         type: "object",
         properties: {
           reason: {
             type: "string",
-            description: "What the user asked about that isn't available in the knowledge base"
+            description: "What specific information the user needs that isn't in the KB"
           }
         },
         required: ["reason"],
