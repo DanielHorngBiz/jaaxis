@@ -83,54 +83,6 @@ export type Database = {
         }
         Relationships: []
       }
-      knowledge_chunks: {
-        Row: {
-          chatbot_id: string
-          chunk_index: number
-          content: string
-          created_at: string | null
-          embedding: string | null
-          id: string
-          knowledge_source_id: string
-          token_count: number | null
-        }
-        Insert: {
-          chatbot_id: string
-          chunk_index: number
-          content: string
-          created_at?: string | null
-          embedding?: string | null
-          id?: string
-          knowledge_source_id: string
-          token_count?: number | null
-        }
-        Update: {
-          chatbot_id?: string
-          chunk_index?: number
-          content?: string
-          created_at?: string | null
-          embedding?: string | null
-          id?: string
-          knowledge_source_id?: string
-          token_count?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "knowledge_chunks_chatbot_id_fkey"
-            columns: ["chatbot_id"]
-            isOneToOne: false
-            referencedRelation: "chatbots"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "knowledge_chunks_knowledge_source_id_fkey"
-            columns: ["knowledge_source_id"]
-            isOneToOne: false
-            referencedRelation: "knowledge_sources"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       knowledge_sources: {
         Row: {
           answer: string | null
@@ -330,19 +282,6 @@ export type Database = {
           _role: Database["public"]["Enums"]["team_role"]
         }
         Returns: string
-      }
-      search_knowledge_chunks: {
-        Args: {
-          p_chatbot_id: string
-          p_match_count?: number
-          p_match_threshold?: number
-          p_query_embedding: string
-        }
-        Returns: {
-          content: string
-          id: string
-          similarity: number
-        }[]
       }
       update_team_member_role: {
         Args: {
