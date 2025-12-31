@@ -7,21 +7,16 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// RAG Configuration
-const EMBEDDING_MODEL = 'text-embedding-3-small';
-const TOP_K = 5; // Number of chunks to retrieve
-const SIMILARITY_THRESHOLD = 0.7; // Minimum similarity score
-
 // Build available tools based on store connection, access level, and forwarding rules
 function getAvailableTools(
   storeConnected: boolean,
   storeAccess: string,
   allowedStatuses: string[],
-  forwardingRules: string | null  // Pass actual rules, not boolean
+  forwardingRules: string | null
 ): any[] {
   const tools: any[] = [];
 
-  // Forward tool - available if forwarding rules exist, rules embedded in description
+  // Forward tool - available if forwarding rules exist
   if (forwardingRules) {
     tools.push({
       type: "function",
@@ -101,90 +96,60 @@ Do NOT use for general questions - only when the above rules apply.`,
           },
           verification_email: {
             type: "string",
-            description: "Customer's email to verify ownership"
+            description: "Customer's email for verification"
           },
           verification_phone: {
             type: "string",
-            description: "Customer's phone to verify ownership"
+            description: "Customer's phone for verification"
           }
         },
         required: ["order_number"],
-        anyOf: [
-          { required: ["verification_email"] },
-          { required: ["verification_phone"] }
-        ],
         additionalProperties: false
       }
     });
 
-    // Build edit_order description with allowed statuses
-    let editDescription = "Edit order details such as status, shipping address, shipping name, billing address, or billing name. Cannot edit tracking information. If the customer hasn't provided verification info, ask them for their email or phone before calling this tool.";
-    
+    // Only add edit_order if there are allowed statuses to change to
     if (allowedStatuses.length > 0) {
-      editDescription += ` For status changes, only these statuses are allowed: ${allowedStatuses.join(', ')}.`;
-    }
+      tools.push({
+        type: "function",
+        name: "edit_order",
+        description: `Update an order's status. If the customer hasn't provided verification info, ask them for their email or phone before calling this tool.
 
-    tools.push({
-      type: "function",
-      name: "edit_order",
-      description: editDescription,
-      parameters: {
-        type: "object",
-        properties: {
-          order_number: {
-            type: "string",
-            description: "The order number to edit"
-          },
-          verification_email: {
-            type: "string",
-            description: "Customer's email to verify ownership"
-          },
-          verification_phone: {
-            type: "string",
-            description: "Customer's phone to verify ownership"
-          },
-          updates: {
-            type: "object",
-            description: "The fields to update",
-            properties: {
-              status: {
-                type: "string",
-                description: "New order status"
-              },
-              shipping_address: {
-                type: "string",
-                description: "New shipping address"
-              },
-              shipping_name: {
-                type: "string",
-                description: "New shipping recipient name"
-              },
-              billing_address: {
-                type: "string",
-                description: "New billing address"
-              },
-              billing_name: {
-                type: "string",
-                description: "New billing name"
-              }
+ALLOWED STATUS VALUES: ${allowedStatuses.join(', ')}
+
+Only these statuses can be set. If a customer requests a status not in this list, politely explain that you can only update to the allowed statuses.`,
+        parameters: {
+          type: "object",
+          properties: {
+            order_number: {
+              type: "string",
+              description: "The order number to update"
             },
-            additionalProperties: false
-          }
-        },
-        required: ["order_number", "updates"],
-        anyOf: [
-          { required: ["verification_email"] },
-          { required: ["verification_phone"] }
-        ],
-        additionalProperties: false
-      }
-    });
+            new_status: {
+              type: "string",
+              enum: allowedStatuses,
+              description: "New status for the order"
+            },
+            verification_email: {
+              type: "string",
+              description: "Customer's email for verification"
+            },
+            verification_phone: {
+              type: "string",
+              description: "Customer's phone for verification"
+            }
+          },
+          required: ["order_number", "new_status"],
+          additionalProperties: false
+        }
+      });
+    }
   }
 
   return tools;
 }
 
-// Verify order ownership by matching email or phone
+// Verify customer owns the order via email or phone
 function verifyOrderOwnership(
   order: any,
   email?: string,
@@ -193,14 +158,14 @@ function verifyOrderOwnership(
   if (email) {
     const normalizedEmail = email.toLowerCase().trim();
     if (
-      order.billing_email?.toLowerCase().trim() === normalizedEmail ||
-      order.shipping_email?.toLowerCase().trim() === normalizedEmail
+      order.billing_email?.toLowerCase() === normalizedEmail ||
+      order.shipping_email?.toLowerCase() === normalizedEmail
     ) {
       return true;
     }
   }
   if (phone) {
-    const normalizedPhone = phone.replace(/\D/g, ''); // Remove non-digits
+    const normalizedPhone = phone.replace(/\D/g, '');
     const billingPhone = order.billing_phone?.replace(/\D/g, '') || '';
     const shippingPhone = order.shipping_phone?.replace(/\D/g, '') || '';
     if (
@@ -223,7 +188,7 @@ async function executeTool(
 ): Promise<{ success: boolean; result?: any; error?: string }> {
   console.log(`Executing tool: ${toolName} with args:`, args);
 
-  // Forward to human tool - POC: just return success, no actual forwarding
+  // Forward to human tool
   if (toolName === "forward_to_human") {
     const reason = args.reason || "User request requires human assistance";
     console.log(`Forwarding to human. Reason: ${reason}`);
@@ -238,14 +203,13 @@ async function executeTool(
     };
   }
 
-  // Read order tool - flexible lookup
+  // Read order tool
   if (toolName === "read_order") {
     const orderNumber = args.order_number?.replace('#', '').trim();
     const customerName = args.customer_name?.trim();
     const customerEmail = args.customer_email?.toLowerCase().trim();
     const customerPhone = args.customer_phone?.replace(/\D/g, '');
 
-    // Validate at least one identifier is provided
     if (!orderNumber && !customerName && !customerEmail && !customerPhone) {
       return { success: false, error: "Please provide at least one of: order number, name, email, or phone" };
     }
@@ -256,18 +220,15 @@ async function executeTool(
       query = query.eq('order_number', `#${orderNumber}`);
     }
     
-    // Execute query
     const { data: orders, error } = await query;
 
     if (error) {
       return { success: false, error: `Failed to search orders: ${error.message}` };
     }
 
-    // Filter by other criteria if no order_number or need additional filtering
     let filteredOrders = orders || [];
     
     if (!orderNumber && filteredOrders.length === 0) {
-      // If no order number, fetch all and filter
       const { data: allOrders, error: allError } = await supabase
         .from('orders')
         .select('*')
@@ -280,7 +241,6 @@ async function executeTool(
       filteredOrders = allOrders || [];
     }
 
-    // Apply additional filters
     if (customerName) {
       const nameLower = customerName.toLowerCase();
       filteredOrders = filteredOrders.filter((o: any) =>
@@ -312,7 +272,6 @@ async function executeTool(
       return { success: true, result: filteredOrders[0] };
     }
 
-    // Return multiple orders summary
     return { 
       success: true, 
       result: {
@@ -327,7 +286,6 @@ async function executeTool(
     };
   }
 
-  // For write operations, require order_number
   const orderNumber = args.order_number?.replace('#', '').trim();
   
   if (!orderNumber) {
@@ -339,7 +297,6 @@ async function executeTool(
     const verificationEmail = args.verification_email;
     const verificationPhone = args.verification_phone;
 
-    // Require verification
     if (!verificationEmail && !verificationPhone) {
       return { success: false, error: "For security, please provide the email or phone number associated with this order to verify ownership" };
     }
@@ -348,16 +305,6 @@ async function executeTool(
       return { success: false, error: "I don't have permission to cancel orders. Would you like me to connect you with someone who can help?" };
     }
 
-    // Check if 'refunded' or 'cancelled' is in allowed statuses
-    const canRefund = allowedStatuses.some(s => 
-      s.toLowerCase().includes('refund') || s.toLowerCase().includes('cancel')
-    );
-    
-    if (!canRefund && allowedStatuses.length > 0) {
-      return { success: false, error: "I'm not authorized to cancel orders. Would you like me to connect you with someone who can help?" };
-    }
-
-    // Get current order
     const { data: order, error: fetchError } = await supabase
       .from('orders')
       .select('*')
@@ -365,25 +312,21 @@ async function executeTool(
       .single();
 
     if (fetchError || !order) {
-      return { success: false, error: `Order #${orderNumber} not found` };
+      return { success: false, error: "Order not found" };
     }
 
-    // Verify ownership
     if (!verifyOrderOwnership(order, verificationEmail, verificationPhone)) {
-      return { success: false, error: "The email or phone provided doesn't match our records for this order. Please double-check and try again." };
+      return { success: false, error: "The email or phone number provided doesn't match our records for this order. Please verify and try again." };
     }
 
-    // Check if order can be cancelled
-    const nonCancellableStatuses = ['completed', 'refunded', 'cancelled'];
-    if (nonCancellableStatuses.includes(order.status)) {
-      return { success: false, error: `Order #${orderNumber} cannot be cancelled because it's already ${order.status}` };
+    if (['completed', 'cancelled', 'refunded'].includes(order.status)) {
+      return { success: false, error: `Cannot cancel order - it is already ${order.status}` };
     }
 
-    // Update order status to refunded
     const { error: updateError } = await supabase
       .from('orders')
-      .update({ status: 'refunded', updated_at: new Date().toISOString() })
-      .eq('order_number', `#${orderNumber}`);
+      .update({ status: 'cancelled' })
+      .eq('id', order.id);
 
     if (updateError) {
       return { success: false, error: `Failed to cancel order: ${updateError.message}` };
@@ -392,18 +335,20 @@ async function executeTool(
     return { 
       success: true, 
       result: { 
-        message: `Order #${orderNumber} has been cancelled and a refund of $${order.order_total.toFixed(2)} has been initiated.`,
-        refund_amount: order.order_total
-      } 
+        message: `Order ${order.order_number} has been cancelled. A refund will be processed within 5-7 business days.`,
+        order_number: order.order_number,
+        previous_status: order.status,
+        new_status: 'cancelled'
+      }
     };
   }
 
   // Edit order tool
   if (toolName === "edit_order") {
+    const newStatus = args.new_status;
     const verificationEmail = args.verification_email;
     const verificationPhone = args.verification_phone;
 
-    // Require verification
     if (!verificationEmail && !verificationPhone) {
       return { success: false, error: "For security, please provide the email or phone number associated with this order to verify ownership" };
     }
@@ -412,9 +357,10 @@ async function executeTool(
       return { success: false, error: "I don't have permission to edit orders. Would you like me to connect you with someone who can help?" };
     }
 
-    const updates = args.updates || {};
-    
-    // Get current order
+    if (!allowedStatuses.includes(newStatus)) {
+      return { success: false, error: `Status '${newStatus}' is not allowed. Available statuses: ${allowedStatuses.join(', ')}` };
+    }
+
     const { data: order, error: fetchError } = await supabase
       .from('orders')
       .select('*')
@@ -422,59 +368,17 @@ async function executeTool(
       .single();
 
     if (fetchError || !order) {
-      return { success: false, error: `Order #${orderNumber} not found` };
+      return { success: false, error: "Order not found" };
     }
 
-    // Verify ownership
     if (!verifyOrderOwnership(order, verificationEmail, verificationPhone)) {
-      return { success: false, error: "The email or phone provided doesn't match our records for this order. Please double-check and try again." };
+      return { success: false, error: "The email or phone number provided doesn't match our records for this order. Please verify and try again." };
     }
 
-    // Build update object (excluding tracking info)
-    const updateData: any = { updated_at: new Date().toISOString() };
-    const changedFields: string[] = [];
-
-    if (updates.status) {
-      // Check if status is allowed
-      const statusAllowed = allowedStatuses.length === 0 || 
-        allowedStatuses.some(s => s.toLowerCase().trim() === updates.status.toLowerCase().trim());
-      
-      if (!statusAllowed) {
-        return { success: false, error: `I'm not authorized to set the status to "${updates.status}". Allowed statuses are: ${allowedStatuses.join(', ')}` };
-      }
-      updateData.status = updates.status;
-      changedFields.push(`status to "${updates.status}"`);
-    }
-
-    if (updates.shipping_address) {
-      updateData.shipping_address = updates.shipping_address;
-      changedFields.push('shipping address');
-    }
-
-    if (updates.shipping_name) {
-      updateData.shipping_name = updates.shipping_name;
-      changedFields.push('shipping name');
-    }
-
-    if (updates.billing_address) {
-      updateData.billing_address = updates.billing_address;
-      changedFields.push('billing address');
-    }
-
-    if (updates.billing_name) {
-      updateData.billing_name = updates.billing_name;
-      changedFields.push('billing name');
-    }
-
-    if (changedFields.length === 0) {
-      return { success: false, error: "No valid fields to update. I can update: status, shipping address, shipping name, billing address, or billing name." };
-    }
-
-    // Update the order
     const { error: updateError } = await supabase
       .from('orders')
-      .update(updateData)
-      .eq('order_number', `#${orderNumber}`);
+      .update({ status: newStatus })
+      .eq('id', order.id);
 
     if (updateError) {
       return { success: false, error: `Failed to update order: ${updateError.message}` };
@@ -483,64 +387,70 @@ async function executeTool(
     return { 
       success: true, 
       result: { 
-        message: `Order #${orderNumber} has been updated. Changed: ${changedFields.join(', ')}.`
-      } 
+        message: `Order ${order.order_number} status updated to '${newStatus}'.`,
+        order_number: order.order_number,
+        previous_status: order.status,
+        new_status: newStatus
+      }
     };
   }
 
   return { success: false, error: `Unknown tool: ${toolName}` };
 }
 
-// Generate embedding for a single query
-async function generateQueryEmbedding(
+// Use OpenAI file_search to retrieve knowledge chunks
+async function searchKnowledgeWithFileSearch(
+  vectorStoreId: string,
   query: string,
   apiKey: string
-): Promise<number[]> {
-  const response = await fetch('https://api.openai.com/v1/embeddings', {
+): Promise<{ text: string; filename: string; score: number }[]> {
+  console.log(`Searching vector store ${vectorStoreId} for: ${query}`);
+
+  const response = await fetch('https://api.openai.com/v1/responses', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: EMBEDDING_MODEL,
+      model: 'gpt-4.1', // Use a lightweight model for search-only
       input: query,
+      tools: [{
+        type: "file_search",
+        vector_store_ids: [vectorStoreId],
+        max_num_results: 5
+      }],
+      include: ["file_search_call.results"],
+      tool_choice: "required" // Force file search to run
     }),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`Embedding API failed: ${errorText}`);
-  }
-
-  const data = await response.json();
-  return data.data[0].embedding;
-}
-
-// Search knowledge chunks using vector similarity
-async function searchKnowledge(
-  supabase: any,
-  chatbotId: string,
-  queryEmbedding: number[],
-  topK: number = TOP_K,
-  threshold: number = SIMILARITY_THRESHOLD
-): Promise<{ content: string; similarity: number }[]> {
-  // Format embedding as pgvector expects
-  const embeddingString = `[${queryEmbedding.join(',')}]`;
-  
-  const { data, error } = await supabase.rpc('search_knowledge_chunks', {
-    p_chatbot_id: chatbotId,
-    p_query_embedding: embeddingString,
-    p_match_count: topK,
-    p_match_threshold: threshold,
-  });
-
-  if (error) {
-    console.error('Knowledge search error:', error);
+    console.error('File search failed:', errorText);
     return [];
   }
 
-  return data || [];
+  const data = await response.json();
+  
+  // Extract search results from the response
+  const chunks: { text: string; filename: string; score: number }[] = [];
+  
+  // Find the file_search_call output
+  for (const output of data.output || []) {
+    if (output.type === 'file_search_call' && output.results) {
+      for (const result of output.results) {
+        chunks.push({
+          text: result.text || '',
+          filename: result.filename || 'unknown',
+          score: result.score || 0
+        });
+      }
+    }
+  }
+
+  console.log(`File search returned ${chunks.length} chunks`);
+  return chunks;
 }
 
 serve(async (req) => {
@@ -567,10 +477,9 @@ serve(async (req) => {
     console.log(`User message: ${message}`);
     console.log(`Has attachments: ${has_attachments}`);
 
-    // Initialize Supabase client
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
-    // Fetch chatbot data
+    // Fetch chatbot data including vector store ID
     const { data: chatbot, error: chatbotError } = await supabase
       .from('chatbots')
       .select('*')
@@ -586,13 +495,14 @@ serve(async (req) => {
     const storeConnected = chatbot.store_connected || false;
     const storeAccess = chatbot.store_access || 'read';
     const storeOrderStatuses = chatbot.store_order_statuses || '';
+    const vectorStoreId = chatbot.openai_vector_store_id;
     const allowedStatuses = storeOrderStatuses
       ? storeOrderStatuses.split(',').map((s: string) => s.trim()).filter(Boolean)
       : [];
 
-    console.log(`Store connected: ${storeConnected}, Access: ${storeAccess}, Allowed statuses: ${allowedStatuses.join(', ')}`);
+    console.log(`Store connected: ${storeConnected}, Access: ${storeAccess}`);
+    console.log(`Vector store ID: ${vectorStoreId || 'none'}`);
 
-    // Variables to pass tool results to RAG layer
     let toolResultsForRag: any[] = [];
     let analyzerMessageForRag: any = null;
 
@@ -600,7 +510,6 @@ serve(async (req) => {
     if (has_attachments) {
       console.log('Attachments detected - triggering automatic forwarding...');
       
-      // Create the forwarding result directly (bypass LLM for this decision)
       const forwardResult = {
         success: true,
         result: {
@@ -609,48 +518,31 @@ serve(async (req) => {
           reason: "Message contains attachments that require human review"
         }
       };
-      
-      // Set up tool results for RAG layer (same format as if LLM called the tool)
-      toolResultsForRag = [{
+
+      toolResultsForRag.push({
         tool_call_id: 'auto_forward_attachments',
         role: 'tool',
         content: JSON.stringify(forwardResult)
-      }];
-      
-      // Create mock analyzer message (as if LLM decided to forward)
+      });
+
       analyzerMessageForRag = {
-        role: 'assistant',
         content: null,
         tool_calls: [{
           id: 'auto_forward_attachments',
           type: 'function',
           function: {
             name: 'forward_to_human',
-            arguments: JSON.stringify({ reason: 'Message contains attachments that require human review' })
+            arguments: JSON.stringify({ reason: "Message contains attachments that require human review" })
           }
         }]
       };
-      
-      console.log('Skipping Query Analyzer - auto-forwarded due to attachments');
     } else {
-      // ========== LAYER 1: Query Analyzer with Tool Calling ==========
+      // ========== LAYER 1: Query Analyzer ==========
       console.log('Running Query Analyzer (Layer 1)...');
 
-      // Build tools array dynamically based on store connection, access level, and forwarding rules
-      // Base forwarding rules that are always active
-      const baseForwardingRules = `- The user explicitly asks to speak with a human, agent, representative, or real person
-- The user expresses strong frustration, anger, or confusion that the bot cannot resolve`;
-
-      // Combine base rules with custom rules
-      const allForwardingRules = forwardingRules 
-        ? `${baseForwardingRules}\n${forwardingRules}`
-        : baseForwardingRules;
-
-      // Pass actual forwarding rules to tool descriptions
-      const availableTools = getAvailableTools(storeConnected, storeAccess, allowedStatuses, allForwardingRules);
+      const availableTools = getAvailableTools(storeConnected, storeAccess, allowedStatuses, forwardingRules);
       console.log(`Available tools: ${availableTools.map((t: any) => t.name).join(', ') || 'none'}`);
 
-      // Query Analyzer system prompt - ONLY for tool routing, NOT for answering questions
       const queryAnalyzerSystemPrompt = `You are a query router. Your job is to call tools.
 
 RULES:
@@ -669,11 +561,10 @@ ${persona ? `Tone for clarifying questions: ${persona}` : ''}`;
             role: msg.role === 'bot' ? 'assistant' : msg.role,
             content: msg.content,
           })),
-          { role: 'user', content: message },
+          { role: 'user', content: message }
         ],
       };
 
-      // Add tools if available
       if (availableTools.length > 0) {
         analyzerBody.tools = availableTools;
       }
@@ -689,62 +580,44 @@ ${persona ? `Tone for clarifying questions: ${persona}` : ''}`;
 
       if (!analyzerResponse.ok) {
         const errorText = await analyzerResponse.text();
-        console.error('Query Analyzer error:', errorText);
-        throw new Error(`Query Analyzer failed: ${errorText}`);
+        throw new Error(`Query analyzer failed: ${errorText}`);
       }
 
-      const analyzerResult = await analyzerResponse.json();
+      const analyzerData = await analyzerResponse.json();
       
-      // Parse Responses API format
-      let analyzerContent = null;
-      const toolCalls: any[] = [];
-
-      for (const item of analyzerResult.output || []) {
-        if (item.type === 'message') {
-          analyzerContent = item.content?.[0]?.text || null;
-        } else if (item.type === 'function_call') {
+      // Extract outputs
+      let analyzerContent = '';
+      let toolCalls: any[] = [];
+      
+      for (const output of analyzerData.output || []) {
+        if (output.type === 'message') {
+          for (const content of output.content || []) {
+            if (content.type === 'output_text') {
+              analyzerContent += content.text;
+            }
+          }
+        } else if (output.type === 'function_call') {
           toolCalls.push({
-            id: item.call_id,
+            id: output.call_id,
             type: 'function',
             function: {
-              name: item.name,
-              arguments: item.arguments
+              name: output.name,
+              arguments: output.arguments
             }
           });
         }
       }
 
-      console.log('Query Analyzer response:', analyzerContent || '(no text output)');
-      console.log('Tool calls:', JSON.stringify(toolCalls));
+      console.log(`Query Analyzer response: ${analyzerContent || '(no text output)'}`);
+      console.log(`Tool calls: ${JSON.stringify(toolCalls.map(tc => tc.function.name))}`);
 
-      // If Query Analyzer is asking a clarifying question (has text but no tool calls), return it directly
-      if (analyzerContent && toolCalls.length === 0) {
-        console.log('Query Analyzer: Returning clarifying question directly, skipping RAG');
-        const responseStream = new ReadableStream({
-          start(controller) {
-            const chunk = {
-              choices: [{ delta: { content: analyzerContent }, index: 0 }]
-            };
-            controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(chunk)}\n\n`));
-            controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'));
-            controller.close();
-          }
-        });
-        return new Response(responseStream, {
-          headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
-        });
-      }
-
-      // Handle tool calls
+      // Execute tools if any
       if (toolCalls.length > 0) {
-        console.log('Processing tool calls...');
-        
         analyzerMessageForRag = {
-          role: 'assistant',
-          content: analyzerContent,
+          content: analyzerContent || null,
           tool_calls: toolCalls
         };
-        
+
         for (const toolCall of toolCalls) {
           const toolName = toolCall.function.name;
           const toolArgs = JSON.parse(toolCall.function.arguments);
@@ -773,24 +646,26 @@ ${persona ? `Tone for clarifying questions: ${persona}` : ''}`;
     // ========== LAYER 2: RAG Answer Generator ==========
     console.log('Running RAG Answer Generator (Layer 2)...');
 
-    // Perform RAG: Generate query embedding and search for relevant chunks
-    console.log('Generating query embedding...');
-    const queryEmbedding = await generateQueryEmbedding(message, OPENAI_API_KEY);
-    
-    console.log('Searching knowledge base...');
-    const relevantChunks = await searchKnowledge(supabase, chatbot_id, queryEmbedding);
-    console.log(`Found ${relevantChunks.length} relevant chunks`);
-
-    // Build knowledge context from retrieved chunks
+    // Search knowledge using OpenAI file_search
     let knowledgeContext = '';
-    if (relevantChunks.length > 0) {
-      knowledgeContext = `KNOWLEDGE BASE:
-${relevantChunks.map((chunk, i) => `[${i + 1}] (similarity: ${chunk.similarity.toFixed(2)}) ${chunk.content}`).join('\n\n---\n\n')}`;
+    
+    if (vectorStoreId) {
+      console.log('Searching knowledge base via file_search...');
+      const relevantChunks = await searchKnowledgeWithFileSearch(vectorStoreId, message, OPENAI_API_KEY);
+      console.log(`Found ${relevantChunks.length} relevant chunks`);
+
+      if (relevantChunks.length > 0) {
+        knowledgeContext = `KNOWLEDGE BASE:
+${relevantChunks.map((chunk, i) => `[${i + 1}] (score: ${chunk.score.toFixed(2)}, file: ${chunk.filename}) ${chunk.text}`).join('\n\n---\n\n')}`;
+      } else {
+        knowledgeContext = 'KNOWLEDGE BASE: No relevant information found in the knowledge base.';
+      }
     } else {
-      knowledgeContext = 'KNOWLEDGE BASE: No relevant information found in the knowledge base.';
+      console.log('No vector store configured for this chatbot');
+      knowledgeContext = 'KNOWLEDGE BASE: No knowledge base has been configured.';
     }
 
-    // RAG system prompt - establishes role, then tone, then KB context
+    // RAG system prompt
     const chatbotName = chatbot.name || 'this business';
     const ragSystemPrompt = `You are a customer support assistant for ${chatbotName}.
 
@@ -806,7 +681,7 @@ RULES:
 5. If query IS RELEVANT but KB has no answer, use the forward_to_human tool
 6. If KB is empty/no matches for an IRRELEVANT query, politely decline without forwarding`;
 
-    // RAG layer forwarding tool - all usage logic in description
+    // RAG layer forwarding tool
     const ragForwardingTool = {
       type: "function",
       name: "forward_to_human",
@@ -842,16 +717,14 @@ DO NOT USE when:
       })),
     ];
 
-    // If we have tool results from Layer 1, include them in the context
+    // Include tool results from Layer 1 if any
     if (toolResultsForRag.length > 0 && analyzerMessageForRag) {
-      // Add the analyzer's tool call
       ragMessages.push({
         role: 'assistant',
         content: analyzerMessageForRag.content,
         tool_calls: analyzerMessageForRag.tool_calls
       });
       
-      // Add tool results
       for (const tr of toolResultsForRag) {
         ragMessages.push({
           role: 'tool',
@@ -860,7 +733,6 @@ DO NOT USE when:
         });
       }
       
-      // Add user message with context about tool results
       ragMessages.push({ 
         role: 'user', 
         content: `${message}\n\n[Note: Tool results above have been processed. Please incorporate them into your response.]` 
@@ -869,7 +741,7 @@ DO NOT USE when:
       ragMessages.push({ role: 'user', content: message });
     }
 
-    // Single API call with Responses API
+    // Final response with streaming
     console.log('Calling GPT-5 for final response...');
     const ragResponse = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
@@ -891,7 +763,7 @@ DO NOT USE when:
       throw new Error(`RAG request failed: ${errorText}`);
     }
 
-    // Transform Responses API SSE to Chat Completions format for client compatibility
+    // Transform Responses API SSE to Chat Completions format
     const transformStream = new TransformStream({
       transform(chunk, controller) {
         const text = new TextDecoder().decode(chunk);
@@ -907,7 +779,6 @@ DO NOT USE when:
           
           try {
             const event = JSON.parse(data);
-            // Transform response.output_text.delta to chat completions format
             if (event.type === 'response.output_text.delta') {
               const transformed = {
                 choices: [{
@@ -924,7 +795,6 @@ DO NOT USE when:
       }
     });
 
-    // Return transformed streaming response
     return new Response(ragResponse.body?.pipeThrough(transformStream), {
       headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
     });
