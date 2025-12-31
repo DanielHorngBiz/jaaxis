@@ -123,7 +123,7 @@ async function addFilesToVectorStore(
   // Poll for completion
   let status = batch.status;
   let attempts = 0;
-  const maxAttempts = 60; // 5 minutes max (5 second intervals)
+  const maxAttempts = 10; // 50 seconds max, then let OpenAI finish in background
 
   while (status === 'in_progress' && attempts < maxAttempts) {
     await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
@@ -145,7 +145,9 @@ async function addFilesToVectorStore(
   }
 
   if (status !== 'completed') {
-    console.warn(`Batch processing ended with status: ${status}`);
+    console.log(`Batch still processing (status: ${status}), OpenAI will continue in background`);
+  } else {
+    console.log('Files added to vector store');
   }
 }
 
@@ -226,6 +228,20 @@ serve(async (req) => {
     const vectorStoreId = await createVectorStore(vectorStoreName, OPENAI_API_KEY);
     console.log(`Created vector store: ${vectorStoreId}`);
 
+    // Save vector store ID IMMEDIATELY (before file upload to avoid timeout issues)
+    const { error: updateError } = await supabase
+      .from('chatbots')
+      .update({ openai_vector_store_id: vectorStoreId })
+      .eq('id', chatbot_id);
+
+    if (updateError) {
+      console.error('Failed to save vector store ID:', updateError);
+      // Clean up the vector store we just created
+      await deleteVectorStore(vectorStoreId, OPENAI_API_KEY);
+      throw new Error(`Failed to save vector store ID: ${updateError.message}`);
+    }
+    console.log('Saved vector store ID to database');
+
     // Upload each knowledge source as a file
     const fileIds: string[] = [];
     
@@ -267,18 +283,6 @@ serve(async (req) => {
     if (fileIds.length > 0) {
       console.log('Adding files to vector store...');
       await addFilesToVectorStore(vectorStoreId, fileIds, OPENAI_API_KEY);
-      console.log('Files added to vector store');
-    }
-
-    // Save vector store ID to chatbot
-    const { error: updateError } = await supabase
-      .from('chatbots')
-      .update({ openai_vector_store_id: vectorStoreId })
-      .eq('id', chatbot_id);
-
-    if (updateError) {
-      console.error('Failed to save vector store ID:', updateError);
-      throw new Error(`Failed to save vector store ID: ${updateError.message}`);
     }
 
     console.log('Sync completed successfully');
