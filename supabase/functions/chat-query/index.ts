@@ -903,7 +903,7 @@ DO NOT USE when:
             }
           ];
 
-          const confirmResponse = await fetch('https://api.openai.com/v1/responses', {
+          const confirmResponse = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${OPENAI_API_KEY}`,
@@ -911,23 +911,29 @@ DO NOT USE when:
             },
             body: JSON.stringify({
               model: 'gpt-5',
-              reasoning: { effort: 'low' },
-              input: confirmMessages,
-              stream: false,
+              messages: confirmMessages,
+              max_completion_tokens: 500,
             }),
           });
 
           if (confirmResponse.ok) {
             const confirmData = await confirmResponse.json();
-            finalOutputText = confirmData.output_text || 
-              confirmData.output?.find((o: any) => o.type === 'message')?.content?.[0]?.text || 
+            finalOutputText = confirmData.choices?.[0]?.message?.content || 
               'Your request has been forwarded to our support team.';
+            console.log('LLM-B confirmation response:', finalOutputText);
+          } else {
+            console.error('LLM-B confirmation call failed:', await confirmResponse.text());
+            finalOutputText = 'Your request has been forwarded to our support team.';
           }
         }
       }
 
-      if (!finalOutputText && !llmCalledForward) {
-        finalOutputText = llmData.output_text || 'I apologize, but I was unable to generate a response. Please try again.';
+      if (!finalOutputText) {
+        if (llmCalledForward) {
+          finalOutputText = 'Your request has been forwarded to our support team.';
+        } else {
+          finalOutputText = llmData.output_text || 'I apologize, but I was unable to generate a response. Please try again.';
+        }
       }
 
       return new Response(JSON.stringify({
