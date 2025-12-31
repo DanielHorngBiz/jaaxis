@@ -643,6 +643,17 @@ ${persona ? `Tone for clarifying questions: ${persona}` : ''}`;
         }
 
         console.log('Tool results:', JSON.stringify(toolResults));
+      } else if (analyzerContent && analyzerContent.trim()) {
+        // Query Analyzer returned a clarifying question (no tool call, but has text)
+        // Return this directly to the user without going through RAG
+        console.log('Query Analyzer returned clarifying question, returning directly:', analyzerContent);
+        
+        return new Response(JSON.stringify({
+          success: true,
+          response: analyzerContent,
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       } else {
         console.log('Query Analyzer: No tools needed, passing to RAG layer');
       }
