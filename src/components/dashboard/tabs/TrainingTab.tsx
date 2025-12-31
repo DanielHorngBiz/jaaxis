@@ -132,6 +132,7 @@ const TrainingTab = () => {
   const handleDeleteSelected = async () => {
     if (!chatbotId) return;
 
+    const itemCount = selectedItems.length;
     const { error } = await supabase
       .from('knowledge_sources')
       .delete()
@@ -150,8 +151,11 @@ const TrainingTab = () => {
     setSelectedItems([]);
     toast({
       title: "Deleted",
-      description: `${selectedItems.length} item(s) deleted successfully.`
+      description: `${itemCount} item(s) deleted. Syncing to AI...`
     });
+    
+    // Auto-sync to remove from OpenAI vector store
+    await handleSyncKnowledge();
   };
 
   const handleDeleteItem = async (id: string) => {
@@ -173,6 +177,14 @@ const TrainingTab = () => {
 
     setTrainedItems(prev => prev.filter(item => item.id !== id));
     setSelectedItems(prev => prev.filter(itemId => itemId !== id));
+    
+    toast({
+      title: "Deleted",
+      description: "Item deleted. Syncing to AI..."
+    });
+    
+    // Auto-sync to remove from OpenAI vector store
+    await handleSyncKnowledge();
   };
 
   const handleRefresh = () => {
