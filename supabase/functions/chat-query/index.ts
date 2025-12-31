@@ -790,8 +790,11 @@ ${relevantChunks.map((chunk, i) => `[${i + 1}] (similarity: ${chunk.similarity.t
       knowledgeContext = 'KNOWLEDGE BASE: No relevant information found in the knowledge base.';
     }
 
-    // RAG system prompt - focused on KB rules only, tool logic in tool description
-    const ragSystemPrompt = `${persona}
+    // RAG system prompt - establishes role, then tone, then KB context
+    const chatbotName = chatbot.name || 'this business';
+    const ragSystemPrompt = `You are a customer support assistant for ${chatbotName}.
+
+TONE: ${persona}
 
 ${knowledgeContext}
 
@@ -800,7 +803,8 @@ RULES:
 2. Never make up facts or information not in the KB
 3. If query is IRRELEVANT to KB topics, politely decline
 4. If only PARTS are relevant, answer those parts only
-5. You may reference chunks like [1], [2] when citing`;
+5. If query IS RELEVANT but KB has no answer, use the forward_to_human tool
+6. If KB is empty/no matches for an IRRELEVANT query, politely decline without forwarding`;
 
     // RAG layer forwarding tool - all usage logic in description
     const ragForwardingTool = {
