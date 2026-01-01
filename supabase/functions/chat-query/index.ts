@@ -766,33 +766,24 @@ TONE: ${persona}
 ${knowledgeContext}
 
 RULES:
-1. Answer based SOLELY on the knowledge base above
-2. Never make up facts or information not in the KB
-3. If query is IRRELEVANT to KB topics, politely decline
-4. If only PARTS are relevant, answer those parts only
-5. If query IS RELEVANT but KB has no answer, use the forward_to_human tool
-6. If KB is empty/no matches for an IRRELEVANT query, politely decline without forwarding`;
+1. Always answer queries based SOLELY on the knowledge base above. Never make up facts.
+2. If the query is clearly out of scope and irrelevant, tell the user you don't have information about that.
+3. If only part of the query is irrelevant, answer the relevant part and decline the rest.
+4. If the query is relevant but the knowledge is insufficient to provide an accurate answer, or you're unsure, use the forward_to_human tool.`;
 
       // RAG layer forwarding tool
       const ragForwardingTool = {
         type: "function",
         name: "forward_to_human",
-        description: `Forward to a human agent when the user's question IS RELEVANT to the business but the answer is NOT in the knowledge base.
+        description: `Forward to a human agent when the query is relevant to the business but the knowledge base is insufficient to provide an accurate answer, or when you're unsure about the answer.
 
-USE THIS TOOL WHEN:
-- User asks about pricing, policies, or details not documented in KB
-- User has account-specific questions you cannot answer
-- KB exists but doesn't contain the needed information
-
-DO NOT USE when:
-- Query is irrelevant to the business (just politely decline instead)
-- You can answer from the KB`,
+Do NOT use this tool for irrelevant queries - simply tell the user you don't have information about that topic.`,
         parameters: {
           type: "object",
           properties: {
             reason: {
               type: "string",
-              description: "What specific information the user needs that isn't in the KB"
+              description: "What information the user needs that isn't available in the knowledge base"
             }
           },
           required: ["reason"],
