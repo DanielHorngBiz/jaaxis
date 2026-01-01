@@ -197,7 +197,6 @@ async function executeTool(
       success: true,
       result: {
         forwarded: true,
-        message: "Your request has been forwarded to our support team. They will get back to you shortly.",
         reason: reason
       }
     };
@@ -660,7 +659,18 @@ ${persona ? `Tone for clarifying questions: ${persona}` : ''}`;
 
 TONE: ${persona}
 
-A customer request has been forwarded to a human agent. Generate a friendly confirmation message based on the tool result provided. Keep it brief and reassuring.`;
+A customer request has been forwarded to a human agent. The tool result contains a "reason" field explaining why.
+
+YOUR ONLY JOB:
+1. Explain to the user WHY their request was forwarded (paraphrase the reason naturally)
+2. Confirm a human will follow up
+
+STRICT RULES:
+- Use the "reason" from the tool result to explain the forwarding
+- Do NOT ask any follow-up questions
+- Do NOT ask for more information
+- Do NOT make suggestions
+- Keep response to 1-2 sentences`;
 
       // Build messages for 2nd LLM
       const llmMessages: any[] = [
