@@ -504,7 +504,7 @@ serve(async (req) => {
     console.log(`Vector store ID: ${vectorStoreId || 'none'}`);
 
     let toolResults: any[] = [];
-    let analyzerToolCalls: any = null;
+    let analyzerFunctionCalls: any[] = []; // Store raw function_call objects from Layer 1
     let isForwardingFlow = false;
 
     // ========== CHECK FOR AUTOMATIC FORWARDING (attachments) ==========
@@ -521,23 +521,18 @@ serve(async (req) => {
         }
       };
 
-      toolResults.push({
-        tool_call_id: 'auto_forward_attachments',
-        role: 'tool',
-        content: JSON.stringify(forwardResult)
+      // Store as function_call object (Responses API format)
+      analyzerFunctionCalls.push({
+        type: 'function_call',
+        call_id: 'auto_forward_attachments',
+        name: 'forward_to_human',
+        arguments: JSON.stringify({ reason: "Message contains attachments that require human review" })
       });
 
-      analyzerToolCalls = {
-        content: null,
-        tool_calls: [{
-          id: 'auto_forward_attachments',
-          type: 'function',
-          function: {
-            name: 'forward_to_human',
-            arguments: JSON.stringify({ reason: "Message contains attachments that require human review" })
-          }
-        }]
-      };
+      toolResults.push({
+        call_id: 'auto_forward_attachments',
+        output: JSON.stringify(forwardResult)
+      });
     } else {
       // ========== LAYER 1: Query Analyzer ==========
       console.log('Running Query Analyzer (Layer 1)...');
@@ -599,33 +594,28 @@ ${persona ? `Tone for clarifying questions: ${persona}` : ''}`;
             }
           }
         } else if (output.type === 'function_call') {
+          // Store raw function_call object for Responses API format
+          analyzerFunctionCalls.push(output);
           toolCalls.push({
             id: output.call_id,
-            type: 'function',
-            function: {
-              name: output.name,
-              arguments: output.arguments
-            }
+            name: output.name,
+            arguments: output.arguments
           });
         }
       }
 
       console.log(`Query Analyzer response: ${analyzerContent || '(no text output)'}`);
-      console.log(`Tool calls: ${JSON.stringify(toolCalls.map(tc => tc.function.name))}`);
+      console.log(`Tool calls: ${JSON.stringify(toolCalls.map(tc => tc.name))}`);
 
       // Execute tools if any
       if (toolCalls.length > 0) {
-        analyzerToolCalls = {
-          content: analyzerContent || null,
-          tool_calls: toolCalls
-        };
 
         // Check if this is a forwarding flow (forward_to_human called)
-        isForwardingFlow = toolCalls.some(tc => tc.function.name === 'forward_to_human');
+        isForwardingFlow = toolCalls.some(tc => tc.name === 'forward_to_human');
 
         for (const toolCall of toolCalls) {
-          const toolName = toolCall.function.name;
-          const toolArgs = JSON.parse(toolCall.function.arguments);
+          const toolName = toolCall.name;
+          const toolArgs = JSON.parse(toolCall.arguments);
           
           const result = await executeTool(
             toolName, 
@@ -635,10 +625,11 @@ ${persona ? `Tone for clarifying questions: ${persona}` : ''}`;
             allowedStatuses
           );
           
+          // Store as function_call_output (Responses API format)
           toolResults.push({
-            tool_call_id: toolCall.id,
-            role: 'tool',
-            content: JSON.stringify(result)
+            type: 'function_call_output',
+            call_id: toolCall.id,
+            output: JSON.stringify(result)
           });
         }
 
@@ -680,20 +671,16 @@ A customer request has been forwarded to a human agent. Generate a friendly conf
         })),
       ];
 
-      // Include tool call and result
-      if (analyzerToolCalls) {
-        llmMessages.push({
-          role: 'assistant',
-          content: analyzerToolCalls.content,
-          tool_calls: analyzerToolCalls.tool_calls
-        });
+      // Include tool calls and results (Responses API format)
+      if (analyzerFunctionCalls.length > 0) {
+        // Add each function_call object directly
+        for (const fc of analyzerFunctionCalls) {
+          llmMessages.push(fc);
+        }
         
+        // Add function_call_output items
         for (const tr of toolResults) {
-          llmMessages.push({
-            role: 'tool',
-            tool_call_id: tr.tool_call_id,
-            content: tr.content
-          });
+          llmMessages.push(tr);
         }
       }
 
@@ -812,20 +799,16 @@ DO NOT USE when:
         })),
       ];
 
-      // Include tool results from Layer 1 if any (store-related tools)
-      if (toolResults.length > 0 && analyzerToolCalls) {
-        llmMessages.push({
-          role: 'assistant',
-          content: analyzerToolCalls.content,
-          tool_calls: analyzerToolCalls.tool_calls
-        });
+      // Include tool results from Layer 1 if any (store-related tools) - Responses API format
+      if (toolResults.length > 0 && analyzerFunctionCalls.length > 0) {
+        // Add each function_call object directly
+        for (const fc of analyzerFunctionCalls) {
+          llmMessages.push(fc);
+        }
         
+        // Add function_call_output items
         for (const tr of toolResults) {
-          llmMessages.push({
-            role: 'tool',
-            tool_call_id: tr.tool_call_id,
-            content: tr.content
-          });
+          llmMessages.push(tr);
         }
         
         llmMessages.push({ 
