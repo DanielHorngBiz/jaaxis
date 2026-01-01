@@ -775,9 +775,7 @@ RULES:
       const ragForwardingTool = {
         type: "function",
         name: "forward_to_human",
-        description: `Forward to a human agent when the query is relevant to the business but the knowledge base is insufficient to provide an accurate answer, or when you're unsure about the answer.
-
-Do NOT use this tool for irrelevant queries - simply tell the user you don't have information about that topic.`,
+        description: `Forward to a human agent when the query is relevant to the business but the knowledge base is insufficient to provide an accurate answer, or when you're unsure about the answer.`,
         parameters: {
           type: "object",
           properties: {
