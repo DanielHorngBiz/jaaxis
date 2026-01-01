@@ -41,6 +41,9 @@ export const BotConfigProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (botId) {
+      // Reset to defaults before loading new bot
+      setConfig(defaultConfig);
+      setChatbotId(null);
       loadBotConfig(botId);
     }
   }, [botId]);

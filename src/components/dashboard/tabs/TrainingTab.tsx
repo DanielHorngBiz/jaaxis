@@ -48,19 +48,21 @@ const TrainingTab = () => {
   const [isSavingRules, setIsSavingRules] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load persona and forwarding rules from config
+  // Load persona and forwarding rules from config - always sync, even if empty
   useEffect(() => {
-    if (config.persona) {
-      setPersona(config.persona);
-    }
-    if (config.forwardingRules) {
-      setForwardingRules(config.forwardingRules);
-    }
+    setPersona(config.persona || "");
+    setForwardingRules(config.forwardingRules || "");
   }, [config.persona, config.forwardingRules]);
 
   useEffect(() => {
     if (chatbotId) {
       fetchKnowledgeSources();
+    } else {
+      // Reset local state when no chatbot is selected
+      setTrainedItems([]);
+      setTextInput("");
+      setWebsiteUrl("");
+      setQaPairs([{ id: '1', question: '', answer: '' }]);
     }
   }, [chatbotId]);
 
