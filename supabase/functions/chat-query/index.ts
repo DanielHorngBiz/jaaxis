@@ -452,6 +452,69 @@ async function searchKnowledgeWithFileSearch(
   return chunks;
 }
 
+// Dedicated 3rd LLM for generating forwarding confirmation messages
+async function generateForwardingConfirmation(
+  forwardResult: { forwarded: boolean; reason: string },
+  chatbotName: string,
+  persona: string,
+  apiKey: string
+): Promise<string> {
+  console.log('Generating forwarding confirmation via 3rd LLM (GPT-5-mini)...');
+  
+  const prompt = `You are a customer support assistant for ${chatbotName}.
+
+TONE: ${persona}
+
+A customer's request has just been forwarded to a human agent.
+
+FORWARDING RESULT:
+${JSON.stringify(forwardResult)}
+
+YOUR ONLY TASK:
+Compose a brief, friendly message to the user that:
+1. Acknowledges their request
+2. Explains why it was forwarded (use the "reason" field naturally)
+3. Confirms a human will follow up
+
+CONSTRAINTS:
+- Maximum 1-2 sentences
+- Do NOT ask follow-up questions
+- Do NOT offer alternatives or suggestions
+- Be warm but concise`;
+
+  try {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'openai/gpt-5-mini',
+        messages: [
+          { role: 'system', content: prompt }
+        ],
+        max_tokens: 150,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('3rd LLM error:', await response.text());
+      return 'Your request has been forwarded to our support team. They will get back to you shortly.';
+    }
+
+    const data = await response.json();
+    const confirmationText = data.choices?.[0]?.message?.content || 
+      'Your request has been forwarded to our support team. They will get back to you shortly.';
+    
+    console.log('3rd LLM confirmation:', confirmationText);
+    return confirmationText;
+  } catch (error) {
+    console.error('3rd LLM error:', error);
+    return 'Your request has been forwarded to our support team. They will get back to you shortly.';
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -459,11 +522,16 @@ serve(async (req) => {
 
   try {
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
     if (!OPENAI_API_KEY) {
       throw new Error('OPENAI_API_KEY is not configured');
+    }
+    
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY is not configured');
     }
 
     const { chatbot_id, message, conversation_history = [], has_attachments = false } = await req.json();
@@ -651,83 +719,41 @@ ${persona ? `Tone for clarifying questions: ${persona}` : ''}`;
 
     // ========== BRANCH: Forwarding vs Normal Flow ==========
     if (isForwardingFlow) {
-      // ========== FORWARDING PATH: Skip RAG, direct to 2nd LLM ==========
-      console.log('Forwarding flow - skipping RAG, direct to 2nd LLM (Layer 3)...');
+      // ========== FORWARDING PATH: Skip RAG, use 3rd LLM for confirmation ==========
+      console.log('Forwarding flow - skipping RAG, using 3rd LLM for confirmation...');
 
       const chatbotName = chatbot.name || 'this business';
-      const forwardingSystemPrompt = `You are a customer support assistant for ${chatbotName}.
-
-TONE: ${persona}
-
-A customer request has been forwarded to a human agent. The tool result contains a "reason" field explaining why.
-
-YOUR ONLY JOB:
-1. Explain to the user WHY their request was forwarded (paraphrase the reason naturally)
-2. Confirm a human will follow up
-
-STRICT RULES:
-- Use the "reason" from the tool result to explain the forwarding
-- Do NOT ask any follow-up questions
-- Do NOT ask for more information
-- Do NOT make suggestions
-- Keep response to 1-2 sentences`;
-
-      // Build messages for 2nd LLM
-      const llmMessages: any[] = [
-        { role: 'system', content: forwardingSystemPrompt },
-        ...conversation_history.map((msg: any) => ({
-          role: msg.role === 'bot' ? 'assistant' : msg.role,
-          content: msg.content,
-        })),
-      ];
-
-      // Include tool calls and results (Responses API format)
-      if (analyzerFunctionCalls.length > 0) {
-        // Add each function_call object directly
-        for (const fc of analyzerFunctionCalls) {
-          llmMessages.push(fc);
-        }
-        
-        // Add function_call_output items
-        for (const tr of toolResults) {
-          llmMessages.push(tr);
+      
+      // Extract the forwarding result from toolResults
+      let forwardResult = { forwarded: true, reason: 'User request requires human assistance' };
+      for (const tr of toolResults) {
+        try {
+          const parsed = JSON.parse(tr.output || '{}');
+          if (parsed.result?.forwarded === true) {
+            forwardResult = parsed.result;
+            break;
+          } else if (parsed.success && parsed.result?.forwarded === true) {
+            forwardResult = parsed.result;
+            break;
+          }
+        } catch (e) {
+          console.error('Error parsing tool result:', e);
         }
       }
+      
+      console.log('Forward result for 3rd LLM:', forwardResult);
 
-      llmMessages.push({ role: 'user', content: message });
-
-      // Call 2nd LLM without tools (just generate confirmation)
-      console.log('Calling GPT-5 for forwarding confirmation...');
-      const llmResponse = await fetch('https://api.openai.com/v1/responses', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-5',
-          reasoning: { effort: 'low' },
-          input: llmMessages,
-          stream: false,
-        }),
-      });
-
-      if (!llmResponse.ok) {
-        const errorText = await llmResponse.text();
-        console.error('2nd LLM API error:', errorText);
-        throw new Error(`2nd LLM request failed: ${errorText}`);
-      }
-
-      const llmData = await llmResponse.json();
-      console.log('2nd LLM response:', JSON.stringify(llmData, null, 2));
-
-      const outputText = llmData.output_text || 
-        llmData.output?.find((o: any) => o.type === 'message')?.content?.[0]?.text || 
-        'Your request has been forwarded to our support team. They will get back to you shortly.';
+      // Use dedicated 3rd LLM for confirmation
+      const confirmationMessage = await generateForwardingConfirmation(
+        forwardResult,
+        chatbotName,
+        persona,
+        LOVABLE_API_KEY!
+      );
 
       return new Response(JSON.stringify({
         success: true,
-        response: outputText,
+        response: confirmationMessage,
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -875,50 +901,14 @@ For every user query, reason step by step:
           // Execute forwarding and get result
           const forwardResult = await executeTool('forward_to_human', forwardArgs, supabase, storeAccess, allowedStatuses);
           
-          // Make another call to 2nd LLM to generate confirmation
-          const confirmMessages = [
-            ...llmMessages,
-            {
-              role: 'assistant',
-              content: null,
-              tool_calls: [{
-                id: output.call_id,
-                type: 'function',
-                function: {
-                  name: 'forward_to_human',
-                  arguments: output.arguments
-                }
-              }]
-            },
-            {
-              role: 'tool',
-              tool_call_id: output.call_id,
-              content: JSON.stringify(forwardResult)
-            }
-          ];
-
-          const confirmResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${OPENAI_API_KEY}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              model: 'gpt-5',
-              messages: confirmMessages,
-              max_completion_tokens: 500,
-            }),
-          });
-
-          if (confirmResponse.ok) {
-            const confirmData = await confirmResponse.json();
-            finalOutputText = confirmData.choices?.[0]?.message?.content || 
-              'Your request has been forwarded to our support team.';
-            console.log('LLM-B confirmation response:', finalOutputText);
-          } else {
-            console.error('LLM-B confirmation call failed:', await confirmResponse.text());
-            finalOutputText = 'Your request has been forwarded to our support team.';
-          }
+          // Use dedicated 3rd LLM for confirmation
+          const chatbotName = chatbot.name || 'this business';
+          finalOutputText = await generateForwardingConfirmation(
+            forwardResult.result || { forwarded: true, reason: forwardArgs.reason },
+            chatbotName,
+            persona,
+            LOVABLE_API_KEY!
+          );
         }
       }
 
