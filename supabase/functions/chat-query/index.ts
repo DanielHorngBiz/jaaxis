@@ -805,22 +805,23 @@ For every user query, reason step by step:
 - Respond directly if you can; otherwise, escalate using forward_to_human, but only if the query is relevant and the knowledge base is insufficient.`;
 
       // RAG layer forwarding tool
-      const ragForwardingTool = {
-        type: "function",
-        name: "forward_to_human",
-        description: `Forward to a human agent when the query is relevant to the business but the knowledge base is insufficient to provide an accurate answer, or when you're unsure about the answer.`,
-        parameters: {
-          type: "object",
-          properties: {
-            reason: {
-              type: "string",
-              description: "What information the user needs that isn't available in the knowledge base"
-            }
-          },
-          required: ["reason"],
-          additionalProperties: false
-        }
-      };
+    const ragForwardingTool = {
+      type: "function",
+      name: "forward_to_human",
+      description: "Forward the query to a human agent ONLY when the knowledge base is relevant but insufficient. Do not use this tool when the query is irrelevant.",
+      strict: true,
+      parameters: {
+        type: "object",
+        properties: {
+          reason: {
+            type: "string",
+            description: "The reason why the chat needs to be forwarded."
+          }
+        },
+        required: ["reason"],
+        additionalProperties: false
+      }
+    };
 
       // Build messages for 2nd LLM
       const llmMessages: any[] = [
