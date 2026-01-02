@@ -457,7 +457,7 @@ async function generateForwardingConfirmation(
   forwardResult: { forwarded: boolean; reason: string },
   chatbotName: string,
   persona: string,
-  apiKey: string
+  openaiApiKey: string
 ): Promise<string> {
   console.log('Generating forwarding confirmation via 3rd LLM (GPT-5-mini)...');
   
@@ -483,18 +483,18 @@ CONSTRAINTS:
 - Be warm but concise`;
 
   try {
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        'Authorization': `Bearer ${openaiApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'openai/gpt-5-mini',
+        model: 'gpt-5-mini-2025-08-07',
         messages: [
           { role: 'system', content: prompt }
         ],
-        max_tokens: 150,
+        max_completion_tokens: 150,
       }),
     });
 
@@ -522,16 +522,11 @@ serve(async (req) => {
 
   try {
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
     if (!OPENAI_API_KEY) {
       throw new Error('OPENAI_API_KEY is not configured');
-    }
-    
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
     }
 
     const { chatbot_id, message, conversation_history = [], has_attachments = false } = await req.json();
@@ -748,7 +743,7 @@ ${persona ? `Tone for clarifying questions: ${persona}` : ''}`;
         forwardResult,
         chatbotName,
         persona,
-        LOVABLE_API_KEY!
+        OPENAI_API_KEY
       );
 
       return new Response(JSON.stringify({
@@ -907,7 +902,7 @@ For every user query, reason step by step:
             forwardResult.result || { forwarded: true, reason: forwardArgs.reason },
             chatbotName,
             persona,
-            LOVABLE_API_KEY!
+            OPENAI_API_KEY
           );
         }
       }
