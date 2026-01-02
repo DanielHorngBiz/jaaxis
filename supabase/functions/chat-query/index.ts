@@ -612,7 +612,7 @@ RULES:
 ${persona ? `Tone for clarifying questions: ${persona}` : ''}`;
 
       const analyzerBody: any = {
-        model: 'gpt-5',
+        model: 'gpt-5.2',
         reasoning: { effort: 'low' },
         input: [
           { role: 'system', content: queryAnalyzerSystemPrompt },
@@ -852,7 +852,7 @@ For every user query, reason step by step:
       }
 
       // Call 2nd LLM with KB context and forwarding tool
-      console.log('Calling GPT-5 for final response...');
+      console.log('Calling GPT-5.2 for final response...');
       const llmResponse = await fetch('https://api.openai.com/v1/responses', {
         method: 'POST',
         headers: {
@@ -860,7 +860,7 @@ For every user query, reason step by step:
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-5',
+          model: 'gpt-5.2',
           reasoning: { effort: 'low' },
           input: llmMessages,
           tools: [ragForwardingTool],
