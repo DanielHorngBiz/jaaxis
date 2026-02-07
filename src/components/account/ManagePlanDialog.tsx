@@ -46,7 +46,7 @@ const ManagePlanDialog = ({
                     </p>
                   )}
                 </div>
-                <Button variant="destructive" size="sm">
+                <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
                   Cancel
                 </Button>
               </div>
