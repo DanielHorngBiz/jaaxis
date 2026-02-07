@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-
+import CancelPlanDialog from "./CancelPlanDialog";
 
 interface ManagePlanDialogProps {
   open: boolean;
@@ -23,6 +24,15 @@ const ManagePlanDialog = ({
   planName,
   renewsAt,
 }: ManagePlanDialogProps) => {
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+
+  const handleCancelConfirm = () => {
+    // TODO: Implement actual cancellation logic
+    console.log("Plan cancelled");
+    setCancelDialogOpen(false);
+    onOpenChange(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -46,7 +56,12 @@ const ManagePlanDialog = ({
                     </p>
                   )}
                 </div>
-                <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-destructive hover:text-destructive"
+                  onClick={() => setCancelDialogOpen(true)}
+                >
                   Cancel
                 </Button>
               </div>
@@ -78,6 +93,13 @@ const ManagePlanDialog = ({
             </Button>
           </div>
         </div>
+
+        <CancelPlanDialog
+          open={cancelDialogOpen}
+          onOpenChange={setCancelDialogOpen}
+          onConfirm={handleCancelConfirm}
+          endDate={renewsAt}
+        />
       </DialogContent>
     </Dialog>
   );
