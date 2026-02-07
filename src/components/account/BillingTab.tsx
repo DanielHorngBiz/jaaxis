@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Check } from "lucide-react";
 import AddRepliesDialog from "./AddRepliesDialog";
+import ManagePlanDialog from "./ManagePlanDialog";
 
 const PLANS = [
   {
@@ -31,6 +33,9 @@ const PLANS = [
 ];
 
 const BillingTab = () => {
+  const [managePlanOpen, setManagePlanOpen] = useState(false);
+  const currentPlan = PLANS.find((p) => p.current);
+  
   const totalReplies = 3000;
   const remainingReplies = 1000;
   const remainingPercentage = (remainingReplies / totalReplies) * 100;
@@ -88,6 +93,7 @@ const BillingTab = () => {
               <Button 
                 variant={plan.variant} 
                 className="w-full"
+                onClick={plan.current ? () => setManagePlanOpen(true) : undefined}
               >
                 {plan.action}
               </Button>
@@ -119,6 +125,15 @@ const BillingTab = () => {
         </CardContent>
       </Card>
 
+      {/* Manage Plan Dialog */}
+      {currentPlan && (
+        <ManagePlanDialog
+          open={managePlanOpen}
+          onOpenChange={setManagePlanOpen}
+          planName={currentPlan.name}
+          renewsAt={currentPlan.renewsAt}
+        />
+      )}
     </div>
   );
 };
