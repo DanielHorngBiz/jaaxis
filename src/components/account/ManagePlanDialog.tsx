@@ -42,7 +42,7 @@ const ManagePlanDialog = ({
                   <p className="font-semibold">You're on {planName} Plan</p>
                   {renewsAt && (
                     <p className="text-sm text-muted-foreground">
-                      Renews {renewsAt}
+                      Renews at {renewsAt}
                     </p>
                   )}
                 </div>
@@ -68,7 +68,7 @@ const ManagePlanDialog = ({
             </Button>
 
             <Button
-              variant="default"
+              variant="outline"
               onClick={() => {
                 // TODO: Implement view invoices
                 console.log("View invoices clicked");
