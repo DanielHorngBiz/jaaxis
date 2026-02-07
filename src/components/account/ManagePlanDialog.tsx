@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { CreditCard, FileText } from "lucide-react";
+
 
 interface ManagePlanDialogProps {
   open: boolean;
@@ -56,29 +56,25 @@ const ManagePlanDialog = ({
           <Separator />
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <Button
               variant="outline"
-              className="justify-start gap-3 h-12"
               onClick={() => {
                 // TODO: Implement edit billing
                 console.log("Edit billing clicked");
               }}
             >
-              <CreditCard className="w-5 h-5" />
-              Edit Billing Information
+              Edit Billing
             </Button>
 
             <Button
-              variant="outline"
-              className="justify-start gap-3 h-12"
+              variant="default"
               onClick={() => {
                 // TODO: Implement view invoices
                 console.log("View invoices clicked");
               }}
             >
-              <FileText className="w-5 h-5" />
-              View Invoices & Payments
+              View Invoices
             </Button>
           </div>
         </div>
