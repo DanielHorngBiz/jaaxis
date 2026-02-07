@@ -64,17 +64,17 @@ const ManagePlanDialog = ({
                 console.log("Edit billing clicked");
               }}
             >
-              Edit Billing
+              Edit Billing Info
             </Button>
 
             <Button
-              variant="outline"
+              variant="default"
               onClick={() => {
                 // TODO: Implement view invoices
                 console.log("View invoices clicked");
               }}
             >
-              View Invoices
+              Invoices & Payments
             </Button>
           </div>
         </div>
