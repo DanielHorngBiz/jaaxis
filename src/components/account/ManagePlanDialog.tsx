@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { CreditCard, FileText, XCircle } from "lucide-react";
+import { CreditCard, FileText } from "lucide-react";
 
 interface ManagePlanDialogProps {
   open: boolean;
@@ -46,8 +46,8 @@ const ManagePlanDialog = ({
                     </p>
                   )}
                 </div>
-                <Button variant="outline" size="sm">
-                  Downgrade
+                <Button variant="destructive" size="sm">
+                  Cancel
                 </Button>
               </div>
             </CardContent>
@@ -79,18 +79,6 @@ const ManagePlanDialog = ({
             >
               <FileText className="w-5 h-5" />
               View Invoices & Payments
-            </Button>
-
-            <Button
-              variant="outline"
-              className="justify-start gap-3 h-12 text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={() => {
-                // TODO: Implement cancel plan
-                console.log("Cancel plan clicked");
-              }}
-            >
-              <XCircle className="w-5 h-5" />
-              Cancel Plan
             </Button>
           </div>
         </div>
